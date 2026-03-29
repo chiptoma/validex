@@ -1,1 +1,0 @@
-{"version":3,"file":"scan.js","sourceRoot":"","sources":["../../../functional/iterable/scan.ts"],"names":[],"mappings":"AAAA;;;;GAIG;AACH,MAAM,SAAU,CAAC,CAAA,IAAI,CACpB,QAAwB,EACxB,OAAe,EACf,WAAoD;IAEpD,IAAI,MAAM,GAAG,OAAO,CAAC;IACrB,KAAK,MAAM,KAAK,IAAI,QAAQ,EAAE,CAAC;QAC9B,MAAM,GAAG,WAAW,CAAC,MAAM,EAAE,KAAK,CAAC,CAAC;QACpC,MAAM,MAAM,CAAC;IACd,CAAC;AACF,CAAC"}

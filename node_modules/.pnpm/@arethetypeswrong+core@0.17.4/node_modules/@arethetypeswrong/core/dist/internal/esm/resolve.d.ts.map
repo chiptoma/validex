@@ -1,1 +1,0 @@
-{"version":3,"file":"resolve.d.ts","sourceRoot":"","sources":["../../../src/internal/esm/resolve.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,OAAO,EAAE,MAAM,mBAAmB,CAAC;AAEjD,OAAO,KAAK,GAAG,MAAM,wBAAwB,CAAC;AAY9C,wBAAgB,UAAU,CAAC,EAAE,EAAE,OAAO,EAAE,SAAS,EAAE,MAAM,EAAE,SAAS,EAAE,GAAG,kBAExE;AAED,wBAAgB,UAAU,CAAC,EAAE,EAAE,OAAO,EAAE,SAAS,EAAE,MAAM,EAAE,SAAS,EAAE,GAAG,kBAExE"}

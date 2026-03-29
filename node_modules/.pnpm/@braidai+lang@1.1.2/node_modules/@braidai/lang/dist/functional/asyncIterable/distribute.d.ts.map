@@ -1,1 +1,0 @@
-{"version":3,"file":"distribute.d.ts","sourceRoot":"","sources":["../../../functional/asyncIterable/distribute.ts"],"names":[],"mappings":"AAGA;;;GAGG;AACH,wBAAgB,UAAU,CAAC,IAAI,EAAE,MAAM,GAAG,IAAI,EAC7C,QAAQ,EAAE,aAAa,CAAC,IAAI,CAAC,EAC7B,WAAW,EAAE,MAAM,EACnB,SAAS,EAAE,CAAC,QAAQ,EAAE,aAAa,CAAC,IAAI,CAAC,KAAK,aAAa,CAAC,MAAM,CAAC,GACjE,aAAa,CAAC,MAAM,CAAC,CAEvB"}

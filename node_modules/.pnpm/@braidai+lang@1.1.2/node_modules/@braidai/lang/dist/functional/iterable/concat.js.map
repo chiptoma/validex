@@ -1,1 +1,0 @@
-{"version":3,"file":"concat.js","sourceRoot":"","sources":["../../../functional/iterable/concat.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,QAAQ,EAAE,MAAM,4CAA4C,CAAC;AACtE,OAAO,EAAE,SAAS,EAAE,MAAM,gBAAgB,CAAC;AAE3C;;GAEG;AACH,MAAM,UAAU,MAAM,CAAO,SAAmC;IAC/D,OAAO,SAAS,CAAC,SAAS,EAAE,QAAQ,CAAC,CAAC;AACvC,CAAC"}
