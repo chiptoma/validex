@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Core (Email + Password)",
+    "path": "dist/index.js",
+    "import": "{ Email, Password }",
+    "limit": "10 kB"
+  },
+  {
+    "name": "Full library (all rules)",
+    "path": "dist/index.js",
+    "import": "*",
+    "limit": "25 kB"
+  }
+]
