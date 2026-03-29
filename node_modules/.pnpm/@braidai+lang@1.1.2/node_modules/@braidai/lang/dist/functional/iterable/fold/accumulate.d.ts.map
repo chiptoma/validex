@@ -1,0 +1,1 @@
+{"version":3,"file":"accumulate.d.ts","sourceRoot":"","sources":["../../../../functional/iterable/fold/accumulate.ts"],"names":[],"mappings":"AAMA;;;GAGG;AACH,wBAAgB,UAAU,CACzB,QAAQ,EAAE,QAAQ,CAAC,MAAM,CAAC,GACxB,MAAM,CAAC;AAEV,wBAAgB,UAAU,CAAC,IAAI,EAC9B,QAAQ,EAAE,QAAQ,CAAC,IAAI,CAAC,EACxB,MAAM,EAAE,CAAC,KAAK,EAAE,IAAI,KAAK,MAAM,GAC7B,MAAM,CAAC"}

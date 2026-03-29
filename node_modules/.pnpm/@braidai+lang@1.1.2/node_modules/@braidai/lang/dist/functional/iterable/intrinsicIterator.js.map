@@ -1,0 +1,1 @@
+{"version":3,"file":"intrinsicIterator.js","sourceRoot":"","sources":["../../../functional/iterable/intrinsicIterator.ts"],"names":[],"mappings":"AAAA,gBAAgB;AAChB,MAAM,CAAC,MAAM,QAAQ,GAAoC,UAAU,CAAC,QAAQ,CAAC;AAE7E,gBAAgB;AAChB,MAAM,UAAU,UAAU,CAAO,QAAwB;IACxD,OAAO;QACN,CAAC,MAAM,CAAC,QAAQ,CAAC;YAChB,OAAO,QAAQ,CAAC;QACjB,CAAC;KACD,CAAC;AACH,CAAC"}

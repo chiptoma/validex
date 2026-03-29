@@ -1,0 +1,18 @@
+{
+  "name": "@braidai/lang",
+  "type": "module",
+  "version": "1.1.2",
+  "license": "ISC",
+  "homepage": "https://github.com/braidnetworks/braidai/tree/main/packages/lang",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/braidnetworks/braidai.git"
+  },
+  "exports": {
+    "./*": {
+      "import": "./dist/*.js",
+      "types": "./dist/*.d.ts"
+    }
+  },
+  "scripts": {}
+}

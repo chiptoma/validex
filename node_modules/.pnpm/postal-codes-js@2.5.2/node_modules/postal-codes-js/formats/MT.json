@@ -1,0 +1,16 @@
+{
+  "Description": "MA : LLL NNNN",
+  "RedundantCharacters": " -",
+  "ValidationRegex": "^[A-Z]{3}[0-9]{4}$",
+  "TestData": {
+    "Valid": [
+      "abc1234",
+      "ABC1234",
+      "SHD4783"
+    ],
+    "Invalid": [
+      "ABCABC",
+      "123ABCD"
+    ]
+  }
+}

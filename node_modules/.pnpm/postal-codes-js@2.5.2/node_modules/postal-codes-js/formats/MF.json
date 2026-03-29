@@ -1,0 +1,14 @@
+{
+  "Description": "MF : 97150",
+  "RedundantCharacters": " -",
+  "ValidationRegex": "^97150$",
+  "TestData": {
+    "Valid": [
+      "97150"
+    ],
+    "Invalid": [
+      "971500",
+      "9715"
+    ]
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "name": "validex",
+  "version": "1.0.0-alpha.0",
+  "description": "Type-safe validation rules built on Zod",
+  "type": "module",
+  "packageManager": "pnpm@9.15.0",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./checks": {
+      "import": "./dist/checks/index.js",
+      "types": "./dist/checks/index.d.ts"
+    },
+    "./utilities": {
+      "import": "./dist/utilities/index.js",
+      "types": "./dist/utilities/index.d.ts"
+    },
+    "./nuxt": {
+      "import": "./dist/adapters/nuxt/index.js",
+      "types": "./dist/adapters/nuxt/index.d.ts"
+    },
+    "./fastify": {
+      "import": "./dist/adapters/fastify/index.js",
+      "types": "./dist/adapters/fastify/index.d.ts"
+    }
+  },
+  "scripts": {
+    "dev": "tsup --watch & vitest",
+    "build": "tsup",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:checks": "vitest run tests/checks",
+    "test:rules": "vitest run tests/rules",
+    "test:integration": "vitest run tests/integration",
+    "test:properties": "vitest run tests/properties",
+    "test:adapters": "vitest run tests/adapters",
+    "check": "pnpm lint && pnpm typecheck && pnpm test",
+    "check:full": "pnpm check && pnpm test:coverage && pnpm build && publint && attw --pack && pnpm knip && pnpm size",
+    "knip": "knip",
+    "size": "size-limit",
+    "changelog": "conventional-changelog -p conventionalcommits -i CHANGELOG.md -s",
+    "release": "bumpp && pnpm changelog && git add CHANGELOG.md && git commit -m 'chore: changelog' && git push --follow-tags && pnpm publish",
+    "prepublishOnly": "pnpm check:full",
+    "prepare": "simple-git-hooks"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged",
+    "commit-msg": "node --input-type=module -e \"import {readFileSync} from 'fs'; const msg = readFileSync(process.argv[1], 'utf8').trim(); if (!/^(feat|fix|docs|refactor|test|chore|perf|ci|build|style|revert)(\\\\(.+\\\\))?!?:.+/.test(msg)) { console.error('Invalid commit message. Use conventional commits: feat|fix|docs|refactor|test|chore: message'); process.exit(1); }\" \"$1\""
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix"
+    ]
+  },
+  "peerDependencies": {
+    "zod": "^3.25.0 || ^4.0.0"
+  },
+  "dependencies": {
+    "libphonenumber-js": "^1.11.0",
+    "postal-codes-js": "^2.5.0",
+    "disposable-email-domains": "^1.0.0"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.0",
+    "@vitest/coverage-v8": "^3.0.0",
+    "@faker-js/faker": "^9.0.0",
+    "fast-check": "^4.0.0",
+    "@nuxt/test-utils": "^3.0.0",
+    "fastify": "^5.0.0",
+    "typescript": "^5.0.0",
+    "tsup": "^8.0.0",
+    "@antfu/eslint-config": "^4.0.0",
+    "eslint": "^9.0.0",
+    "eslint-plugin-regexp": "^2.0.0",
+    "eslint-plugin-sonarjs": "^4.0.0",
+    "eslint-plugin-vitest": "^0.5.0",
+    "simple-git-hooks": "^2.0.0",
+    "lint-staged": "^15.0.0",
+    "knip": "^5.0.0",
+    "publint": "^0.2.0",
+    "@arethetypeswrong/cli": "^0.17.0",
+    "bumpp": "^9.0.0",
+    "conventional-changelog-cli": "^5.0.0",
+    "conventional-changelog-conventionalcommits": "^8.0.0",
+    "size-limit": "^11.0.0",
+    "@size-limit/preset-small-lib": "^11.0.0",
+    "@types/node": "^22.0.0",
+    "@emnapi/core": "^1.7.1",
+    "@emnapi/runtime": "^1.7.1"
+  },
+  "peerDependenciesMeta": {
+    "nuxt": {
+      "optional": true
+    },
+    "fastify": {
+      "optional": true
+    }
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "@typescript-eslint/rule-tester"
+      ],
+      "allowAny": [
+        "eslint"
+      ]
+    }
+  }
+}

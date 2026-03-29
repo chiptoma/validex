@@ -1,0 +1,15 @@
+{
+  "Description": "GI : GX11 1AA",
+  "RedundantCharacters": " -",
+  "ValidationRegex": "^GX111AA$",
+  "TestData": {
+    "Valid": [
+      "GX111AA",
+      "GX11 1AA"
+    ],
+    "Invalid": [
+      "GX1101AA",
+      "GX111AAA"
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+{"version":3,"file":"reduce.d.ts","sourceRoot":"","sources":["../../../../functional/iterable/fold/reduce.ts"],"names":[],"mappings":"AAEA;;;GAGG;AACH,eAAO,MAAM,MAAM,EAAE,CAAC,IAAI,EAAE,MAAM,GAAG,IAAI,EACxC,QAAQ,EAAE,QAAQ,CAAC,IAAI,CAAC,EACxB,OAAO,EAAE,MAAM,EACf,OAAO,EAAE,CAAC,WAAW,EAAE,MAAM,EAAE,KAAK,EAAE,IAAI,EAAE,KAAK,EAAE,MAAM,KAAK,MAAM,KAChE,MAiBF,CAAC"}

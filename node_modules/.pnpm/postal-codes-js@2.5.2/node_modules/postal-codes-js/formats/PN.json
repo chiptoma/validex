@@ -1,0 +1,15 @@
+{
+  "Description": "PN : PCRN 1ZZ",
+  "RedundantCharacters": " -",
+  "ValidationRegex": "^PCRN1ZZ$",
+  "TestData": {
+    "Valid": [
+      "PCRN 1ZZ",
+      "PCRN1ZZ"
+    ],
+    "Invalid": [
+      "PCRN01ZZ",
+      "PCRN1ZZZ"
+    ]
+  }
+}
