@@ -1,0 +1,219 @@
+[
+  { "value": "Jean-Pierre", "category": "French", "note": "Hyphenated first name" },
+  { "value": "François Hollande", "category": "French", "note": "Cedilla in first name" },
+  { "value": "Marie-Claire", "category": "French", "note": "Hyphenated female name" },
+  { "value": "René Descartes", "category": "French", "note": "Accented philosopher" },
+  { "value": "Gérard Depardieu", "category": "French", "note": "Accented actor" },
+  { "value": "Édith Piaf", "category": "French", "note": "Accented singer" },
+  { "value": "Brigitte Bardot", "category": "French", "note": "Double consonant" },
+
+  { "value": "Hans Müller", "category": "German", "note": "Umlaut surname" },
+  { "value": "Friedrich Schröder", "category": "German", "note": "Umlaut surname" },
+  { "value": "Günter Grass", "category": "German", "note": "Umlaut first name" },
+  { "value": "Jürgen Habermas", "category": "German", "note": "Umlaut philosopher" },
+  { "value": "Käthe Kollwitz", "category": "German", "note": "Umlaut female artist" },
+  { "value": "Rüdiger Safranski", "category": "German", "note": "Umlaut author" },
+
+  { "value": "María García", "category": "Spanish", "note": "Accented common name" },
+  { "value": "José Rodríguez", "category": "Spanish", "note": "Accented surname" },
+  { "value": "Alejandro González", "category": "Spanish", "note": "Accented surname" },
+  { "value": "Pilar López", "category": "Spanish", "note": "Accented surname" },
+  { "value": "Fernando Álvarez", "category": "Spanish", "note": "Accented surname" },
+  { "value": "Carmen Calvo", "category": "Spanish", "note": "Standard Spanish name" },
+
+  { "value": "João Silva", "category": "Portuguese", "note": "Tilde in first name" },
+  { "value": "Conceição Santos", "category": "Portuguese", "note": "Cedilla in first name" },
+  { "value": "Gonçalo Ramos", "category": "Portuguese", "note": "Cedilla in first name" },
+  { "value": "Joaquim Chissano", "category": "Portuguese", "note": "Mozambican-Portuguese" },
+  { "value": "Inês de Castro", "category": "Portuguese", "note": "Accented with particle" },
+  { "value": "Fábio Coentrão", "category": "Portuguese", "note": "Multiple accents" },
+
+  { "value": "Giuseppe Verdi", "category": "Italian", "note": "Composer" },
+  { "value": "Alessandro D'Amico", "category": "Italian", "note": "Apostrophe in surname" },
+  { "value": "Francesca Capello", "category": "Italian", "note": "Double consonant" },
+  { "value": "Leonardo da Vinci", "category": "Italian", "note": "Particle name" },
+  { "value": "Niccolò Paganini", "category": "Italian", "note": "Accented first name" },
+  { "value": "Nicolò Barella", "category": "Italian", "note": "Accented first name" },
+
+  { "value": "Björk Guðmundsdóttir", "category": "Icelandic", "note": "Eth and accents" },
+  { "value": "Halldór Laxness", "category": "Icelandic", "note": "Accented Nobel laureate" },
+  { "value": "Vigdís Finnbogadóttir", "category": "Icelandic", "note": "Accented president" },
+  { "value": "Ólafur Ragnar", "category": "Icelandic", "note": "Accented first name" },
+  { "value": "Þóra Arnórsdóttir", "category": "Icelandic", "note": "Thorn and accents" },
+
+  { "value": "Søren Kierkegaard", "category": "Danish", "note": "Slashed O philosopher" },
+  { "value": "Niels Bohr", "category": "Danish", "note": "Physicist" },
+  { "value": "Karen Blixen", "category": "Danish", "note": "Author" },
+  { "value": "Mads Mikkelsen", "category": "Danish", "note": "Actor" },
+  { "value": "Lars von Trier", "category": "Danish", "note": "Director with particle" },
+
+  { "value": "Ørjan Nilsen", "category": "Norwegian", "note": "Slashed O first name" },
+  { "value": "Bjørnstjerne Bjørnson", "category": "Norwegian", "note": "Double slashed O" },
+  { "value": "Edvard Grieg", "category": "Norwegian", "note": "Composer" },
+  { "value": "Henrik Ibsen", "category": "Norwegian", "note": "Playwright" },
+  { "value": "Sigrid Undset", "category": "Norwegian", "note": "Nobel laureate" },
+
+  { "value": "Ingmar Bergman", "category": "Swedish", "note": "Director" },
+  { "value": "Astrid Lindgren", "category": "Swedish", "note": "Author" },
+  { "value": "Göran Persson", "category": "Swedish", "note": "Umlaut politician" },
+  { "value": "Åsa Romson", "category": "Swedish", "note": "Ring A politician" },
+  { "value": "Mårten Mickos", "category": "Swedish", "note": "Ring A in first name" },
+
+  { "value": "Väinö Linna", "category": "Finnish", "note": "Umlaut author" },
+  { "value": "Eino Leino", "category": "Finnish", "note": "Poet" },
+  { "value": "Mika Häkkinen", "category": "Finnish", "note": "Umlaut driver" },
+  { "value": "Tarja Halonen", "category": "Finnish", "note": "President" },
+  { "value": "Aino Aalto", "category": "Finnish", "note": "Designer" },
+
+  { "value": "Łukasz Piszczek", "category": "Polish", "note": "Stroke L footballer" },
+  { "value": "Wisława Szymborska", "category": "Polish", "note": "Stroke L Nobel poet" },
+  { "value": "Zbigniew Brzeziński", "category": "Polish", "note": "Accented politician" },
+  { "value": "Lech Wałęsa", "category": "Polish", "note": "Ogonek president" },
+  { "value": "Andrzej Wajda", "category": "Polish", "note": "Director" },
+
+  { "value": "Antonín Dvořák", "category": "Czech", "note": "Háček composer" },
+  { "value": "Věra Čáslavská", "category": "Czech", "note": "Háček gymnast" },
+  { "value": "Karel Čapek", "category": "Czech", "note": "Háček author" },
+  { "value": "Bedřich Smetana", "category": "Czech", "note": "Háček composer" },
+
+  { "value": "László Polgár", "category": "Hungarian", "note": "Accented chess teacher" },
+  { "value": "István Szabó", "category": "Hungarian", "note": "Accented director" },
+  { "value": "Béla Bartók", "category": "Hungarian", "note": "Accented composer" },
+  { "value": "Ferenc Puskás", "category": "Hungarian", "note": "Accented footballer" },
+
+  { "value": "Ștefan cel Mare", "category": "Romanian", "note": "Comma-below S ruler" },
+  { "value": "Ion Iliescu", "category": "Romanian", "note": "Standard president" },
+  { "value": "Nicolae Ceaușescu", "category": "Romanian", "note": "Comma-below S leader" },
+  { "value": "Mihai Eminescu", "category": "Romanian", "note": "Poet" },
+
+  { "value": "Željko Jovanović", "category": "Croatian", "note": "Háček and accented" },
+  { "value": "Miroslav Krleža", "category": "Croatian", "note": "Háček author" },
+  { "value": "Luka Modrić", "category": "Croatian", "note": "Accented footballer" },
+
+  { "value": "Sinéad O'Connor", "category": "Irish", "note": "Accented with apostrophe" },
+  { "value": "Saoirse Ronan", "category": "Irish", "note": "Gaelic first name" },
+  { "value": "Ciarán Hinds", "category": "Irish", "note": "Accented actor" },
+  { "value": "Niamh Cusack", "category": "Irish", "note": "Gaelic first name" },
+  { "value": "Domhnall Gleeson", "category": "Irish", "note": "Gaelic first name" },
+  { "value": "Gráinne Seoige", "category": "Irish", "note": "Accented Gaelic name" },
+
+  { "value": "Siân Phillips", "category": "Welsh", "note": "Circumflex actress" },
+  { "value": "Rhys Ifans", "category": "Welsh", "note": "Welsh actor" },
+  { "value": "Ioan Gruffudd", "category": "Welsh", "note": "Welsh actor" },
+
+  { "value": "Ewan McGregor", "category": "Scottish", "note": "Scottish actor" },
+  { "value": "Sean Connery", "category": "Scottish", "note": "Scottish actor" },
+
+  { "value": "李明", "category": "Chinese", "note": "Two-character common name" },
+  { "value": "王小红", "category": "Chinese", "note": "Three-character name" },
+  { "value": "张伟", "category": "Chinese", "note": "Common name" },
+  { "value": "陈芳", "category": "Chinese", "note": "Female name" },
+  { "value": "赵丽颖", "category": "Chinese", "note": "Actress name" },
+
+  { "value": "田中太郎", "category": "Japanese", "note": "Kanji male name" },
+  { "value": "佐藤花子", "category": "Japanese", "note": "Kanji female name" },
+  { "value": "山田一郎", "category": "Japanese", "note": "Kanji male name" },
+  { "value": "鈴木美咲", "category": "Japanese", "note": "Kanji female name" },
+
+  { "value": "김민수", "category": "Korean", "note": "Hangul male name" },
+  { "value": "박지영", "category": "Korean", "note": "Hangul female name" },
+  { "value": "이준호", "category": "Korean", "note": "Hangul male name" },
+  { "value": "최수진", "category": "Korean", "note": "Hangul female name" },
+
+  { "value": "Nguyễn Thị Thanh", "category": "Vietnamese", "note": "Diacritics female name" },
+  { "value": "Phạm Văn Đức", "category": "Vietnamese", "note": "Đ and diacritics" },
+  { "value": "Trần Thị Mai", "category": "Vietnamese", "note": "Diacritics female name" },
+  { "value": "Lê Văn Tâm", "category": "Vietnamese", "note": "Circumflex male name" },
+  { "value": "Đỗ Thị Hà", "category": "Vietnamese", "note": "Đ female name" },
+
+  { "value": "Subrahmanyan Chandrasekhar", "category": "Indian", "note": "Nobel physicist" },
+  { "value": "Arundhati Roy", "category": "Indian", "note": "Author" },
+  { "value": "Rabindranath Tagore", "category": "Indian", "note": "Nobel poet" },
+  { "value": "Mahatma Gandhi", "category": "Indian", "note": "Honorific and surname" },
+  { "value": "Satyajit Ray", "category": "Indian", "note": "Director" },
+  { "value": "Ravi Shankar", "category": "Indian", "note": "Musician" },
+
+  { "value": "Malala Yousafzai", "category": "Pakistani", "note": "Nobel laureate" },
+  { "value": "Benazir Bhutto", "category": "Pakistani", "note": "Prime minister" },
+
+  { "value": "Mahinda Rajapaksa", "category": "Sri Lankan", "note": "President" },
+  { "value": "Arjuna Ranatunga", "category": "Sri Lankan", "note": "Cricketer" },
+  { "value": "Kumar Sangakkara", "category": "Sri Lankan", "note": "Cricketer" },
+
+  { "value": "محمد", "category": "Arabic", "note": "Common Arabic name" },
+  { "value": "عبدالله", "category": "Arabic", "note": "Arabic male name" },
+  { "value": "عائشة", "category": "Arabic", "note": "Arabic female name" },
+  { "value": "خديجة", "category": "Arabic", "note": "Arabic female name" },
+  { "value": "فاطمة", "category": "Arabic", "note": "Arabic female name" },
+
+  { "value": "Recep Erdoğan", "category": "Turkish", "note": "Breve G politician" },
+  { "value": "Orhan Pamuk", "category": "Turkish", "note": "Nobel author" },
+  { "value": "Elif Şafak", "category": "Turkish", "note": "Cedilla S author" },
+  { "value": "Fatih Gülşen", "category": "Turkish", "note": "Umlaut and cedilla" },
+  { "value": "İlhan İrem", "category": "Turkish", "note": "Dotted capital I" },
+  { "value": "Özlem Türeci", "category": "Turkish", "note": "Umlaut scientist" },
+
+  { "value": "رضا پهلوی", "category": "Persian", "note": "Persian script name" },
+
+  { "value": "Oluwasegun Obasanjo", "category": "Yoruba", "note": "Nigerian president" },
+  { "value": "Chimamanda Adichie", "category": "Yoruba", "note": "Nigerian author" },
+  { "value": "Wole Soyinka", "category": "Yoruba", "note": "Nobel laureate" },
+
+  { "value": "Chukwuemeka Odumegwu", "category": "Igbo", "note": "Nigerian Igbo leader" },
+  { "value": "Chinua Achebe", "category": "Igbo", "note": "Nigerian Igbo author" },
+
+  { "value": "ተስፋየ ገብረስላሴ", "category": "Amharic", "note": "Ethiopic script name" },
+
+  { "value": "Bheki Cele", "category": "Zulu", "note": "South African politician" },
+  { "value": "Thabo Mbeki", "category": "Zulu", "note": "South African president" },
+
+  { "value": "Jomo Kenyatta", "category": "Swahili", "note": "Kenyan president" },
+  { "value": "Julius Nyerere", "category": "Swahili", "note": "Tanzanian president" },
+
+  { "value": "José de la Cruz", "category": "Latin American", "note": "Particle name" },
+  { "value": "María del Valle", "category": "Latin American", "note": "Particle name" },
+  { "value": "García López", "category": "Latin American", "note": "Compound surname" },
+  { "value": "Hernández Martínez", "category": "Latin American", "note": "Compound surname" },
+  { "value": "Carlos Slim Helú", "category": "Latin American", "note": "Mexican businessman" },
+  { "value": "Gabriel García Márquez", "category": "Latin American", "note": "Colombian Nobel author" },
+  { "value": "Pablo Neruda", "category": "Latin American", "note": "Chilean Nobel poet" },
+  { "value": "Frida Kahlo", "category": "Latin American", "note": "Mexican artist" },
+  { "value": "Rigoberta Menchú", "category": "Latin American", "note": "Guatemalan Nobel laureate" },
+  { "value": "Simón Bolívar", "category": "Latin American", "note": "Liberator" },
+
+  { "value": "Beyoncé", "category": "Edge case — mononym", "note": "Accented single word" },
+  { "value": "Pelé", "category": "Edge case — mononym", "note": "Accented single word" },
+  { "value": "Madonna", "category": "Edge case — mononym", "note": "Single word" },
+  { "value": "Bono", "category": "Edge case — mononym", "note": "Single word" },
+
+  { "value": "Li", "category": "Edge case — 2-char", "note": "Minimum length Chinese romanized" },
+  { "value": "Bo", "category": "Edge case — 2-char", "note": "Minimum length Scandinavian" },
+  { "value": "Qi", "category": "Edge case — 2-char", "note": "Minimum length Chinese romanized" },
+  { "value": "An", "category": "Edge case — 2-char", "note": "Minimum length Vietnamese romanized" },
+  { "value": "Ed", "category": "Edge case — 2-char", "note": "Minimum length English" },
+
+  { "value": "Jean-Paul", "category": "Edge case — hyphenated", "note": "French hyphenated" },
+  { "value": "Anne-Marie", "category": "Edge case — hyphenated", "note": "French hyphenated" },
+  { "value": "N'Golo", "category": "Edge case — apostrophe", "note": "African apostrophe name" },
+  { "value": "N'Golo Kanté", "category": "Edge case — apostrophe", "note": "Apostrophe and accent" },
+
+  { "value": "O'Brien", "category": "Edge case — apostrophe", "note": "Irish apostrophe surname" },
+  { "value": "D'Angelo", "category": "Edge case — apostrophe", "note": "Italian apostrophe name" },
+  { "value": "O'Shaughnessy", "category": "Edge case — apostrophe", "note": "Irish long apostrophe surname" },
+  { "value": "L'Amour", "category": "Edge case — apostrophe", "note": "French apostrophe surname" },
+
+  { "value": "al-Rashid", "category": "Edge case — particle", "note": "Arabic prefix with hyphen" },
+  { "value": "ibn Sina", "category": "Edge case — particle", "note": "Arabic patronymic particle" },
+  { "value": "bin Salman", "category": "Edge case — particle", "note": "Arabic patronymic particle" },
+  { "value": "Al-Farabi", "category": "Edge case — particle", "note": "Arabic prefix capitalized" },
+  { "value": "Van der Berg", "category": "Edge case — particle", "note": "Dutch particle name" },
+  { "value": "De la Cruz", "category": "Edge case — particle", "note": "Spanish particle name" },
+
+  { "value": "Пушкин", "category": "Cyrillic", "note": "Russian Cyrillic surname" },
+  { "value": "Анна Каренина", "category": "Cyrillic", "note": "Russian Cyrillic full name" },
+  { "value": "Борис Ельцин", "category": "Cyrillic", "note": "Russian Cyrillic president" },
+  { "value": "Фёдор Достоевский", "category": "Cyrillic", "note": "Russian author with yo" },
+
+  { "value": "Ælfric", "category": "Edge case — ligature", "note": "Old English ligature Æ" },
+  { "value": "Mæve", "category": "Edge case — ligature", "note": "Ligature variant of Maeve" }
+]
