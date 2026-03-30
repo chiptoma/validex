@@ -86,6 +86,8 @@ interface I18nConfig {
 }
 ```
 
+For the complete translation guide with all error codes and a ready-to-copy template, see [Translation Guide](./I18N.md).
+
 **`LabelConfig` interface:**
 
 ```ts
