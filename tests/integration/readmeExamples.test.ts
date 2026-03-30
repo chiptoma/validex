@@ -334,3 +334,43 @@ describe('rEADME — ValidationResult shape', () => {
     expect(result.issues.length).toBeGreaterThan(0)
   })
 })
+
+// ----------------------------------------------------------
+// SUBPATH EXPORTS
+// ----------------------------------------------------------
+
+describe('rEADME — Subpath exports', () => {
+  it('validex/checks exports work', async () => {
+    const {
+      hasUppercase,
+      hasLowercase,
+      hasDigits,
+      containsEmail,
+      maxConsecutive,
+    } = await import('../../src/checks')
+    expect(hasUppercase('Hello', 1)).toBe(true)
+    expect(hasLowercase('Hello', 1)).toBe(true)
+    expect(hasDigits('abc123', 2)).toBe(true)
+    expect(containsEmail('email test@example.com here')).toBe(true)
+    expect(maxConsecutive('aab', 2)).toBe(true)
+    expect(maxConsecutive('aaab', 2)).toBe(false)
+  })
+
+  it('validex/utilities exports work', async () => {
+    const { sameAs, requiredWhen } = await import('../../src/utilities')
+    expect(typeof sameAs).toBe('function')
+    expect(typeof requiredWhen).toBe('function')
+  })
+
+  it('validex/nuxt exports work', async () => {
+    const { useValidation, setupValidex } = await import('../../src/adapters/nuxt')
+    expect(typeof useValidation).toBe('function')
+    expect(typeof setupValidex).toBe('function')
+  })
+
+  it('validex/fastify exports work', async () => {
+    const { validexPlugin, validateData } = await import('../../src/adapters/fastify')
+    expect(typeof validexPlugin).toBe('function')
+    expect(typeof validateData).toBe('function')
+  })
+})

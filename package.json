@@ -78,6 +78,9 @@
       }
     }
   },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "CHANGELOG.md",
     "LICENSE",
@@ -101,6 +104,8 @@
     "test:integration": "vitest run tests/integration",
     "test:properties": "vitest run tests/properties",
     "test:adapters": "vitest run tests/adapters",
+    "test:fuzz": "vitest run tests/fuzz",
+    "test:loaders": "vitest run tests/loaders",
     "check": "pnpm lint && pnpm typecheck && pnpm test",
     "check:full": "pnpm check && pnpm test:coverage && pnpm build && publint && attw --pack && pnpm knip && pnpm size",
     "knip": "knip",

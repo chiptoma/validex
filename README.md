@@ -110,6 +110,8 @@ import { Email } from 'validex'
 | MacAddress | `MacAddress` | MAC address (colon, hyphen, and dot notations) |
 | IpAddress | `IpAddress` | IPv4 and IPv6 with optional CIDR notation |
 
+For complete API documentation with all options, defaults, and error codes, see [API Reference](./docs/API.md).
+
 ## Configuration
 
 Use `setup()` to apply defaults globally or per-rule. Rule keys are the camelCase namespace names (not PascalCase factory names):
