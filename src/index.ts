@@ -19,7 +19,8 @@ export type { CountryData } from './data/countryCodes'
 export type { CardIssuer } from './data/creditCardPrefixes'
 
 export type { IbanPattern } from './data/ibanPatterns'
-// Internal types (for consumers building custom rules)
+export { normalizeLowercase, normalizeTrim, normalizeUppercase } from './internal/normalizers'
+// Internal types and utilities (for consumers building custom rules)
 export type { ResolvedBoundary } from './internal/resolveBoundary'
 export type { ResolvedRange } from './internal/resolveRange'
 

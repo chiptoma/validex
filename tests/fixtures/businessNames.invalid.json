@@ -1,0 +1,137 @@
+[
+  {
+    "value": "",
+    "note": "empty string",
+    "expectedCode": "required"
+  },
+  {
+    "value": "A",
+    "note": "too short (min 2)",
+    "expectedCode": "min"
+  },
+  {
+    "value": "-Company",
+    "note": "starts with hyphen (boundary violation)",
+    "expectedCode": "boundary"
+  },
+  {
+    "value": "Company-",
+    "note": "ends with hyphen (boundary violation)",
+    "expectedCode": "boundary"
+  },
+  {
+    "value": "&Company",
+    "note": "starts with ampersand (boundary violation)",
+    "expectedCode": "boundary"
+  },
+  {
+    "value": "Company&",
+    "note": "ends with ampersand (boundary violation)",
+    "expectedCode": "boundary"
+  },
+  {
+    "value": "Aaaaaaaaa",
+    "note": "9 consecutive identical chars (max 4)",
+    "expectedCode": "maxConsecutive"
+  },
+  {
+    "value": "Coooooompany",
+    "note": "7 consecutive o's (max 4)",
+    "expectedCode": "maxConsecutive"
+  },
+  {
+    "value": "BBBBBBB Inc",
+    "note": "7 consecutive B's",
+    "expectedCode": "maxConsecutive"
+  },
+  {
+    "value": "<script>alert(1)</script>",
+    "note": "XSS payload",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "'; DROP TABLE companies;--",
+    "note": "SQL injection",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "<img src=x onerror=alert(1)>",
+    "note": "XSS via img tag",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "Company\u0000Name",
+    "note": "null byte injection",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "!@#$%",
+    "note": "special chars only",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "Co[mpany]",
+    "note": "brackets not in default charset",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "Co{mpany}",
+    "note": "curly braces not in default charset",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "Co|mpany",
+    "note": "pipe not in default charset",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "Co\\mpany",
+    "note": "backslash not in default charset",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "Co~mpany",
+    "note": "tilde not in default charset",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "Co`mpany",
+    "note": "backtick not in default charset",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "Co^mpany",
+    "note": "caret not in default charset",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "Co=mpany",
+    "note": "equals not in default charset",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "Co+mpany",
+    "note": "plus not in default charset",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "Co@mpany",
+    "note": "at sign not in default charset",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "Co#mpany",
+    "note": "hash not in default charset",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "Co$mpany",
+    "note": "dollar not in default charset",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "Co%mpany",
+    "note": "percent not in default charset",
+    "expectedCode": "invalid"
+  }
+]

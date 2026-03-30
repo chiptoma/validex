@@ -1,0 +1,164 @@
+[
+  {
+    "value": "ABCDE",
+    "country": "US",
+    "note": "letters not valid for US ZIP",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "1234",
+    "country": "US",
+    "note": "too short for US ZIP (need 5)",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "123456",
+    "country": "US",
+    "note": "6 digits without hyphen",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "12345-67",
+    "country": "US",
+    "note": "ZIP+4 too short after hyphen",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "SWAA 1AA",
+    "country": "GB",
+    "note": "invalid UK format",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "SW1A",
+    "country": "GB",
+    "note": "incomplete UK postcode",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "1234",
+    "country": "GB",
+    "note": "numeric only not valid for UK",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "K1A",
+    "country": "CA",
+    "note": "incomplete Canadian code",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "K1A0B",
+    "country": "CA",
+    "note": "5 chars not valid for Canada",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "1234",
+    "country": "DE",
+    "note": "too short for Germany (need 5)",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "123456",
+    "country": "DE",
+    "note": "too long for Germany",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "ABCDE",
+    "country": "DE",
+    "note": "letters not valid for Germany",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "7500",
+    "country": "FR",
+    "note": "too short for France (need 5)",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "750011",
+    "country": "FR",
+    "note": "too long for France",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "100000",
+    "country": "JP",
+    "note": "missing hyphen for Japan",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "2800",
+    "country": "ES",
+    "note": "too short for Spain (need 5)",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "280011",
+    "country": "ES",
+    "note": "too long for Spain",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "1012",
+    "country": "NL",
+    "note": "missing letters for Netherlands",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "1012 1B",
+    "country": "NL",
+    "note": "digit in letter position",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "",
+    "country": "US",
+    "note": "empty string",
+    "expectedCode": "required"
+  },
+  {
+    "value": " ",
+    "country": "US",
+    "note": "whitespace only",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "<script>alert(1)</script>",
+    "country": "US",
+    "note": "XSS payload",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "'; DROP TABLE--",
+    "country": "US",
+    "note": "SQL injection",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "ABC",
+    "country": "NO",
+    "note": "letters not valid for Norway",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "123",
+    "country": "NO",
+    "note": "too short for Norway (need 4)",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "12345678",
+    "country": "CH",
+    "note": "too long for Switzerland (need 4)",
+    "expectedCode": "invalid"
+  },
+  {
+    "value": "1A2B",
+    "country": "CH",
+    "note": "letters not valid for Switzerland",
+    "expectedCode": "invalid"
+  }
+]
