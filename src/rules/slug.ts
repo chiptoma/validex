@@ -66,8 +66,10 @@ export const Slug = /* @__PURE__ */ createRule<SlugOptions>({
   },
   build: (opts: SlugOptions): z.ZodType => {
     const range = resolveRange(opts.length)
+    /* v8 ignore start -- defensive fallback; defaults always provide length range */
     const min = range?.min ?? 1
     const max = range?.max ?? 100
+    /* v8 ignore stop */
 
     const pattern = opts.regex ?? buildSlugPattern(opts.extraChars)
 

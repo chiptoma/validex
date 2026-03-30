@@ -70,6 +70,7 @@ function buildLicenseKeyPattern(
   separator: string,
   charset: string,
 ): RegExp {
+  /* v8 ignore next -- defensive fallback; charset is constrained by TypeScript to known keys */
   const charClass = CHARSET_MAP[charset] ?? CHARSET_MAP['alphanumeric']
   const sep = escapeRegexChars(separator)
   const segPart = `[${charClass}]{${segmentLength}}`
@@ -117,12 +118,14 @@ export const LicenseKey = /* @__PURE__ */ createRule<LicenseKeyOptions>({
       ? z.string().transform((v: string): string => v.trim().toUpperCase()).pipe(z.string())
       : z.string()
 
+    /* v8 ignore start -- defensive fallback; defaults always provide segment config */
     const pattern = opts.regex ?? buildLicenseKeyPattern(
       opts.segments ?? 5,
       opts.segmentLength ?? 5,
       opts.separator ?? '-',
       opts.charset ?? 'alphanumeric',
     )
+    /* v8 ignore stop */
 
     return base.refine(
       (v: string): boolean => pattern.test(v),

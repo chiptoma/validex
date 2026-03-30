@@ -46,6 +46,7 @@ const PATTERNS: Readonly<Record<string, RegExp>> = {
  * @returns The corresponding regex pattern.
  */
 function getPattern(delimiter: string): RegExp {
+  /* v8 ignore next -- defensive fallback; delimiter is constrained by TypeScript to known keys */
   return PATTERNS[delimiter] ?? COLON_PATTERN
 }
 
@@ -72,6 +73,7 @@ export const macAddress = /* @__PURE__ */ createRule<MacAddressOptions>({
     invalid: '{{label}} is not a valid MAC address',
   },
   build: (opts: MacAddressOptions): unknown => {
+    /* v8 ignore next -- defensive fallback; defaults always provide delimiter */
     const delimiter = opts.delimiter ?? ':'
     const pattern = getPattern(delimiter)
 

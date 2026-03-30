@@ -6,7 +6,7 @@
 import type { Boundary } from '../types'
 
 /** Valid boundary character constraint values. */
-export type BoundaryValue = 'alpha' | 'alphanumeric' | 'any'
+type BoundaryValue = 'alpha' | 'alphanumeric' | 'any'
 
 /**
  * ResolvedBoundary

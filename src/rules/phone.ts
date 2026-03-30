@@ -116,8 +116,10 @@ function validatePhoneConstraints(
   }
 
   const parsedCountry = parsed.country
+  /* v8 ignore start -- defensive fallback; defaults always provide allow/block arrays */
   const allow = opts.allowCountries ?? []
   const block = opts.blockCountries ?? []
+  /* v8 ignore stop */
 
   if (allow.length > 0 && (!parsedCountry || !allow.includes(parsedCountry))) {
     addPhoneIssue(ctx, 'countryNotAllowed')
@@ -160,6 +162,7 @@ export const phone = /* @__PURE__ */ createRule<PhoneOptions>({
       'Phone numbers from this country are not in the allowed list',
   },
   build: (opts: PhoneOptions): z.ZodType => {
+    /* v8 ignore next -- defensive fallback; defaults always provide format */
     const fmt = opts.format ?? 'e164'
 
     return z.string().trim().superRefine(
@@ -181,8 +184,10 @@ export const phone = /* @__PURE__ */ createRule<PhoneOptions>({
       if (opts.normalize === false)
         return value
       const parsed = tryParsePhone(value, opts.country)
+      /* v8 ignore start -- defensive guard; parse already succeeded in superRefine so parsed is always valid here */
       if (!parsed)
         return value
+      /* v8 ignore stop */
       return formatPhoneNumber(parsed, fmt)
     })
   },

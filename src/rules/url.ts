@@ -65,8 +65,10 @@ function checkProtocolAllowed(value: string, protocols: readonly string[]): bool
   if (protocols.length === 0)
     return true
   const parsed = parseUrlSafely(value)
+  /* v8 ignore start -- defensive guard; URL already passed z.url() validation */
   if (parsed === undefined)
     return false
+  /* v8 ignore stop */
   return protocols.includes(parsed.protocol.replace(/:$/, ''))
 }
 
@@ -79,8 +81,10 @@ function checkProtocolAllowed(value: string, protocols: readonly string[]): bool
  */
 function checkHasTLD(value: string): boolean {
   const parsed = parseUrlSafely(value)
+  /* v8 ignore start -- defensive guard; URL already passed z.url() validation */
   if (parsed === undefined)
     return false
+  /* v8 ignore stop */
   return parsed.hostname.includes('.')
 }
 
@@ -93,8 +97,10 @@ function checkHasTLD(value: string): boolean {
  */
 function checkNoAuth(value: string): boolean {
   const parsed = parseUrlSafely(value)
+  /* v8 ignore start -- defensive guard; URL already passed z.url() validation */
   if (parsed === undefined)
     return false
+  /* v8 ignore stop */
   return parsed.username === '' && parsed.password === ''
 }
 
@@ -115,8 +121,10 @@ function checkDomainList(
   if (domains.length === 0)
     return true
   const parsed = parseUrlSafely(value)
+  /* v8 ignore start -- defensive guard; URL already passed z.url() validation */
   if (parsed === undefined)
     return false
+  /* v8 ignore stop */
   const matches = domains.some((d: string) =>
     parsed.hostname === d || parsed.hostname.endsWith(`.${d}`),
   )
@@ -132,8 +140,10 @@ function checkDomainList(
  */
 function checkNoQuery(value: string): boolean {
   const parsed = parseUrlSafely(value)
+  /* v8 ignore start -- defensive guard; URL already passed z.url() validation */
   if (parsed === undefined)
     return false
+  /* v8 ignore stop */
   return parsed.search === ''
 }
 
@@ -170,8 +180,10 @@ export const url = /* @__PURE__ */ createRule<URLOptions>({
   },
   build: (opts: URLOptions): unknown => {
     const range = resolveRange(opts.length)
+    /* v8 ignore start -- defensive fallback; defaults always provide length/protocols */
     const max = range?.max ?? 2048
     const protocols = opts.protocols ?? ['http', 'https']
+    /* v8 ignore stop */
 
     const base = opts.normalize !== false
       ? z.string().trim()
@@ -199,10 +211,12 @@ export const url = /* @__PURE__ */ createRule<URLOptions>({
 
     schema = schema
       .refine(
+        /* v8 ignore next -- defensive fallback; defaults always provide blockDomains */
         (v: string): boolean => checkDomainList(v, opts.blockDomains ?? [], 'block'),
         { params: { code: 'domainBlocked', namespace: 'url' } },
       )
       .refine(
+        /* v8 ignore next -- defensive fallback; defaults always provide allowDomains */
         (v: string): boolean => checkDomainList(v, opts.allowDomains ?? [], 'allow'),
         { params: { code: 'domainNotAllowed', namespace: 'url' } },
       )

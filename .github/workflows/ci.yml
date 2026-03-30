@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [dev]
+    branches: [dev, main]
   pull_request:
     branches: [main]
 
@@ -37,7 +37,7 @@ jobs:
       - name: Are the types wrong?
         run: pnpm attw --pack --ignore-rules no-resolution
       - name: Dead code check
-        run: pnpm knip || true
+        run: pnpm knip
       - name: Bundle size check
         run: pnpm size
 

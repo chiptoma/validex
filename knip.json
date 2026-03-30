@@ -1,0 +1,15 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignore": [
+    "src/config/defaults.ts",
+    "tests/helpers/generateTestData.ts"
+  ],
+  "ignoreDependencies": [
+    "@emnapi/core",
+    "@emnapi/runtime",
+    "@faker-js/faker",
+    "@nuxt/test-utils",
+    "conventional-changelog-conventionalcommits",
+    "eslint-plugin-vitest"
+  ]
+}

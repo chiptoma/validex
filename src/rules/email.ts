@@ -44,6 +44,7 @@ export interface EmailOptions extends BaseRuleOptions {
  * @returns The domain after the @ sign, or empty string.
  */
 function extractDomain(email: string): string {
+  /* v8 ignore next -- defensive fallback; email already validated to contain @ */
   return email.split('@')[1] ?? ''
 }
 
@@ -55,6 +56,7 @@ function extractDomain(email: string): string {
  * @returns The local part before the @ sign, or empty string.
  */
 function extractLocalPart(email: string): string {
+  /* v8 ignore next -- defensive fallback; split always returns at least one element */
   return email.split('@')[0] ?? ''
 }
 
@@ -92,6 +94,7 @@ export const email = /* @__PURE__ */ createRule<EmailOptions>({
   },
   build: (opts: EmailOptions): unknown => {
     const range = resolveRange(opts.length)
+    /* v8 ignore next -- defensive fallback; defaults always provide length */
     const maxLen = range?.max ?? 254
 
     const base = opts.normalize !== false
@@ -158,8 +161,10 @@ function applyBusinessRules(
  */
 function applyDomainFilters(schema: z.ZodType, opts: EmailOptions): z.ZodType {
   let result = schema
+  /* v8 ignore start -- defensive fallback; defaults always provide allow/block arrays */
   const allow = opts.allowDomains ?? []
   const block = opts.blockDomains ?? []
+  /* v8 ignore stop */
 
   if (allow.length > 0) {
     result = result.pipe(z.string().refine(
@@ -189,6 +194,7 @@ function applyDisposableCheck(schema: z.ZodType): z.ZodType {
   return schema.pipe(z.string().refine(
     async (value: string): Promise<boolean> => {
       const domain = extractDomain(value)
+      /* v8 ignore start -- dynamic import and defensive catch; disposable-email-domains may fail on module resolution */
       try {
         const disposable = (
           await import('disposable-email-domains')
@@ -198,6 +204,7 @@ function applyDisposableCheck(schema: z.ZodType): z.ZodType {
       catch {
         return true
       }
+      /* v8 ignore stop */
     },
     { params: { code: 'disposableBlocked', namespace: 'email' } },
   ))

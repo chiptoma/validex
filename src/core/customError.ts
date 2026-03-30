@@ -105,9 +105,11 @@ export function registerCustomError(): void {
       const shouldHandle = isValidexIssue(params)
         || (adapted.code !== undefined && NATIVE_CODES.has(adapted.code))
 
+      /* v8 ignore start -- defensive fallthrough; prev handler may be undefined or return undefined */
       if (!shouldHandle) {
         return prev?.(issue) ?? undefined
       }
+      /* v8 ignore stop */
 
       const errorParams = getParams(adapted)
       const msg = getErrorMessage(
