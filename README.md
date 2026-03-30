@@ -284,14 +284,18 @@ const schema = Text({
 
 ## Bundle Sizes
 
-Measured with [size-limit](https://github.com/ai/size-limit), excluding `zod` peer dependency:
+Measured with esbuild + Brotli compression, excluding `zod` peer dependency and on-demand data files:
 
-| Import | Limit |
-| --- | --- |
-| Core (Email + Password) | < 25 kB |
-| Full library (all 25 rules) | < 40 kB |
+| Import | Raw (minified) | Brotli | Gzip |
+| --- | --- | --- | --- |
+| Core only (setup + validate) | 6.6 kB | 1.6 kB | 1.9 kB |
+| Email + Password | 13.7 kB | 3.4 kB | 3.9 kB |
+| Form (Email+Password+PersonName+Phone) | 16.9 kB | 4.3 kB | 4.8 kB |
+| All 25 rules | 43.7 kB | 10.5 kB | 11.7 kB |
 
 Data files (common passwords, disposable domains, country codes, IBAN patterns) are loaded on demand and not included in the base bundle.
+
+Run `pnpm size:detail` for per-rule measurements.
 
 ## License
 

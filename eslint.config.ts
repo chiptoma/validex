@@ -9,7 +9,7 @@ export default antfu(
       tsconfigPath: 'tsconfig.json',
       parserOptions: {
         projectService: {
-          allowDefaultProject: ['*.config.ts'],
+          allowDefaultProject: ['*.config.ts', 'scripts/*.ts'],
         },
       },
     },
@@ -102,6 +102,18 @@ export default antfu(
       'sonarjs/no-redundant-jump': 'error',
       'sonarjs/no-collapsible-if': 'error',
       'sonarjs/prefer-single-boolean-return': 'error',
+    },
+  },
+
+  // Scripts — relaxed rules
+  {
+    files: ['scripts/**/*.ts'],
+    rules: {
+      'no-console': 'off',
+      'ts/explicit-function-return-type': 'off',
+      'max-lines-per-function': 'off',
+      'jsdoc/require-jsdoc': 'off',
+      'sonarjs/no-duplicate-string': 'off',
     },
   },
 

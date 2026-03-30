@@ -46,6 +46,7 @@ Complete reference for the validex public API. Every option, default value, and 
 - [Adapters](#adapters)
   - [Nuxt (`validex/nuxt`)](#nuxt-validexnuxt)
   - [Fastify (`validex/fastify`)](#fastify-validexfastify)
+- [Bundle Sizes](#bundle-sizes)
 - [Types](#types)
 
 ---
@@ -1824,6 +1825,46 @@ import type { ValidationResult, GlobalConfig, ErrorParams } from 'validex'
 | `ValidationState<T>` | `validex/nuxt` | Validation state container. |
 | `ValidexFastifyOptions` | `validex/fastify` | Fastify plugin options. |
 | `ValidateSource` | `validex/fastify` | `'body' \| 'params' \| 'query'` |
+
+---
+
+## Bundle Sizes
+
+Measured with esbuild + Brotli compression, excluding `zod` peer dependency and on-demand data files (common passwords, disposable domains, country codes, IBAN patterns, etc.).
+
+| Import | Raw (minified) | Brotli | Gzip |
+| --- | --- | --- | --- |
+| Core only (setup + validate) | 6.6 kB | 1.6 kB | 1.9 kB |
+| BusinessName | 11.2 kB | 2.9 kB | 3.3 kB |
+| Color | 10.1 kB | 2.5 kB | 2.9 kB |
+| Country | 10.3 kB | 2.6 kB | 3.0 kB |
+| CreditCard | 10.8 kB | 2.8 kB | 3.2 kB |
+| Currency | 10.1 kB | 2.5 kB | 2.9 kB |
+| DateTime | 10.6 kB | 2.6 kB | 2.9 kB |
+| Email | 10.8 kB | 2.6 kB | 3.0 kB |
+| Iban | 10.6 kB | 2.8 kB | 3.1 kB |
+| IpAddress | 10.3 kB | 2.6 kB | 3.0 kB |
+| Jwt | 10.9 kB | 2.7 kB | 3.1 kB |
+| LicenseKey | 9.9 kB | 2.5 kB | 2.9 kB |
+| MacAddress | 9.6 kB | 2.4 kB | 2.7 kB |
+| Password | 12.3 kB | 3.1 kB | 3.5 kB |
+| PasswordConfirmation | 12.6 kB | 3.2 kB | 3.6 kB |
+| PersonName | 11.5 kB | 3.0 kB | 3.4 kB |
+| Phone | 10.3 kB | 2.6 kB | 3.0 kB |
+| PostalCode | 9.5 kB | 2.4 kB | 2.7 kB |
+| Slug | 9.8 kB | 2.5 kB | 2.9 kB |
+| Text | 11.3 kB | 2.8 kB | 3.2 kB |
+| Token | 10.0 kB | 2.6 kB | 2.9 kB |
+| Url | 10.8 kB | 2.7 kB | 3.0 kB |
+| Username | 11.6 kB | 3.1 kB | 3.5 kB |
+| Uuid | 9.5 kB | 2.4 kB | 2.7 kB |
+| VatNumber | 10.1 kB | 2.6 kB | 3.0 kB |
+| Website | 11.0 kB | 2.7 kB | 3.1 kB |
+| Email + Password | 13.7 kB | 3.4 kB | 3.9 kB |
+| Form (Email+Password+PersonName+Phone) | 16.9 kB | 4.3 kB | 4.8 kB |
+| All 25 rules | 43.7 kB | 10.5 kB | 11.7 kB |
+
+Run `pnpm size:detail` to regenerate these measurements.
 
 ---
 
