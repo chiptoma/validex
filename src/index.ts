@@ -7,19 +7,21 @@
 export { getConfig, preloadData, setup } from './config'
 
 // Core utilities
-export { createRule } from './core/createRule'
-export { registerCustomError } from './core/customError'
-export { getErrorMessage, MESSAGE_MAP, registerMessages } from './core/errorMap'
-export { getParams } from './core/getParams'
-export { validate } from './core/validate'
+export {
+  createRule,
+  getErrorMessage,
+  getParams,
+  MESSAGE_MAP,
+  registerCustomError,
+  registerMessages,
+  validate,
+} from './core'
 
-// Internal types and utilities (for consumers building custom rules)
-export type { ResolvedBoundary } from './internal/resolveBoundary'
-export type { ResolvedRange } from './internal/resolveRange'
-// Data types (for consumers using data loaders)
-export type { CountryData } from './loaders/countryCodes'
-export type { CardIssuer } from './loaders/creditCardPrefixes'
-export type { IbanPattern } from './loaders/ibanPatterns'
+// Internal utilities (for consumers building custom rules)
+export type { ResolvedBoundary, ResolvedRange } from './internal'
+
+// Data loader types (for consumers using data loaders)
+export type { CardIssuer, CountryData, IbanPattern } from './loaders'
 
 // Rules (re-export from rules barrel)
 export {
@@ -49,6 +51,7 @@ export {
   VatNumber,
   Website,
 } from './rules'
+
 // Rule option types
 export type {
   BusinessNameOptions,
