@@ -155,11 +155,7 @@ function detectIssuer(
 export const CreditCard = /* @__PURE__ */ createRule<CreditCardOptions>({
   name: 'creditCard',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not a valid credit card number',
-    issuerNotAllowed: 'This card issuer is not accepted',
-    issuerBlocked: 'This card issuer is not allowed',
-  },
+  messages: {},
   build: (opts: CreditCardOptions): z.ZodType => {
     const allow = opts.allowIssuers ?? []
     const block = opts.blockIssuers ?? []
@@ -189,6 +185,7 @@ export const CreditCard = /* @__PURE__ */ createRule<CreditCardOptions>({
           async (v: string): Promise<boolean> => {
             const prefixes = await resolvePrefixes()
             const issuer = detectIssuer(v, prefixes)
+            // SAFETY: detectIssuer returns keys from the prefixes map which are IssuerType values
             return issuer !== undefined && allow.includes(issuer as IssuerType)
           },
           { params: { code: 'issuerNotAllowed', namespace: 'creditCard' } },
@@ -203,6 +200,7 @@ export const CreditCard = /* @__PURE__ */ createRule<CreditCardOptions>({
           async (v: string): Promise<boolean> => {
             const prefixes = await resolvePrefixes()
             const issuer = detectIssuer(v, prefixes)
+            // SAFETY: detectIssuer returns keys from the prefixes map which are IssuerType values
             return issuer === undefined || !block.includes(issuer as IssuerType)
           },
           { params: { code: 'issuerBlocked', namespace: 'creditCard' } },

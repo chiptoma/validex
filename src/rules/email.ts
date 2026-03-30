@@ -75,14 +75,7 @@ function extractLocalPart(email: string): string {
 export const Email = /* @__PURE__ */ createRule<EmailOptions>({
   name: 'email',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not a valid email address',
-    plusAliasBlocked: 'Plus aliases are not allowed',
-    disposableBlocked: 'Disposable email addresses are not allowed',
-    domainBlocked: 'This email domain is not allowed',
-    domainNotAllowed: 'This email domain is not in the allowed list',
-    subdomainNotAllowed: 'Subdomain email addresses are not allowed',
-  },
+  messages: {},
   build: (opts: EmailOptions): unknown => {
     const range = resolveRange(opts.length)
     /* c8 ignore next -- defensive fallback; defaults always provide length */
@@ -189,6 +182,7 @@ function applyDisposableCheck(schema: z.ZodType): z.ZodType {
       try {
         const disposable = (
           await import('disposable-email-domains')
+        // SAFETY: disposable-email-domains default export is a string array by package contract
         ).default as readonly string[]
         return !disposable.includes(domain)
       }

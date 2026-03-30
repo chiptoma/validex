@@ -111,11 +111,7 @@ function validateMod97(iban: string): boolean {
 export const Iban = /* @__PURE__ */ createRule<IbanOptions>({
   name: 'iban',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not a valid IBAN',
-    countryBlocked: 'IBANs from this country are not allowed',
-    countryNotAllowed: 'IBANs from this country are not in the allowed list',
-  },
+  messages: {},
   build: (opts: IbanOptions): z.ZodType => {
     const allow = opts.allowCountries ?? []
     const block = opts.blockCountries ?? []

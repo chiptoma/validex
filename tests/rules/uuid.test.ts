@@ -165,7 +165,7 @@ describe('uuid (security)', () => {
     '\'; DROP TABLE users; --',
     '550e8400-e29b-41d4-a716-446655440000\x00injected',
     '../../../etc/passwd',
-    // eslint-disable-next-line no-template-curly-in-string
+    // eslint-disable-next-line no-template-curly-in-string -- REASON: XSS/injection test payload contains template literal syntax
     '${7*7}',
     '{{constructor.constructor("return this")()}}',
     '%00%00%00%00-%00%00-%00%00-%00%00-%00%00%00%00%00%00',

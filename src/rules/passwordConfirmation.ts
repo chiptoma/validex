@@ -9,7 +9,6 @@
 import type { z } from 'zod'
 import type { BaseRuleOptions } from '../types'
 import type { PasswordOptions } from './password'
-import { registerMessages } from '../core/errorMap'
 import { Password } from './password'
 
 // ----------------------------------------------------------
@@ -26,14 +25,6 @@ export interface PasswordConfirmationOptions extends BaseRuleOptions {
 }
 
 // ----------------------------------------------------------
-// MESSAGES
-// ----------------------------------------------------------
-
-const MESSAGES = {
-  mismatch: 'Passwords must match',
-}
-
-// ----------------------------------------------------------
 // RULE FACTORY
 // ----------------------------------------------------------
 
@@ -47,12 +38,7 @@ const MESSAGES = {
  * @returns A Zod schema that validates the confirmation string.
  */
 export const PasswordConfirmation = /* @__PURE__ */ (() => {
-  let registered = false
   return (options?: Partial<PasswordConfirmationOptions>): unknown => {
-    if (!registered) {
-      registerMessages('confirmation', MESSAGES)
-      registered = true
-    }
     const _field = options?.passwordField ?? 'password'
     const passthrough: Record<string, unknown> = {}
     if (options?.label !== undefined)
@@ -63,6 +49,7 @@ export const PasswordConfirmation = /* @__PURE__ */ (() => {
       passthrough['normalize'] = options.normalize
     if (options?.customFn !== undefined)
       passthrough['customFn'] = options.customFn
+    // SAFETY: passthrough keys are manually copied from BaseRuleOptions; Password returns a ZodType
     return Password(passthrough as Partial<PasswordOptions>) as z.ZodType
   }
 })()

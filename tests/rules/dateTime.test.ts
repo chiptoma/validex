@@ -259,7 +259,7 @@ describe('dateTime (security)', () => {
     '\'; DROP TABLE users; --',
     '2025-03-29T14:30:00Z\x00injected',
     '../../../etc/passwd',
-    // eslint-disable-next-line no-template-curly-in-string
+    // eslint-disable-next-line no-template-curly-in-string -- REASON: XSS/injection test payload contains template literal syntax
     '${7*7}',
     '{{constructor.constructor("return this")()}}',
     '%00%00%00%00-%00%00-%00%00-%00%00-%00%00%00%00%00%00',

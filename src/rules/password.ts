@@ -139,15 +139,7 @@ function applyMaxRefine(
 export const Password = /* @__PURE__ */ createRule<PasswordOptions>({
   name: 'password',
   defaults: {},
-  messages: {
-    minUppercase: '{{label}} must have at least {{minimum}} uppercase characters',
-    minLowercase: '{{label}} must have at least {{minimum}} lowercase characters',
-    minDigits: '{{label}} must have at least {{minimum}} digits',
-    minSpecial: '{{label}} must have at least {{minimum}} special characters',
-    maxUppercase: '{{label}} must have at most {{maximum}} uppercase characters',
-    maxConsecutive: '{{label}} must not have more than {{maximum}} consecutive characters',
-    commonBlocked: 'This password is too common',
-  },
+  messages: {},
   build: (opts: PasswordOptions): unknown => {
     const ns = 'password'
     let base = z.string()

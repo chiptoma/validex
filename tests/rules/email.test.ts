@@ -280,7 +280,7 @@ describe('email (security)', () => {
     'user@domain.com\'; DROP TABLE users; --',
     'user@domain.com\x00injected',
     '../../../etc/passwd@domain.com',
-    // eslint-disable-next-line no-template-curly-in-string
+    // eslint-disable-next-line no-template-curly-in-string -- REASON: XSS/injection test payload contains template literal syntax
     '${7*7}@domain.com',
     '{{constructor.constructor("return this")()}}@domain.com',
     `${'a'.repeat(255)}@domain.com`,

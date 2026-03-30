@@ -81,6 +81,7 @@ function decodeJwtParts(value: string): JwtParts | null {
   try {
     const headerStr = segments[0] ?? ''
     const payloadStr = segments[1] ?? ''
+    // SAFETY: JWT header and payload are JSON objects by spec; catch block handles parse failure
     const header = JSON.parse(base64UrlDecode(headerStr)) as Record<string, unknown>
     const payload = JSON.parse(base64UrlDecode(payloadStr)) as Record<string, unknown>
     return { header, payload }
@@ -229,13 +230,7 @@ function validateTemporal(
 export const Jwt = /* @__PURE__ */ createRule<JWTOptions>({
   name: 'jwt',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not a valid JWT',
-    expired: 'This token has expired',
-    notYetValid: 'This token is not yet valid',
-    missingClaim: 'Required claim \'{{claim}}\' is missing',
-    algorithmNotAllowed: 'Algorithm \'{{algorithm}}\' is not allowed',
-  },
+  messages: {},
   build: (opts: JWTOptions): z.ZodType => {
     const schema = opts.normalize !== false ? z.string().trim() : z.string()
 

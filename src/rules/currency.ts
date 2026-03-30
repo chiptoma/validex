@@ -59,11 +59,7 @@ async function resolveCurrencyCodes(): Promise<ReadonlySet<string>> {
 export const Currency = /* @__PURE__ */ createRule<CurrencyOptions>({
   name: 'currency',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not a valid currency code',
-    blocked: 'This currency is not allowed',
-    notAllowed: 'This currency is not in the allowed list',
-  },
+  messages: {},
   build: (opts: CurrencyOptions): z.ZodType => {
     /* c8 ignore start -- defensive fallback; defaults always provide allow/block */
     const allow = opts.allowCurrencies ?? []

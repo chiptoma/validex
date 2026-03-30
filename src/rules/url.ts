@@ -164,12 +164,7 @@ function checkNoQuery(value: string): boolean {
 export const Url = /* @__PURE__ */ createRule<URLOptions>({
   name: 'url',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not a valid URL',
-    protocolNotAllowed: 'This URL protocol is not allowed',
-    domainBlocked: 'This URL domain is not allowed',
-    domainNotAllowed: 'This URL domain is not in the allowed list',
-  },
+  messages: {},
   build: (opts: URLOptions): unknown => {
     const range = resolveRange(opts.length)
     /* c8 ignore start -- defensive fallback; defaults always provide length/protocols */

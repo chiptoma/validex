@@ -15,7 +15,7 @@
       "postalCode": "Postal Code",
       "licenseKey": "License Key",
       "uuid": "UUID",
-      "jwt": "Token",
+      "jwt": "JWT",
       "dateTime": "Date/Time",
       "token": "Token",
       "text": "Text",

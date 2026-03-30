@@ -41,9 +41,7 @@ const UUID_VERSION_INDEX = 14
 export const Uuid = /* @__PURE__ */ createRule<UUIDOptions>({
   name: 'uuid',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not a valid UUID',
-  },
+  messages: {},
   build: (opts: UUIDOptions): unknown => {
     let schema = opts.normalize !== false
       ? z.string().trim().toLowerCase().uuid()

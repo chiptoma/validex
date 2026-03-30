@@ -152,7 +152,7 @@ function applyPrivateRefinement(
 ): z.ZodType {
   return schema.refine(
     (v: unknown): boolean => {
-      const bare = stripCidr(v as string)
+      const bare = stripCidr(v as string) // SAFETY: refine callback on z.string(); v is always a string
       if (version === 'v4')
         return !isPrivateIpv4(bare)
       if (version === 'v6')
@@ -181,10 +181,7 @@ function applyPrivateRefinement(
 export const IpAddress = /* @__PURE__ */ createRule<IpAddressOptions>({
   name: 'ipAddress',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not a valid IP address',
-    privateNotAllowed: 'Private IP addresses are not allowed',
-  },
+  messages: {},
   build: (opts: IpAddressOptions): unknown => {
     const version = opts.version ?? 'any'
     const allowCidr = opts.allowCidr === true

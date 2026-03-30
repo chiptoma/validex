@@ -126,6 +126,7 @@ export function getParams(issue: ZodIssueInput): ErrorParams {
   const path: ReadonlyArray<string | number> = issue.path ?? []
   const params = issue.params ?? {}
 
+  // SAFETY: validex stores code/namespace as strings in params; undefined when issue is not from validex
   const validexCode = params['code'] as string | undefined
   const validexNs = params['namespace'] as string | undefined
 
@@ -135,6 +136,7 @@ export function getParams(issue: ZodIssueInput): ErrorParams {
   const namespace = validexNs ?? native?.namespace ?? 'base'
   const code = validexCode ?? native?.code ?? 'format'
 
+  // SAFETY: validex stores label as a string in params; undefined when not explicitly set
   const explicitLabel = params['label'] as string | undefined
   const label = deriveLabel(path, explicitLabel)
 

@@ -65,9 +65,7 @@ function getPattern(delimiter: string): RegExp {
 export const MacAddress = /* @__PURE__ */ createRule<MacAddressOptions>({
   name: 'macAddress',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not a valid MAC address',
-  },
+  messages: {},
   build: (opts: MacAddressOptions): unknown => {
     /* c8 ignore next -- defensive fallback; defaults always provide delimiter */
     const delimiter = opts.delimiter ?? ':'

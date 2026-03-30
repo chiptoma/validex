@@ -25,6 +25,7 @@ const TEMPLATE_PARAM_RE = /\{\{(\w+)\}\}/g
  *
  * @type {Record<string, Record<string, string>>}
  */
+// SAFETY: en.json messages are a two-level Record of namespace to code to template string
 export const MESSAGE_MAP: Record<string, Record<string, string>>
   = enLocale.validation.messages as Record<string, Record<string, string>>
 

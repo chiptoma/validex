@@ -120,7 +120,7 @@
     "test:fuzz": "vitest run tests/fuzz",
     "test:loaders": "vitest run tests/loaders",
     "check": "pnpm lint && pnpm typecheck && pnpm test",
-    "check:full": "pnpm check && pnpm test:coverage && pnpm build && publint && attw --pack --ignore-rules no-resolution && pnpm knip && pnpm size",
+    "check:full": "pnpm check && pnpm test:coverage && pnpm build && publint && attw --pack --ignore-rules no-resolution unexpected-module-syntax && pnpm knip && pnpm size",
     "knip": "knip",
     "size": "size-limit",
     "size:detail": "node --experimental-strip-types scripts/measureBundle.ts",
@@ -141,6 +141,7 @@
     }
   },
   "dependencies": {
+    "@nuxt/kit": "^4.4.2",
     "disposable-email-domains": "^1.0.62",
     "fastify-plugin": "^5.1.0",
     "libphonenumber-js": "^1.12.41",

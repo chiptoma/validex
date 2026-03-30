@@ -1,12 +1,14 @@
 // ==============================================================================
 // NUXT MODULE
-// Nuxt module definition for validex. Works without Nuxt as a hard dependency.
+// Nuxt module definition for validex using @nuxt/kit. Also exports standalone
+// helpers for use outside of a Nuxt context.
 // ------------------------------------------------------------------------------
-// NOTE: Nuxt is an optional peer dependency. The createNuxtModule() function
-//       returns a plain module definition object consumable by defineNuxtModule.
+// NOTE: @nuxt/kit is a regular dependency so the module import works at runtime.
 // ==============================================================================
 
+import type { Resolver } from '@nuxt/kit'
 import type { GlobalConfig, I18nConfig, PreloadOptions } from '../../types'
+import { addImports, createResolver, defineNuxtModule } from '@nuxt/kit'
 import { preloadData, setup } from '../../config'
 
 // ----------------------------------------------------------
@@ -34,18 +36,106 @@ export interface ValidexNuxtOptions {
   readonly preload?: PreloadOptions
 }
 
+// ----------------------------------------------------------
+// NUXT MODULE (DEFAULT EXPORT)
+// ----------------------------------------------------------
+
+export default defineNuxtModule<ValidexNuxtOptions>({
+  meta: {
+    name: 'validex',
+    configKey: 'validex',
+    compatibility: { nuxt: '>=3.0.0' },
+  },
+  defaults: {},
+  async setup(options, nuxt) {
+    const resolver = createResolver(import.meta.url)
+
+    if (options.rules !== undefined || options.i18n !== undefined) {
+      setup(buildConfig(options))
+    }
+
+    registerAutoImports(resolver)
+    detectAndEnableI18n(nuxt.options.modules ?? [], options)
+
+    if (options.preload !== undefined) {
+      await preloadData(options.preload)
+    }
+  },
+})
+
+// ----------------------------------------------------------
+// AUTO-IMPORTS
+// ----------------------------------------------------------
+
 /**
- * NuxtModuleDefinition
- * Plain object describing the Nuxt module, compatible with defineNuxtModule.
+ * Register Auto Imports
+ * Registers all 25 rules, core utilities, and the composable as Nuxt
+ * auto-imports so they are available without explicit import statements.
+ *
+ * @param resolver - The Nuxt module resolver instance.
  */
-export interface NuxtModuleDefinition {
-  readonly meta: {
-    readonly name: string
-    readonly configKey: string
-    readonly compatibility: { readonly nuxt: string }
+function registerAutoImports(resolver: Resolver): void {
+  addImports([
+    { name: 'BusinessName', from: resolver.resolve('../../rules/businessName') },
+    { name: 'Color', from: resolver.resolve('../../rules/color') },
+    { name: 'Country', from: resolver.resolve('../../rules/country') },
+    { name: 'CreditCard', from: resolver.resolve('../../rules/creditCard') },
+    { name: 'Currency', from: resolver.resolve('../../rules/currency') },
+    { name: 'DateTime', from: resolver.resolve('../../rules/dateTime') },
+    { name: 'Email', from: resolver.resolve('../../rules/email') },
+    { name: 'Iban', from: resolver.resolve('../../rules/iban') },
+    { name: 'IpAddress', from: resolver.resolve('../../rules/ipAddress') },
+    { name: 'Jwt', from: resolver.resolve('../../rules/jwt') },
+    { name: 'LicenseKey', from: resolver.resolve('../../rules/licenseKey') },
+    { name: 'MacAddress', from: resolver.resolve('../../rules/macAddress') },
+    { name: 'Password', from: resolver.resolve('../../rules/password') },
+    { name: 'PasswordConfirmation', from: resolver.resolve('../../rules/passwordConfirmation') },
+    { name: 'PersonName', from: resolver.resolve('../../rules/personName') },
+    { name: 'Phone', from: resolver.resolve('../../rules/phone') },
+    { name: 'PostalCode', from: resolver.resolve('../../rules/postalCode') },
+    { name: 'Slug', from: resolver.resolve('../../rules/slug') },
+    { name: 'Text', from: resolver.resolve('../../rules/text') },
+    { name: 'Token', from: resolver.resolve('../../rules/token') },
+    { name: 'Url', from: resolver.resolve('../../rules/url') },
+    { name: 'Username', from: resolver.resolve('../../rules/username') },
+    { name: 'Uuid', from: resolver.resolve('../../rules/uuid') },
+    { name: 'VatNumber', from: resolver.resolve('../../rules/vatNumber') },
+    { name: 'Website', from: resolver.resolve('../../rules/website') },
+    { name: 'validate', from: resolver.resolve('../../core/validate') },
+    { name: 'setup', as: 'validexSetup', from: resolver.resolve('../../config') },
+    { name: 'useValidation', from: resolver.resolve('./composables') },
+  ])
+}
+
+// ----------------------------------------------------------
+// I18N DETECTION
+// ----------------------------------------------------------
+
+/**
+ * Detect And Enable I18n
+ * Checks the installed Nuxt modules for @nuxtjs/i18n and auto-enables
+ * validex i18n mode when found and not already explicitly enabled.
+ *
+ * @param modules - The raw modules array from nuxt.options.modules.
+ * @param options - The validex module options.
+ */
+function detectAndEnableI18n(
+  modules: readonly unknown[],
+  options: ValidexNuxtOptions,
+): void {
+  const hasI18n = modules.some((m: unknown) => {
+    let name = ''
+    if (typeof m === 'string') {
+      name = m
+    }
+    else if (Array.isArray(m) && typeof m[0] === 'string') {
+      name = m[0]
+    }
+    return name === '@nuxtjs/i18n' || name === 'nuxt-i18n'
+  })
+  if (hasI18n && options.i18n?.enabled !== true) {
+    setup({ i18n: { enabled: true } })
   }
-  readonly defaults: ValidexNuxtOptions
-  readonly setup: (options: ValidexNuxtOptions) => Promise<void>
 }
 
 // ----------------------------------------------------------
@@ -83,11 +173,12 @@ function buildConfig(opts: ValidexNuxtOptions): Partial<GlobalConfig> {
     config['i18n'] = i18n
   }
 
+  // SAFETY: config is built from validated NuxtOptions fields; structurally matches Partial<GlobalConfig>
   return config as Partial<GlobalConfig>
 }
 
 // ----------------------------------------------------------
-// SETUP
+// STANDALONE HELPERS
 // ----------------------------------------------------------
 
 /**
@@ -108,10 +199,6 @@ export async function setupValidex(
   }
 }
 
-// ----------------------------------------------------------
-// NUXT I18N DETECTION
-// ----------------------------------------------------------
-
 /**
  * Detect Nuxt I18n
  * Checks whether @nuxtjs/i18n is present in the list of installed modules.
@@ -126,27 +213,4 @@ export function detectNuxtI18n(
   return installedModules.some(
     mod => mod === '@nuxtjs/i18n' || mod === 'nuxt-i18n',
   )
-}
-
-// ----------------------------------------------------------
-// MODULE FACTORY
-// ----------------------------------------------------------
-
-/**
- * Create Nuxt Module
- * Returns a plain module definition object that can be passed to
- * Nuxt's defineNuxtModule(). Does not import @nuxt/kit directly.
- *
- * @returns A NuxtModuleDefinition compatible with defineNuxtModule.
- */
-export function createNuxtModule(): NuxtModuleDefinition {
-  return {
-    meta: {
-      name: 'validex',
-      configKey: 'validex',
-      compatibility: { nuxt: '>=3.0.0' },
-    },
-    defaults: {},
-    setup: setupValidex,
-  }
 }

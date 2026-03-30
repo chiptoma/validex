@@ -50,16 +50,7 @@ export interface TextOptions extends FormatRuleOptions {
 export const Text = /* @__PURE__ */ createRule<TextOptions>({
   name: 'text',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not valid text',
-    noEmails: '{{label}} must not contain email addresses',
-    noUrls: '{{label}} must not contain URLs',
-    noPhoneNumbers: '{{label}} must not contain phone numbers',
-    noHtml: '{{label}} must not contain HTML',
-    maxWords: '{{label}} must have at most {{maximum}} words',
-    maxConsecutive:
-      '{{label}} must not have more than {{maximum}} consecutive characters',
-  },
+  messages: {},
   build: (opts: TextOptions): unknown => {
     const range = resolveRange(opts.length)
     const wordsRange = resolveRange(opts.words)

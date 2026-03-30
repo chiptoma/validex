@@ -66,9 +66,7 @@ const TOKEN_SPECS: Readonly<Record<TokenType, TokenSpec>> = {
 export const Token = /* @__PURE__ */ createRule<TokenOptions>({
   name: 'token',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not a valid {{type}} token',
-  },
+  messages: {},
   build: (opts: TokenOptions): unknown => {
     const spec = TOKEN_SPECS[opts.type]
     const range = resolveRange(opts.length)

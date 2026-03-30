@@ -98,9 +98,7 @@ function extractCountryAndNumber(
 export const VatNumber = /* @__PURE__ */ createRule<VatNumberOptions>({
   name: 'vatNumber',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not a valid VAT number',
-  },
+  messages: {},
   build: (opts: VatNumberOptions): z.ZodType => {
     const requirePrefix = opts.requirePrefix ?? false
 

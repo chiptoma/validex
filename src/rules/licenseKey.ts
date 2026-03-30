@@ -6,6 +6,7 @@
 import type { FormatRuleOptions } from '../types'
 import { z } from 'zod'
 import { createRule } from '../core/createRule'
+import { escapeRegexChars } from '../internal/escapeRegex'
 
 // ----------------------------------------------------------
 // TYPES
@@ -42,19 +43,6 @@ const CHARSET_MAP: Readonly<Record<string, string>> = {
 // ----------------------------------------------------------
 // HELPERS
 // ----------------------------------------------------------
-
-const ESCAPE_REGEX_RE = /[.*+?^${}()|[\]\\]/g
-
-/**
- * Escape Regex Chars
- * Escapes special regex characters in a string.
- *
- * @param str - The string to escape.
- * @returns The escaped string safe for use in a regex pattern.
- */
-function escapeRegexChars(str: string): string {
-  return str.replace(ESCAPE_REGEX_RE, '\\$&')
-}
 
 /**
  * Build License Key Pattern
@@ -98,9 +86,7 @@ function buildLicenseKeyPattern(
 export const LicenseKey = /* @__PURE__ */ createRule<LicenseKeyOptions>({
   name: 'licenseKey',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not a valid license key',
-  },
+  messages: {},
   build: (opts: LicenseKeyOptions): unknown => {
     if (opts.type === 'uuid') {
       return opts.normalize !== false

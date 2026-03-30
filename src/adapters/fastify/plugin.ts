@@ -81,6 +81,7 @@ function isZodSchema(value: unknown): value is z.ZodType {
     typeof value === 'object'
     && value !== null
     && 'safeParseAsync' in value
+    // SAFETY: object+non-null+in guard above ensures value is an object; cast for property access
     && typeof (value as Record<string, unknown>)['safeParseAsync'] === 'function'
   )
 }
@@ -126,11 +127,13 @@ function buildPreValidationHook(
   errorHandler?: ValidexFastifyOptions['errorHandler'],
 ): (request: FastifyRequest, reply: FastifyReply) => Promise<void> {
   return async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
+    // SAFETY: Fastify route config is an opaque object; cast to Record for validex key lookup
     const routeConfig = request.routeOptions.config as unknown as Record<string, unknown>
     const validexConfig = routeConfig['validex']
     if (typeof validexConfig !== 'object' || validexConfig === null)
       return
 
+    // SAFETY: validexConfig narrowed to non-null object above; cast for nested key access
     const bodySchema = (validexConfig as Record<string, unknown>)['body']
     if (!isZodSchema(bodySchema))
       return
@@ -180,6 +183,7 @@ async function validexPluginImpl(
   }
 
   app.decorate('validate', validateData)
+  // SAFETY: Fastify decorateRequest requires a type-matching placeholder; actual value set in preHandler hook
   app.decorateRequest('validate', undefined as unknown as FastifyRequest['validate'])
   app.addHook('preHandler', attachRequestValidate)
   app.addHook('preValidation', buildPreValidationHook(options.errorHandler))

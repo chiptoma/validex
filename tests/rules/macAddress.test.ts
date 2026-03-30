@@ -145,7 +145,7 @@ describe('macAddress (security)', () => {
     '\'; DROP TABLE users; --',
     '00:1A:2B:3C:4D:5E\x00injected',
     '../../../etc/passwd',
-    // eslint-disable-next-line no-template-curly-in-string
+    // eslint-disable-next-line no-template-curly-in-string -- REASON: XSS/injection test payload contains template literal syntax
     '${7*7}',
     '{{constructor.constructor("return this")()}}',
     '%00:%00:%00:%00:%00:%00',

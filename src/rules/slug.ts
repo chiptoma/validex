@@ -61,9 +61,7 @@ function buildSlugPattern(extraChars?: string): RegExp {
 export const Slug = /* @__PURE__ */ createRule<SlugOptions>({
   name: 'slug',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not a valid slug',
-  },
+  messages: {},
   build: (opts: SlugOptions): z.ZodType => {
     const range = resolveRange(opts.length)
     /* c8 ignore start -- defensive fallback; defaults always provide length range */

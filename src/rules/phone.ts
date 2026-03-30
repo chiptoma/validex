@@ -74,6 +74,7 @@ function tryParsePhone(
   country: string | undefined,
 ): PhoneNumber | null {
   try {
+    // SAFETY: country is a user-provided ISO 3166-1 alpha-2 string; libphonenumber validates internally
     return parsePhoneNumberWithError(value, country as CountryCode | undefined)
   }
   catch {
@@ -150,13 +151,7 @@ function validatePhoneConstraints(
 export const Phone = /* @__PURE__ */ createRule<PhoneOptions>({
   name: 'phone',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not a valid phone number',
-    requireMobile: 'A mobile phone number is required',
-    countryBlocked: 'Phone numbers from this country are not allowed',
-    countryNotAllowed:
-      'Phone numbers from this country are not in the allowed list',
-  },
+  messages: {},
   build: (opts: PhoneOptions): z.ZodType => {
     /* c8 ignore next -- defensive fallback; defaults always provide format */
     const fmt = opts.format ?? 'e164'

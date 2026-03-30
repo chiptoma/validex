@@ -103,9 +103,7 @@ function matchesAnyFormat(value: string, alpha: boolean): boolean {
 export const Color = /* @__PURE__ */ createRule<ColorOptions>({
   name: 'color',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not a valid color',
-  },
+  messages: {},
   build: (opts: ColorOptions): z.ZodType => {
     const format = opts.format ?? 'hex'
     const alpha = opts.alpha !== false

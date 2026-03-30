@@ -172,12 +172,7 @@ function hasNoQuery(value: string): boolean {
 export const Website = /* @__PURE__ */ createRule<WebsiteOptions>({
   name: 'website',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not a valid website URL',
-    domainBlocked: 'This website domain is not allowed',
-    domainNotAllowed: 'This website domain is not in the allowed list',
-    subdomainNotAllowed: 'Subdomain URLs are not allowed',
-  },
+  messages: {},
   build: (opts: WebsiteOptions): unknown => {
     const range = resolveRange(opts.length)
     const max = range?.max ?? 255

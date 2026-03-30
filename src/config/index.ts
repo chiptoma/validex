@@ -17,6 +17,8 @@ import { getConfig as getStoreConfig, isInitialized, setConfig } from './store'
 export function setup(config?: Partial<GlobalConfig>): void {
   if (config !== undefined) {
     const current = getStoreConfig()
+    // SAFETY: GlobalConfig and Record<string, unknown> are structurally compatible
+    // plain objects; double cast bridges the typed config to the untyped deep merge
     const merged = deepMergeTwo(
       current as unknown as Record<string, unknown>,
       config as unknown as Record<string, unknown>,

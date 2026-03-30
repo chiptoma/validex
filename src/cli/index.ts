@@ -42,6 +42,7 @@ function loadEnglishLocale(): Record<string, unknown> {
     process.exit(1)
   }
 
+  // SAFETY: en.json is a known JSON object; JSON.parse returns unknown, cast narrows to Record
   return JSON.parse(readFileSync(localePath, 'utf-8')) as Record<string, unknown>
 }
 
@@ -140,6 +141,7 @@ function generateLocale(
   empty: boolean,
 ): Record<string, unknown> {
   const locale = empty
+    // SAFETY: emptyValues preserves object structure; returns Record when input is Record
     ? emptyValues(source) as Record<string, unknown>
     : structuredClone(source)
 

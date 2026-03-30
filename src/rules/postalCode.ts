@@ -38,9 +38,7 @@ export interface PostalCodeOptions extends FormatRuleOptions {
 export const PostalCode = /* @__PURE__ */ createRule<PostalCodeOptions>({
   name: 'postalCode',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not a valid postal code',
-  },
+  messages: {},
   build: (opts: PostalCodeOptions): z.ZodType => {
     const base = opts.normalize !== false
       ? z.string().transform((v: string): string => v.trim().toUpperCase())

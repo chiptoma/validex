@@ -122,6 +122,7 @@ function applyRangeRefinements(
   if (opts.min !== undefined) {
     const minDate = parseToDate(opts.min)
     result = result.refine(
+      // SAFETY: refine callback on z.string() schema; v is always a string
       (v: unknown): boolean => new Date(v as string) >= minDate,
       { params: { code: 'tooEarly', namespace: 'dateTime', minimum: minDate.toISOString() } },
     )
@@ -130,6 +131,7 @@ function applyRangeRefinements(
   if (opts.max !== undefined) {
     const maxDate = parseToDate(opts.max)
     result = result.refine(
+      // SAFETY: refine callback on z.string() schema; v is always a string
       (v: unknown): boolean => new Date(v as string) <= maxDate,
       { params: { code: 'tooLate', namespace: 'dateTime', maximum: maxDate.toISOString() } },
     )
@@ -137,6 +139,7 @@ function applyRangeRefinements(
 
   if (opts.allowFuture === false) {
     result = result.refine(
+      // SAFETY: refine callback on z.string() schema; v is always a string
       (v: unknown): boolean => new Date(v as string) <= new Date(),
       { params: { code: 'noFuture', namespace: 'dateTime' } },
     )
@@ -144,6 +147,7 @@ function applyRangeRefinements(
 
   if (opts.allowPast === false) {
     result = result.refine(
+      // SAFETY: refine callback on z.string() schema; v is always a string
       (v: unknown): boolean => new Date(v as string) >= new Date(),
       { params: { code: 'noPast', namespace: 'dateTime' } },
     )
@@ -167,13 +171,7 @@ function applyRangeRefinements(
 export const DateTime = /* @__PURE__ */ createRule<DateTimeOptions>({
   name: 'dateTime',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not a valid date/time',
-    tooEarly: '{{label}} must be after {{minimum}}',
-    tooLate: '{{label}} must be before {{maximum}}',
-    noFuture: '{{label}} must not be in the future',
-    noPast: '{{label}} must not be in the past',
-  },
+  messages: {},
   build: (opts: DateTimeOptions): unknown => {
     let schema: z.ZodType
 

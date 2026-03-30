@@ -5,8 +5,10 @@
 
 import type { Boundary, FormatRuleOptions, Range } from '../types'
 import { z } from 'zod'
+import { checkAsciiBoundary } from '../checks/boundary'
 import { maxConsecutive } from '../checks/limits'
 import { createRule } from '../core/createRule'
+import { escapeRegexChars } from '../internal/escapeRegex'
 import { resolveBoundary } from '../internal/resolveBoundary'
 import { resolveRange } from '../internal/resolveRange'
 import { getReservedUsernames, loadReservedUsernames } from '../loaders/reservedUsernames'
@@ -54,19 +56,6 @@ const PATTERN_MAP: Readonly<Record<string, string>> = {
 // HELPERS
 // ----------------------------------------------------------
 
-const ESCAPE_REGEX_RE = /[.*+?^${}()|[\]\\]/g
-
-/**
- * Escape Regex Chars
- * Escapes special regex characters in a string.
- *
- * @param str - The string to escape.
- * @returns The escaped string safe for use in a character class.
- */
-function escapeRegexChars(str: string): string {
-  return str.replace(ESCAPE_REGEX_RE, '\\$&')
-}
-
 /**
  * Build Username Pattern
  * Constructs a regex for username validation from pattern preset and extra chars.
@@ -95,40 +84,6 @@ function buildUsernamePattern(
   }
 
   return new RegExp(`^[${charClass}]+$`)
-}
-
-const BOUNDARY_ALPHA_RE = /^[a-z]$/
-const BOUNDARY_ALPHANUMERIC_RE = /^[a-z0-9]$/
-
-/**
- * Check Boundary
- * Validates that the first and last characters satisfy the boundary constraint.
- *
- * @param value    - The string to check.
- * @param boundary - Resolved boundary configuration.
- * @param boundary.start
- * @param boundary.end
- * @returns True if boundary constraints are satisfied.
- */
-function checkBoundary(
-  value: string,
-  boundary: { start: string, end: string },
-): boolean {
-  const first = value.charAt(0)
-  const last = value.charAt(value.length - 1)
-
-  if (first === '' || last === '')
-    return false
-  if (boundary.start === 'alpha' && !BOUNDARY_ALPHA_RE.test(first))
-    return false
-  if (boundary.start === 'alphanumeric' && !BOUNDARY_ALPHANUMERIC_RE.test(first))
-    return false
-  if (boundary.end === 'alpha' && !BOUNDARY_ALPHA_RE.test(last))
-    return false
-  if (boundary.end === 'alphanumeric' && !BOUNDARY_ALPHANUMERIC_RE.test(last))
-    return false
-
-  return true
 }
 
 /**
@@ -185,13 +140,7 @@ function applyReservedRefine(
 export const Username = /* @__PURE__ */ createRule<UsernameOptions>({
   name: 'username',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not a valid username',
-    reservedBlocked: 'This username is reserved',
-    boundary: '{{label}} must start and end with a letter or number',
-    maxConsecutive:
-      '{{label}} must not have more than {{maximum}} consecutive characters',
-  },
+  messages: {},
   build: (opts: UsernameOptions): unknown => {
     const range = resolveRange(opts.length)
     const consecutiveRange = resolveRange(opts.consecutive)
@@ -220,7 +169,7 @@ export const Username = /* @__PURE__ */ createRule<UsernameOptions>({
 
     if (boundary !== undefined) {
       inner = inner.refine(
-        (v: string): boolean => checkBoundary(v, boundary),
+        (v: string): boolean => checkAsciiBoundary(v, boundary),
         { params: { code: 'boundary', namespace: 'username' } },
       )
     }
@@ -238,7 +187,7 @@ export const Username = /* @__PURE__ */ createRule<UsernameOptions>({
         inner,
         opts.ignoreCase !== false,
         opts.reservedWords ?? [],
-      ) as typeof inner
+      ) as typeof inner // SAFETY: applyReservedRefine preserves the ZodType shape; cast keeps pipe() type-compatible
       return base.pipe(refined)
     }
 

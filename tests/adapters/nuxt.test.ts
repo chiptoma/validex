@@ -8,8 +8,7 @@ import { fileURLToPath } from 'node:url'
 import { $fetch, createTest } from '@nuxt/test-utils/e2e'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { z } from 'zod'
-import {
-  createNuxtModule,
+import validexModule, {
   detectNuxtI18n,
   setupValidex,
   useValidation,
@@ -67,28 +66,9 @@ describe('nuxt adapter — module registration', () => {
     expect(config.i18n.enabled).toBe(false)
   })
 
-  it('createNuxtModule returns valid module definition', () => {
-    const mod = createNuxtModule()
-    expect(mod.meta.name).toBe('validex')
-    expect(mod.meta.configKey).toBe('validex')
-    expect(mod.meta.compatibility.nuxt).toBe('>=3.0.0')
-  })
-
-  it('createNuxtModule has empty defaults', () => {
-    const mod = createNuxtModule()
-    expect(mod.defaults).toEqual({})
-  })
-
-  it('createNuxtModule setup applies config', async () => {
-    const mod = createNuxtModule()
-    await mod.setup({ rules: { Password: { uppercase: { min: 2 } } } })
-
-    const config = getConfig()
-    const pwRules = config.rules?.['Password']
-    const uppercase = pwRules?.['uppercase'] as
-      | Record<string, unknown>
-      | undefined
-    expect(uppercase?.['min']).toBe(2)
+  it('default export is a defineNuxtModule result', () => {
+    expect(validexModule).toBeDefined()
+    expect(typeof validexModule).toBe('function')
   })
 })
 

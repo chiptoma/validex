@@ -98,19 +98,23 @@ export function createRule<T extends BaseRuleOptions>(
 
   return (options?: Partial<T>): unknown => {
     if (!messagesRegistered) {
-      registerMessages(config.name, config.messages)
+      if (Object.keys(config.messages).length > 0) {
+        registerMessages(config.name, config.messages)
+      }
       messagesRegistered = true
     }
     const tier1Defaults = RULE_DEFAULTS[config.name] ?? {}
+    // SAFETY: Options are plain objects flowing through three-tier merge
     const tier1 = { ...tier1Defaults, ...config.defaults } as Record<string, unknown>
     const globals = getConfig().rules?.[config.name] ?? {}
     const mergedOpts = mergeThreeTiers(
       tier1,
       globals,
+      // SAFETY: Options are plain objects flowing through three-tier merge
       (options ?? {}) as Record<string, unknown>,
-    ) as T
+    ) as T // SAFETY: Merge result conforms to T by construction; all keys validated by TypeScript at call site
 
-    // SAFETY: config.build returns unknown but always produces a ZodType
+    // SAFETY: build() always returns a ZodType; unknown used in interface for loose coupling
     const baseSchema = config.build(mergedOpts) as z.ZodType
 
     let schema: z.ZodType = mergedOpts.emptyToUndefined !== false

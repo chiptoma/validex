@@ -54,6 +54,7 @@ const NATIVE_CODES = new Set([
 function adaptIssue(issue: Record<string, unknown>): IssueAdapter {
   const rawPath = issue['path']
   const path = Array.isArray(rawPath)
+    // SAFETY: Array.isArray guard ensures rawPath is an array; elements filtered by type predicate below
     ? (rawPath as unknown[]).filter(
         (s): s is string | number =>
           typeof s === 'string' || typeof s === 'number',
@@ -69,6 +70,7 @@ function adaptIssue(issue: Record<string, unknown>): IssueAdapter {
     received: typeof issue['received'] === 'string' ? issue['received'] : undefined,
     input: issue['input'],
     format: typeof issue['format'] === 'string' ? issue['format'] : undefined,
+    // SAFETY: Zod issues have untyped params; narrowed via isValidexIssue guard
     params: issue['params'] as Readonly<Record<string, unknown>> | undefined,
   }
 }
@@ -99,6 +101,7 @@ export function registerCustomError(): void {
 
   z.config({
     customError(issue) {
+      // SAFETY: Zod 4 customError issue is an opaque object; cast to Record for field access in adaptIssue
       const adapted = adaptIssue(issue as unknown as Record<string, unknown>)
       const params = adapted.params ?? {}
 

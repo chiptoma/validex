@@ -45,6 +45,7 @@ function buildNestedErrors(
       if (current[segment] === undefined) {
         current[segment] = {}
       }
+      // SAFETY: nested object created two lines above; always a Record at this point
       current = current[segment] as Record<string, unknown>
     }
 
@@ -58,6 +59,7 @@ function buildNestedErrors(
     }
   }
 
+  // SAFETY: root is built to match NestedErrors shape; leaf values are string[] by construction
   return root as NestedErrors
 }
 
@@ -82,7 +84,7 @@ export async function validate<T extends z.ZodType>(
   if (result.success) {
     return {
       success: true,
-      data: result.data as z.output<T>,
+      data: result.data as z.output<T>, // SAFETY: Zod safeParseAsync returns inferred output type on success
       errors: {},
       firstErrors: {},
       nestedErrors: {},
@@ -90,6 +92,7 @@ export async function validate<T extends z.ZodType>(
     }
   }
 
+  // SAFETY: Zod issues always carry path and message; cast narrows the opaque issue type
   const rawIssues = result.error.issues as ReadonlyArray<{
     readonly path: readonly (string | number)[]
     readonly message: string
@@ -112,6 +115,7 @@ export async function validate<T extends z.ZodType>(
     errors,
     firstErrors,
     nestedErrors: buildNestedErrors(rawIssues),
+    // SAFETY: issues escape hatch exposes raw Zod issues as ReadonlyArray<unknown> for consumers
     issues: result.error.issues as ReadonlyArray<unknown>,
   }
 }

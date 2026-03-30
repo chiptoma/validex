@@ -87,11 +87,7 @@ function isValidCountryCode(
 export const Country = /* @__PURE__ */ createRule<CountryOptions>({
   name: 'country',
   defaults: {},
-  messages: {
-    invalid: '{{label}} is not a valid country code',
-    blocked: 'This country is not allowed',
-    notAllowed: 'This country is not in the allowed list',
-  },
+  messages: {},
   build: (opts: CountryOptions): z.ZodType => {
     /* c8 ignore start -- defensive fallback; defaults always provide format/allow/block */
     const format = opts.format ?? 'alpha2'

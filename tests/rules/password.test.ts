@@ -213,7 +213,7 @@ describe('password (security)', () => {
     '<script>alert("xss")</script>',
     '\'; DROP TABLE users; --',
     '../../../etc/passwd',
-    // eslint-disable-next-line no-template-curly-in-string
+    // eslint-disable-next-line no-template-curly-in-string -- REASON: XSS/injection test payload contains template literal syntax
     '${7*7}',
     '{{constructor.constructor("return this")()}}',
     '\x00\x00\x00\x00\x00\x00\x00\x00',
