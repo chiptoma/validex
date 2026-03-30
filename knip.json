@@ -1,14 +1,13 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "ignore": [
-    "src/config/defaults.ts",
-    "tests/helpers/generateTestData.ts"
+    "tests/fixtures/nuxt-app/**"
   ],
   "ignoreDependencies": [
     "@emnapi/core",
     "@emnapi/runtime",
-    "@faker-js/faker",
     "@nuxt/test-utils",
+    "nuxt",
     "conventional-changelog-conventionalcommits",
     "eslint-plugin-vitest"
   ]

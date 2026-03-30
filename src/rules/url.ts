@@ -161,17 +161,7 @@ function checkNoQuery(value: string): boolean {
  */
 export const url = /* @__PURE__ */ createRule<URLOptions>({
   name: 'url',
-  defaults: {
-    protocols: ['http', 'https'],
-    requireTLD: true,
-    length: { max: 2048 },
-    allowDomains: [],
-    blockDomains: [],
-    allowQuery: true,
-    allowAuth: false,
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid URL',
     protocolNotAllowed: 'This URL protocol is not allowed',

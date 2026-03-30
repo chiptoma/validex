@@ -56,11 +56,7 @@ function buildSlugPattern(extraChars?: string): RegExp {
  */
 export const Slug = /* @__PURE__ */ createRule<SlugOptions>({
   name: 'slug',
-  defaults: {
-    length: { min: 3, max: 100 },
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid slug',
   },

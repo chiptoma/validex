@@ -130,14 +130,7 @@ function checkBoundary(
  */
 export const BusinessName = /* @__PURE__ */ createRule<BusinessNameOptions>({
   name: 'businessName',
-  defaults: {
-    length: { min: 2, max: 100 },
-    boundary: 'alphanumeric',
-    consecutive: { max: 4 },
-    titleCase: false,
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid business name',
     boundary: '{{label}} must start and end with a letter or number',

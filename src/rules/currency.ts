@@ -58,12 +58,7 @@ async function resolveCurrencyCodes(): Promise<ReadonlySet<string>> {
  */
 export const Currency = /* @__PURE__ */ createRule<CurrencyOptions>({
   name: 'currency',
-  defaults: {
-    allowCurrencies: [],
-    blockCurrencies: [],
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid currency code',
     blocked: 'This currency is not allowed',

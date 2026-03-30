@@ -40,11 +40,7 @@ const UUID_VERSION_INDEX = 14
  */
 export const uuid = /* @__PURE__ */ createRule<UUIDOptions>({
   name: 'uuid',
-  defaults: {
-    version: 'any',
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid UUID',
   },

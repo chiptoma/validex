@@ -37,10 +37,7 @@ export interface PostalCodeOptions extends FormatRuleOptions {
  */
 export const postalCode = /* @__PURE__ */ createRule<PostalCodeOptions>({
   name: 'postalCode',
-  defaults: {
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid postal code',
   },

@@ -70,19 +70,6 @@ export function generateNames(
 }
 
 /**
- * Generate Phones
- * Produces phone number strings across multiple locales.
- *
- * @param perLocale - Number of phone numbers to generate per locale.
- * @returns Array of objects with value and locale.
- */
-export function generatePhones(
-  perLocale: number = 50,
-): Array<{ value: string, locale: string }> {
-  return generateWithLocales(perLocale, f => f.phone.number())
-}
-
-/**
  * Generate Company Names
  * Produces company name strings across multiple locales.
  *

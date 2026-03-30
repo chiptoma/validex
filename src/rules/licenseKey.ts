@@ -95,15 +95,7 @@ function buildLicenseKeyPattern(
  */
 export const LicenseKey = /* @__PURE__ */ createRule<LicenseKeyOptions>({
   name: 'licenseKey',
-  defaults: {
-    type: 'custom',
-    segments: 5,
-    segmentLength: 5,
-    separator: '-',
-    charset: 'alphanumeric',
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid license key',
   },

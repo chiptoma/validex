@@ -86,13 +86,7 @@ function isValidCountryCode(
  */
 export const Country = /* @__PURE__ */ createRule<CountryOptions>({
   name: 'country',
-  defaults: {
-    format: 'alpha2',
-    allowCountries: [],
-    blockCountries: [],
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid country code',
     blocked: 'This country is not allowed',

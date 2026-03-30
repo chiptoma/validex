@@ -74,16 +74,7 @@ function extractLocalPart(email: string): string {
  */
 export const email = /* @__PURE__ */ createRule<EmailOptions>({
   name: 'email',
-  defaults: {
-    length: { max: 254 },
-    blockPlusAlias: false,
-    blockDomains: [],
-    allowDomains: [],
-    blockDisposable: false,
-    allowSubdomains: true,
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid email address',
     plusAliasBlocked: 'Plus aliases are not allowed',

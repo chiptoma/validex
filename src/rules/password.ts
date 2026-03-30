@@ -138,17 +138,7 @@ function applyMaxRefine(
  */
 export const password = /* @__PURE__ */ createRule<PasswordOptions>({
   name: 'password',
-  defaults: {
-    length: { min: 8, max: 128 },
-    uppercase: { min: 1 },
-    lowercase: { min: 1 },
-    digits: { min: 1 },
-    special: { min: 1 },
-    consecutive: { max: 3 },
-    blockCommon: false,
-    emptyToUndefined: true,
-    normalize: false,
-  },
+  defaults: {},
   messages: {
     minUppercase: '{{label}} must have at least {{minimum}} uppercase characters',
     minLowercase: '{{label}} must have at least {{minimum}} lowercase characters',

@@ -154,10 +154,7 @@ function detectIssuer(
  */
 export const creditCard = /* @__PURE__ */ createRule<CreditCardOptions>({
   name: 'creditCard',
-  defaults: {
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid credit card number',
     issuerNotAllowed: 'This card issuer is not accepted',

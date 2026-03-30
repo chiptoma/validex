@@ -65,10 +65,7 @@ const TOKEN_SPECS: Readonly<Record<TokenType, TokenSpec>> = {
  */
 export const Token = /* @__PURE__ */ createRule<TokenOptions>({
   name: 'token',
-  defaults: {
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid {{type}} token',
   },

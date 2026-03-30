@@ -49,14 +49,7 @@ export interface TextOptions extends FormatRuleOptions {
  */
 export const text = /* @__PURE__ */ createRule<TextOptions>({
   name: 'text',
-  defaults: {
-    noEmails: false,
-    noUrls: false,
-    noPhoneNumbers: false,
-    noHtml: false,
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not valid text',
     noEmails: '{{label}} must not contain email addresses',

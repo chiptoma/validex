@@ -110,12 +110,7 @@ function validateMod97(iban: string): boolean {
  */
 export const iban = /* @__PURE__ */ createRule<IbanOptions>({
   name: 'iban',
-  defaults: {
-    allowCountries: [],
-    blockCountries: [],
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid IBAN',
     countryBlocked: 'IBANs from this country are not allowed',

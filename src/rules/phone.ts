@@ -145,15 +145,7 @@ function validatePhoneConstraints(
  */
 export const phone = /* @__PURE__ */ createRule<PhoneOptions>({
   name: 'phone',
-  defaults: {
-    allowCountries: [],
-    blockCountries: [],
-    requireMobile: false,
-    requireCountryCode: false,
-    format: 'e164',
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid phone number',
     requireMobile: 'A mobile phone number is required',

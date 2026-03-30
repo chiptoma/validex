@@ -5,6 +5,7 @@
 
 import type { BaseRuleOptions, CreateRuleConfig, RuleFactory } from '../types'
 import { z } from 'zod'
+import { RULE_DEFAULTS } from '../config/defaults'
 import { getConfig } from '../config/index'
 import { mergeThreeTiers } from '../config/merge'
 import { registerMessages } from './errorMap'
@@ -100,9 +101,11 @@ export function createRule<T extends BaseRuleOptions>(
       registerMessages(config.name, config.messages)
       messagesRegistered = true
     }
+    const tier1Defaults = RULE_DEFAULTS[config.name] ?? {}
+    const tier1 = { ...tier1Defaults, ...config.defaults } as Record<string, unknown>
     const globals = getConfig().rules?.[config.name] ?? {}
     const mergedOpts = mergeThreeTiers(
-      config.defaults as Record<string, unknown>,
+      tier1,
       globals,
       (options ?? {}) as Record<string, unknown>,
     ) as T

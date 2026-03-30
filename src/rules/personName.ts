@@ -135,16 +135,7 @@ function checkBoundary(
  */
 export const PersonName = /* @__PURE__ */ createRule<PersonNameOptions>({
   name: 'personName',
-  defaults: {
-    length: { min: 2, max: 50 },
-    words: { max: 5 },
-    allowUnicode: true,
-    boundary: 'alpha',
-    consecutive: { max: 3 },
-    titleCase: false,
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid name',
     maxWords: '{{label}} must have at most {{maximum}} words',

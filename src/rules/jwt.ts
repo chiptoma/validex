@@ -225,14 +225,7 @@ function validateTemporal(
  */
 export const jwt = /* @__PURE__ */ createRule<JWTOptions>({
   name: 'jwt',
-  defaults: {
-    requireExpiry: false,
-    checkExpiry: false,
-    checkNotBefore: false,
-    clockTolerance: 0,
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid JWT',
     expired: 'This token has expired',

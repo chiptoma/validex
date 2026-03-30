@@ -180,13 +180,7 @@ function applyPrivateRefinement(
  */
 export const ipAddress = /* @__PURE__ */ createRule<IpAddressOptions>({
   name: 'ipAddress',
-  defaults: {
-    version: 'any',
-    allowCidr: false,
-    allowPrivate: true,
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid IP address',
     privateNotAllowed: 'Private IP addresses are not allowed',

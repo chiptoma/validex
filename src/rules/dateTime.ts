@@ -166,15 +166,7 @@ function applyRangeRefinements(
  */
 export const dateTime = /* @__PURE__ */ createRule<DateTimeOptions>({
   name: 'dateTime',
-  defaults: {
-    format: 'iso',
-    allowFuture: true,
-    allowPast: true,
-    allowOffset: true,
-    allowLocal: false,
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid date/time',
     tooEarly: '{{label}} must be after {{minimum}}',

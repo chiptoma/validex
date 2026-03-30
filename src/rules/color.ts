@@ -102,12 +102,7 @@ function matchesAnyFormat(value: string, alpha: boolean): boolean {
  */
 export const Color = /* @__PURE__ */ createRule<ColorOptions>({
   name: 'color',
-  defaults: {
-    format: 'hex',
-    alpha: true,
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid color',
   },

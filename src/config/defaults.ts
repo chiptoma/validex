@@ -1,15 +1,23 @@
 // ==============================================================================
 // RULE DEFAULTS
-// Built-in Tier 1 defaults for all 25 rules.
+// Centralized Tier 1 defaults for all built-in validex rules.
+// ------------------------------------------------------------------------------
+// Source of truth: docs/DEFAULTS.md
+// NOTE: Keys must match the rule `name` (namespace) used in createRule.
 // ==============================================================================
 
+// ----------------------------------------------------------
+// RULE DEFAULTS MAP
+// ----------------------------------------------------------
+
 /**
- * Sensible defaults for all built-in rules (Tier 1 in three-tier merge).
- *
- * @type {Readonly<Record<string, Record<string, unknown>>>}
+ * RULE_DEFAULTS
+ * Canonical Tier 1 defaults for every built-in rule. createRule reads
+ * this map first, then merges global config (Tier 2), then per-call
+ * options (Tier 3).
  */
 export const RULE_DEFAULTS: Readonly<Record<string, Record<string, unknown>>> = {
-  Email: {
+  email: {
     length: { max: 254 },
     blockPlusAlias: false,
     blockDomains: [],
@@ -19,7 +27,7 @@ export const RULE_DEFAULTS: Readonly<Record<string, Record<string, unknown>>> = 
     emptyToUndefined: true,
     normalize: true,
   },
-  PersonName: {
+  personName: {
     length: { min: 2, max: 50 },
     words: { max: 5 },
     allowUnicode: true,
@@ -29,7 +37,7 @@ export const RULE_DEFAULTS: Readonly<Record<string, Record<string, unknown>>> = 
     emptyToUndefined: true,
     normalize: true,
   },
-  BusinessName: {
+  businessName: {
     length: { min: 2, max: 100 },
     boundary: 'alphanumeric',
     consecutive: { max: 4 },
@@ -37,7 +45,7 @@ export const RULE_DEFAULTS: Readonly<Record<string, Record<string, unknown>>> = 
     emptyToUndefined: true,
     normalize: true,
   },
-  Password: {
+  password: {
     length: { min: 8, max: 128 },
     uppercase: { min: 1 },
     lowercase: { min: 1 },
@@ -48,13 +56,12 @@ export const RULE_DEFAULTS: Readonly<Record<string, Record<string, unknown>>> = 
     emptyToUndefined: true,
     normalize: false,
   },
-  PasswordConfirmation: {
+  passwordConfirmation: {
     passwordField: 'password',
     emptyToUndefined: true,
-    normalize: false,
+    normalize: true,
   },
-  Phone: {
-    metadata: 'min',
+  phone: {
     allowCountries: [],
     blockCountries: [],
     requireMobile: false,
@@ -63,7 +70,7 @@ export const RULE_DEFAULTS: Readonly<Record<string, Record<string, unknown>>> = 
     emptyToUndefined: true,
     normalize: true,
   },
-  Website: {
+  website: {
     length: { max: 255 },
     requireWww: false,
     requireHttps: false,
@@ -75,7 +82,7 @@ export const RULE_DEFAULTS: Readonly<Record<string, Record<string, unknown>>> = 
     emptyToUndefined: true,
     normalize: true,
   },
-  URL: {
+  url: {
     protocols: ['http', 'https'],
     requireTLD: true,
     length: { max: 2048 },
@@ -86,26 +93,26 @@ export const RULE_DEFAULTS: Readonly<Record<string, Record<string, unknown>>> = 
     emptyToUndefined: true,
     normalize: true,
   },
-  Username: {
+  username: {
     length: { min: 3, max: 20 },
     pattern: 'alphanumeric-underscore',
     boundary: 'alphanumeric',
-    reservedWords: [],
-    blockReserved: false,
     ignoreCase: true,
+    blockReserved: false,
+    reservedWords: [],
     emptyToUndefined: true,
     normalize: true,
   },
-  Slug: {
+  slug: {
     length: { min: 3, max: 100 },
     emptyToUndefined: true,
     normalize: true,
   },
-  PostalCode: {
+  postalCode: {
     emptyToUndefined: true,
     normalize: true,
   },
-  LicenseKey: {
+  licenseKey: {
     type: 'custom',
     segments: 5,
     segmentLength: 5,
@@ -114,12 +121,12 @@ export const RULE_DEFAULTS: Readonly<Record<string, Record<string, unknown>>> = 
     emptyToUndefined: true,
     normalize: true,
   },
-  UUID: {
+  uuid: {
     version: 'any',
     emptyToUndefined: true,
     normalize: true,
   },
-  JWT: {
+  jwt: {
     requireExpiry: false,
     checkExpiry: false,
     checkNotBefore: false,
@@ -127,7 +134,7 @@ export const RULE_DEFAULTS: Readonly<Record<string, Record<string, unknown>>> = 
     emptyToUndefined: true,
     normalize: true,
   },
-  DateTime: {
+  dateTime: {
     format: 'iso',
     allowFuture: true,
     allowPast: true,
@@ -136,11 +143,11 @@ export const RULE_DEFAULTS: Readonly<Record<string, Record<string, unknown>>> = 
     emptyToUndefined: true,
     normalize: true,
   },
-  Token: {
+  token: {
     emptyToUndefined: true,
     normalize: true,
   },
-  Text: {
+  text: {
     noEmails: false,
     noUrls: false,
     noPhoneNumbers: false,
@@ -148,46 +155,46 @@ export const RULE_DEFAULTS: Readonly<Record<string, Record<string, unknown>>> = 
     emptyToUndefined: true,
     normalize: true,
   },
-  Country: {
+  country: {
     format: 'alpha2',
     allowCountries: [],
     blockCountries: [],
     emptyToUndefined: true,
     normalize: true,
   },
-  Currency: {
+  currency: {
     allowCurrencies: [],
     blockCurrencies: [],
     emptyToUndefined: true,
     normalize: true,
   },
-  Color: {
+  color: {
     format: 'hex',
     alpha: true,
     emptyToUndefined: true,
     normalize: true,
   },
-  CreditCard: {
+  creditCard: {
     emptyToUndefined: true,
     normalize: true,
   },
-  IBAN: {
+  iban: {
     allowCountries: [],
     blockCountries: [],
     emptyToUndefined: true,
     normalize: true,
   },
-  VatNumber: {
+  vatNumber: {
     requirePrefix: false,
     emptyToUndefined: true,
     normalize: true,
   },
-  MacAddress: {
+  macAddress: {
     delimiter: ':',
     emptyToUndefined: true,
     normalize: true,
   },
-  IpAddress: {
+  ipAddress: {
     version: 'any',
     allowCidr: false,
     allowPrivate: true,

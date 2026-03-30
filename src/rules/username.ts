@@ -181,15 +181,7 @@ function applyReservedRefine(
  */
 export const Username = /* @__PURE__ */ createRule<UsernameOptions>({
   name: 'username',
-  defaults: {
-    length: { min: 3, max: 20 },
-    pattern: 'alphanumeric-underscore',
-    boundary: 'alphanumeric',
-    ignoreCase: true,
-    blockReserved: false,
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid username',
     reservedBlocked: 'This username is reserved',

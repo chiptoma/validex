@@ -91,11 +91,7 @@ function extractCountryAndNumber(
  */
 export const vatNumber = /* @__PURE__ */ createRule<VatNumberOptions>({
   name: 'vatNumber',
-  defaults: {
-    requirePrefix: false,
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid VAT number',
   },

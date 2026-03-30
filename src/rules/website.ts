@@ -169,18 +169,7 @@ function hasNoQuery(value: string): boolean {
  */
 export const website = /* @__PURE__ */ createRule<WebsiteOptions>({
   name: 'website',
-  defaults: {
-    length: { max: 255 },
-    requireWww: false,
-    requireHttps: false,
-    allowDomains: [],
-    blockDomains: [],
-    allowSubdomains: true,
-    allowPath: true,
-    allowQuery: false,
-    emptyToUndefined: true,
-    normalize: true,
-  },
+  defaults: {},
   messages: {
     invalid: '{{label}} is not a valid website URL',
     domainBlocked: 'This website domain is not allowed',
