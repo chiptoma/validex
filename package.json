@@ -5,13 +5,13 @@
   "packageManager": "pnpm@9.15.0",
   "description": "Type-safe validation rules built on Zod",
   "license": "MIT",
-  "homepage": "https://github.com/ciprianpaulsen/validex#readme",
+  "homepage": "https://github.com/chiptoma/validex#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ciprianpaulsen/validex.git"
+    "url": "git+https://github.com/chiptoma/validex.git"
   },
   "bugs": {
-    "url": "https://github.com/ciprianpaulsen/validex/issues"
+    "url": "https://github.com/chiptoma/validex/issues"
   },
   "keywords": [
     "zod",
@@ -28,24 +28,54 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "import": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
-      "require": { "types": "./dist/index.d.cts", "default": "./dist/index.cjs" }
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./checks": {
-      "import": { "types": "./dist/checks/index.d.ts", "default": "./dist/checks/index.js" },
-      "require": { "types": "./dist/checks/index.d.cts", "default": "./dist/checks/index.cjs" }
+      "import": {
+        "types": "./dist/checks/index.d.ts",
+        "default": "./dist/checks/index.js"
+      },
+      "require": {
+        "types": "./dist/checks/index.d.cts",
+        "default": "./dist/checks/index.cjs"
+      }
     },
     "./utilities": {
-      "import": { "types": "./dist/utilities/index.d.ts", "default": "./dist/utilities/index.js" },
-      "require": { "types": "./dist/utilities/index.d.cts", "default": "./dist/utilities/index.cjs" }
+      "import": {
+        "types": "./dist/utilities/index.d.ts",
+        "default": "./dist/utilities/index.js"
+      },
+      "require": {
+        "types": "./dist/utilities/index.d.cts",
+        "default": "./dist/utilities/index.cjs"
+      }
     },
     "./nuxt": {
-      "import": { "types": "./dist/adapters/nuxt/index.d.ts", "default": "./dist/adapters/nuxt/index.js" },
-      "require": { "types": "./dist/adapters/nuxt/index.d.cts", "default": "./dist/adapters/nuxt/index.cjs" }
+      "import": {
+        "types": "./dist/adapters/nuxt/index.d.ts",
+        "default": "./dist/adapters/nuxt/index.js"
+      },
+      "require": {
+        "types": "./dist/adapters/nuxt/index.d.cts",
+        "default": "./dist/adapters/nuxt/index.cjs"
+      }
     },
     "./fastify": {
-      "import": { "types": "./dist/adapters/fastify/index.d.ts", "default": "./dist/adapters/fastify/index.js" },
-      "require": { "types": "./dist/adapters/fastify/index.d.cts", "default": "./dist/adapters/fastify/index.cjs" }
+      "import": {
+        "types": "./dist/adapters/fastify/index.d.ts",
+        "default": "./dist/adapters/fastify/index.js"
+      },
+      "require": {
+        "types": "./dist/adapters/fastify/index.d.cts",
+        "default": "./dist/adapters/fastify/index.cjs"
+      }
     }
   },
   "files": [
