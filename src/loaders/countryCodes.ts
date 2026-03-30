@@ -37,7 +37,7 @@ export async function loadCountryCodes(): Promise<ReadonlyMap<string, CountryDat
   if (cache !== undefined)
     return cache
 
-  const raw: readonly CountryData[] = (await import('./countryCodes.json')).default
+  const raw: readonly CountryData[] = (await import('../data/countryCodes.json')).default
   const map = new Map<string, CountryData>()
 
   for (const entry of raw) {

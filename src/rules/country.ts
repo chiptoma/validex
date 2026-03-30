@@ -8,7 +8,7 @@
 import type { BaseRuleOptions } from '../types'
 import { z } from 'zod'
 import { createRule } from '../core/createRule'
-import { getCountryCodes, loadCountryCodes } from '../data/countryCodes'
+import { getCountryCodes, loadCountryCodes } from '../loaders/countryCodes'
 
 // ----------------------------------------------------------
 // TYPES

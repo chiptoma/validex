@@ -13,16 +13,13 @@ export { getErrorMessage, MESSAGE_MAP, registerMessages } from './core/errorMap'
 export { getParams } from './core/getParams'
 export { validate } from './core/validate'
 
-// Data types (for consumers using data loaders)
-export type { CountryData } from './data/countryCodes'
-
-export type { CardIssuer } from './data/creditCardPrefixes'
-
-export type { IbanPattern } from './data/ibanPatterns'
-export { normalizeLowercase, normalizeTrim, normalizeUppercase } from './internal/normalizers'
 // Internal types and utilities (for consumers building custom rules)
 export type { ResolvedBoundary } from './internal/resolveBoundary'
 export type { ResolvedRange } from './internal/resolveRange'
+// Data types (for consumers using data loaders)
+export type { CountryData } from './loaders/countryCodes'
+export type { CardIssuer } from './loaders/creditCardPrefixes'
+export type { IbanPattern } from './loaders/ibanPatterns'
 
 // Rules (re-export from rules barrel)
 export {

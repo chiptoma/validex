@@ -3,37 +3,37 @@ import {
   clearCommonPasswordsCache,
   getCommonPasswords,
   loadCommonPasswords,
-} from '../../src/data/commonPasswords'
+} from '../../src/loaders/commonPasswords'
 import {
   clearCountryCodesCache,
   getCountryCodes,
   loadCountryCodes,
-} from '../../src/data/countryCodes'
+} from '../../src/loaders/countryCodes'
 import {
   clearCreditCardPrefixesCache,
   getCreditCardPrefixes,
   loadCreditCardPrefixes,
-} from '../../src/data/creditCardPrefixes'
+} from '../../src/loaders/creditCardPrefixes'
 import {
   clearCurrencyCodesCache,
   getCurrencyCodes,
   loadCurrencyCodes,
-} from '../../src/data/currencyCodes'
+} from '../../src/loaders/currencyCodes'
 import {
   clearIbanPatternsCache,
   getIbanPatterns,
   loadIbanPatterns,
-} from '../../src/data/ibanPatterns'
+} from '../../src/loaders/ibanPatterns'
 import {
   getReservedUsernames,
   loadReservedUsernames,
   resetReservedUsernamesCache,
-} from '../../src/data/reservedUsernames'
+} from '../../src/loaders/reservedUsernames'
 import {
   clearVatPatternsCache,
   getVatPatterns,
   loadVatPatterns,
-} from '../../src/data/vatPatterns'
+} from '../../src/loaders/vatPatterns'
 
 describe('commonPasswords', () => {
   it('should load tier1 (basic) with 100 entries', async () => {

@@ -46,7 +46,7 @@ export async function loadCreditCardPrefixes(): Promise<ReadonlyMap<string, Card
   if (cache !== undefined)
     return cache
 
-  const raw: RawIssuerEntry[] = (await import('./credit-card-prefixes.json')).default
+  const raw: RawIssuerEntry[] = (await import('../data/creditCardPrefixes.json')).default
   const map = new Map<string, CardIssuer>()
 
   for (const entry of raw) {

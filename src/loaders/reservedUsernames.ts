@@ -25,7 +25,7 @@ export async function loadReservedUsernames(): Promise<ReadonlySet<string>> {
   if (cache !== undefined)
     return cache
 
-  const raw: string[] = (await import('./reserved-usernames.json')).default
+  const raw: string[] = (await import('../data/reservedUsernames.json')).default
   cache = new Set<string>(raw)
   return cache
 }

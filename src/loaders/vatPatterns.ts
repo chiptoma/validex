@@ -37,7 +37,7 @@ export async function loadVatPatterns(): Promise<ReadonlyMap<string, RegExp>> {
   if (cache !== undefined)
     return cache
 
-  const raw: RawVatEntry[] = (await import('./vat-patterns.json')).default
+  const raw: RawVatEntry[] = (await import('../data/vatPatterns.json')).default
   const map = new Map<string, RegExp>()
 
   for (const entry of raw) {

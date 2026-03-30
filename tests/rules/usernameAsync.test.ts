@@ -5,7 +5,7 @@
 
 import type { z } from 'zod'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { resetReservedUsernamesCache } from '../../src/data/reservedUsernames'
+import { resetReservedUsernamesCache } from '../../src/loaders/reservedUsernames'
 import { Username } from '../../src/rules/username'
 
 // ----------------------------------------------------------

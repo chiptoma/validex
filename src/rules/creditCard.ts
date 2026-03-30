@@ -12,7 +12,7 @@ import { createRule } from '../core/createRule'
 import {
   getCreditCardPrefixes,
   loadCreditCardPrefixes,
-} from '../data/creditCardPrefixes'
+} from '../loaders/creditCardPrefixes'
 
 // ----------------------------------------------------------
 // TYPES

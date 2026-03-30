@@ -26,7 +26,7 @@ export async function loadCurrencyCodes(): Promise<ReadonlySet<string>> {
   if (cache !== undefined)
     return cache
 
-  const raw: string[] = (await import('./currency-codes.json')).default
+  const raw: string[] = (await import('../data/currencyCodes.json')).default
   cache = new Set(raw)
   return cache
 }

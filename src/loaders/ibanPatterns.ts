@@ -43,7 +43,7 @@ export async function loadIbanPatterns(): Promise<ReadonlyMap<string, IbanPatter
   if (cache !== undefined)
     return cache
 
-  const raw: RawIbanEntry[] = (await import('./iban-patterns.json')).default
+  const raw: RawIbanEntry[] = (await import('../data/ibanPatterns.json')).default
   const map = new Map<string, IbanPattern>()
 
   for (const entry of raw) {

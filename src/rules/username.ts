@@ -7,9 +7,9 @@ import type { Boundary, FormatRuleOptions, Range } from '../types'
 import { z } from 'zod'
 import { maxConsecutive } from '../checks/limits'
 import { createRule } from '../core/createRule'
-import { getReservedUsernames, loadReservedUsernames } from '../data/reservedUsernames'
 import { resolveBoundary } from '../internal/resolveBoundary'
 import { resolveRange } from '../internal/resolveRange'
+import { getReservedUsernames, loadReservedUsernames } from '../loaders/reservedUsernames'
 
 // ----------------------------------------------------------
 // TYPES

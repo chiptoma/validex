@@ -5,7 +5,7 @@
 
 import type { z } from 'zod'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { clearCommonPasswordsCache } from '../../src/data/commonPasswords'
+import { clearCommonPasswordsCache } from '../../src/loaders/commonPasswords'
 import { Password } from '../../src/rules/password'
 
 // ----------------------------------------------------------

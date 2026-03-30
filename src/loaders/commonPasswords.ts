@@ -40,23 +40,23 @@ export async function loadCommonPasswords(
     return cached
 
   if (tier === 'basic') {
-    const { default: tier1 } = await import('./passwords-tier1.json')
+    const { default: tier1 } = await import('../data/passwordsTier1.json')
     const result: ReadonlySet<string> = new Set(tier1)
     cache.basic = result
     return result
   }
 
   if (tier === 'moderate') {
-    const { default: tier1 } = await import('./passwords-tier1.json')
-    const { default: tier2 } = await import('./passwords-tier2.json')
+    const { default: tier1 } = await import('../data/passwordsTier1.json')
+    const { default: tier2 } = await import('../data/passwordsTier2.json')
     const result: ReadonlySet<string> = new Set([...tier1, ...tier2])
     cache.moderate = result
     return result
   }
 
-  const { default: tier1 } = await import('./passwords-tier1.json')
-  const { default: tier2 } = await import('./passwords-tier2.json')
-  const { default: tier3 } = await import('./passwords-tier3.json')
+  const { default: tier1 } = await import('../data/passwordsTier1.json')
+  const { default: tier2 } = await import('../data/passwordsTier2.json')
+  const { default: tier3 } = await import('../data/passwordsTier3.json')
   const result: ReadonlySet<string> = new Set([...tier1, ...tier2, ...tier3])
   cache.strict = result
   return result

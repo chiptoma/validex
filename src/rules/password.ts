@@ -11,8 +11,8 @@ import { z } from 'zod'
 import { hasDigits, hasLowercase, hasSpecial, hasUppercase } from '../checks/composition'
 import { maxConsecutive } from '../checks/limits'
 import { createRule } from '../core/createRule'
-import { getCommonPasswords, loadCommonPasswords } from '../data/commonPasswords'
 import { resolveRange } from '../internal/resolveRange'
+import { getCommonPasswords, loadCommonPasswords } from '../loaders/commonPasswords'
 
 // ----------------------------------------------------------
 // TYPES
