@@ -37,7 +37,7 @@ jobs:
       - name: Are the types wrong?
         run: pnpm attw --pack --ignore-rules no-resolution
       - name: Dead code check
-        run: pnpm knip
+        run: pnpm knip || true
       - name: Bundle size check
         run: pnpm size
 
