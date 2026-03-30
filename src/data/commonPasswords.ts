@@ -3,120 +3,13 @@
 // Async loader for the top 10,000 most common passwords from breach data.
 // ------------------------------------------------------------------------------
 // Passwords are organized into three cumulative tiers:
-//   basic    — top 100 (inline)
+//   basic    — top 100 (tier1 JSON import)
 //   moderate — top 1,000 (basic + tier2 JSON import)
 //   strict   — top 10,000 (moderate + tier3 JSON import)
 // ==============================================================================
 
 /** Tier type for password strength checking granularity. */
 type PasswordTier = 'basic' | 'moderate' | 'strict'
-
-// ----------------------------------------------------------
-// TIER 1 DATA (TOP 100)
-// ----------------------------------------------------------
-
-const TIER1: readonly string[] = [
-  '123456',
-  'password',
-  '12345678',
-  'qwerty',
-  '123456789',
-  '12345',
-  '1234',
-  '111111',
-  '1234567',
-  'dragon',
-  '123123',
-  'baseball',
-  'abc123',
-  'football',
-  'monkey',
-  'letmein',
-  'shadow',
-  'master',
-  '666666',
-  'qwertyuiop',
-  '123321',
-  'mustang',
-  '1234567890',
-  'michael',
-  '654321',
-  'superman',
-  '1qaz2wsx',
-  '7777777',
-  '121212',
-  '000000',
-  'qazwsx',
-  '123qwe',
-  'killer',
-  'trustno1',
-  'jordan',
-  'jennifer',
-  'zxcvbnm',
-  'asdfgh',
-  'hunter',
-  'buster',
-  'soccer',
-  'harley',
-  'batman',
-  'andrew',
-  'tigger',
-  'sunshine',
-  'iloveyou',
-  '2000',
-  'charlie',
-  'robert',
-  'thomas',
-  'hockey',
-  'ranger',
-  'daniel',
-  'starwars',
-  'klaster',
-  '112233',
-  'george',
-  'computer',
-  'michelle',
-  'jessica',
-  'pepper',
-  '1111',
-  'zxcvbn',
-  '555555',
-  '11111111',
-  '131313',
-  'freedom',
-  '777777',
-  'pass',
-  'maggie',
-  '159753',
-  'aaaaaa',
-  'ginger',
-  'princess',
-  'joshua',
-  'cheese',
-  'amanda',
-  'summer',
-  'love',
-  'ashley',
-  'nicole',
-  'chelsea',
-  'biteme',
-  'matthew',
-  'access',
-  'yankees',
-  '987654321',
-  'dallas',
-  'austin',
-  'thunder',
-  'taylor',
-  'matrix',
-  'mobilemail',
-  'master1',
-  'diamond',
-  'whatever',
-  'bailey',
-  'nothing',
-  'phoenix',
-]
 
 // ----------------------------------------------------------
 // CACHE
@@ -147,21 +40,24 @@ export async function loadCommonPasswords(
     return cached
 
   if (tier === 'basic') {
-    const result: ReadonlySet<string> = new Set(TIER1)
+    const { default: tier1 } = await import('./passwords-tier1.json')
+    const result: ReadonlySet<string> = new Set(tier1)
     cache.basic = result
     return result
   }
 
   if (tier === 'moderate') {
+    const { default: tier1 } = await import('./passwords-tier1.json')
     const { default: tier2 } = await import('./passwords-tier2.json')
-    const result: ReadonlySet<string> = new Set([...TIER1, ...tier2])
+    const result: ReadonlySet<string> = new Set([...tier1, ...tier2])
     cache.moderate = result
     return result
   }
 
+  const { default: tier1 } = await import('./passwords-tier1.json')
   const { default: tier2 } = await import('./passwords-tier2.json')
   const { default: tier3 } = await import('./passwords-tier3.json')
-  const result: ReadonlySet<string> = new Set([...TIER1, ...tier2, ...tier3])
+  const result: ReadonlySet<string> = new Set([...tier1, ...tier2, ...tier3])
   cache.strict = result
   return result
 }

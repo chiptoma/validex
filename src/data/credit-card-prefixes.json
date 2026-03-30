@@ -1,0 +1,44 @@
+[
+  {
+    "id": "visa",
+    "name": "Visa",
+    "prefixes": ["4"],
+    "lengths": [13, 16, 19]
+  },
+  {
+    "id": "mastercard",
+    "name": "Mastercard",
+    "prefixes": ["51", "52", "53", "54", "55", "2221-2720"],
+    "lengths": [16]
+  },
+  {
+    "id": "amex",
+    "name": "American Express",
+    "prefixes": ["34", "37"],
+    "lengths": [15]
+  },
+  {
+    "id": "discover",
+    "name": "Discover",
+    "prefixes": ["6011", "644", "645", "646", "647", "648", "649", "65"],
+    "lengths": [16, 17, 18, 19]
+  },
+  {
+    "id": "diners",
+    "name": "Diners Club",
+    "prefixes": ["300", "301", "302", "303", "304", "305", "36", "38"],
+    "lengths": [14, 16, 17, 18, 19]
+  },
+  {
+    "id": "jcb",
+    "name": "JCB",
+    "prefixes": ["3528-3589"],
+    "lengths": [15, 16, 17, 18, 19]
+  },
+  {
+    "id": "unionpay",
+    "name": "UnionPay",
+    "prefixes": ["62"],
+    "lengths": [16, 17, 18, 19]
+  }
+]

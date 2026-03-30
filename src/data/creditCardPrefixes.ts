@@ -18,68 +18,13 @@ interface CardIssuer {
   readonly lengths: readonly number[]
 }
 
-// ----------------------------------------------------------
-// RAW DATA
-// ----------------------------------------------------------
-
-const ISSUERS: ReadonlyArray<readonly [string, CardIssuer]> = [
-  [
-    'visa',
-    {
-      name: 'Visa',
-      prefixes: ['4'],
-      lengths: [13, 16, 19],
-    },
-  ],
-  [
-    'mastercard',
-    {
-      name: 'Mastercard',
-      prefixes: ['51', '52', '53', '54', '55', '2221-2720'],
-      lengths: [16],
-    },
-  ],
-  [
-    'amex',
-    {
-      name: 'American Express',
-      prefixes: ['34', '37'],
-      lengths: [15],
-    },
-  ],
-  [
-    'discover',
-    {
-      name: 'Discover',
-      prefixes: ['6011', '644', '645', '646', '647', '648', '649', '65'],
-      lengths: [16, 17, 18, 19],
-    },
-  ],
-  [
-    'diners',
-    {
-      name: 'Diners Club',
-      prefixes: ['300', '301', '302', '303', '304', '305', '36', '38'],
-      lengths: [14, 16, 17, 18, 19],
-    },
-  ],
-  [
-    'jcb',
-    {
-      name: 'JCB',
-      prefixes: ['3528-3589'],
-      lengths: [15, 16, 17, 18, 19],
-    },
-  ],
-  [
-    'unionpay',
-    {
-      name: 'UnionPay',
-      prefixes: ['62'],
-      lengths: [16, 17, 18, 19],
-    },
-  ],
-]
+/** Shape of each entry in the JSON data file. */
+interface RawIssuerEntry {
+  readonly id: string
+  readonly name: string
+  readonly prefixes: string[]
+  readonly lengths: number[]
+}
 
 // ----------------------------------------------------------
 // CACHE
@@ -93,7 +38,7 @@ let cache: ReadonlyMap<string, CardIssuer> | undefined
 
 /**
  * Load Credit Card Prefixes
- * Lazily builds and caches a Map of issuer identifiers to CardIssuer data.
+ * Lazily imports JSON data and caches a Map of issuer identifiers to CardIssuer data.
  *
  * @returns A ReadonlyMap of issuer keys to CardIssuer entries.
  */
@@ -101,10 +46,15 @@ export async function loadCreditCardPrefixes(): Promise<ReadonlyMap<string, Card
   if (cache !== undefined)
     return cache
 
+  const raw: RawIssuerEntry[] = (await import('./credit-card-prefixes.json')).default
   const map = new Map<string, CardIssuer>()
 
-  for (const [key, issuer] of ISSUERS) {
-    map.set(key, issuer)
+  for (const entry of raw) {
+    map.set(entry.id, {
+      name: entry.name,
+      prefixes: entry.prefixes,
+      lengths: entry.lengths,
+    })
   }
 
   cache = map
