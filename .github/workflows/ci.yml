@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [dev, main]
+    tags: ['v*']
   pull_request:
     branches: [main]
 
@@ -46,7 +47,7 @@ jobs:
 
   publish:
     needs: quality
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -59,13 +60,6 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - name: Publish
-        run: |
-          CURRENT=$(npm view validex version 2>/dev/null || echo "0.0.0")
-          LOCAL=$(node -p "require('./package.json').version")
-          if [ "$CURRENT" != "$LOCAL" ]; then
-            pnpm publish --no-git-checks
-          else
-            echo "Version unchanged ($LOCAL), skipping publish"
-          fi
+        run: pnpm publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
