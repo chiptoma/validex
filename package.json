@@ -1,32 +1,59 @@
 {
   "name": "validex",
-  "version": "1.0.0-alpha.0",
-  "description": "Type-safe validation rules built on Zod",
   "type": "module",
+  "version": "1.0.0-alpha.0",
   "packageManager": "pnpm@9.15.0",
+  "description": "Type-safe validation rules built on Zod",
+  "license": "MIT",
+  "homepage": "https://github.com/ciprianpaulsen/validex#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ciprianpaulsen/validex.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ciprianpaulsen/validex/issues"
+  },
+  "keywords": [
+    "zod",
+    "validation",
+    "zod4",
+    "email",
+    "phone",
+    "typescript",
+    "i18n",
+    "nuxt",
+    "fastify",
+    "tree-shakeable"
+  ],
   "sideEffects": false,
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "import": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+      "require": { "types": "./dist/index.d.cts", "default": "./dist/index.cjs" }
     },
     "./checks": {
-      "import": "./dist/checks/index.js",
-      "types": "./dist/checks/index.d.ts"
+      "import": { "types": "./dist/checks/index.d.ts", "default": "./dist/checks/index.js" },
+      "require": { "types": "./dist/checks/index.d.cts", "default": "./dist/checks/index.cjs" }
     },
     "./utilities": {
-      "import": "./dist/utilities/index.js",
-      "types": "./dist/utilities/index.d.ts"
+      "import": { "types": "./dist/utilities/index.d.ts", "default": "./dist/utilities/index.js" },
+      "require": { "types": "./dist/utilities/index.d.cts", "default": "./dist/utilities/index.cjs" }
     },
     "./nuxt": {
-      "import": "./dist/adapters/nuxt/index.js",
-      "types": "./dist/adapters/nuxt/index.d.ts"
+      "import": { "types": "./dist/adapters/nuxt/index.d.ts", "default": "./dist/adapters/nuxt/index.js" },
+      "require": { "types": "./dist/adapters/nuxt/index.d.cts", "default": "./dist/adapters/nuxt/index.cjs" }
     },
     "./fastify": {
-      "import": "./dist/adapters/fastify/index.js",
-      "types": "./dist/adapters/fastify/index.d.ts"
+      "import": { "types": "./dist/adapters/fastify/index.d.ts", "default": "./dist/adapters/fastify/index.js" },
+      "require": { "types": "./dist/adapters/fastify/index.d.cts", "default": "./dist/adapters/fastify/index.cjs" }
     }
   },
+  "files": [
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md",
+    "dist"
+  ],
   "scripts": {
     "dev": "tsup --watch & vitest",
     "build": "tsup",
@@ -50,58 +77,50 @@
     "prepublishOnly": "pnpm check:full",
     "prepare": "simple-git-hooks"
   },
-  "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged",
-    "commit-msg": "node --input-type=module -e \"import {readFileSync} from 'fs'; const msg = readFileSync(process.argv[1], 'utf8').trim(); if (!/^(feat|fix|docs|refactor|test|chore|perf|ci|build|style|revert)(\\\\(.+\\\\))?!?:.+/.test(msg)) { console.error('Invalid commit message. Use conventional commits: feat|fix|docs|refactor|test|chore: message'); process.exit(1); }\" \"$1\""
-  },
-  "lint-staged": {
-    "*.ts": [
-      "eslint --fix"
-    ]
-  },
   "peerDependencies": {
     "zod": "^3.25.0 || ^4.0.0"
   },
+  "peerDependenciesMeta": {
+    "fastify": {
+      "optional": true
+    },
+    "nuxt": {
+      "optional": true
+    }
+  },
   "dependencies": {
+    "disposable-email-domains": "^1.0.0",
     "libphonenumber-js": "^1.11.0",
-    "postal-codes-js": "^2.5.0",
-    "disposable-email-domains": "^1.0.0"
+    "postal-codes-js": "^2.5.0"
   },
   "devDependencies": {
-    "vitest": "^3.0.0",
-    "@vitest/coverage-v8": "^3.0.0",
-    "@faker-js/faker": "^9.0.0",
-    "fast-check": "^4.0.0",
-    "@nuxt/test-utils": "^3.0.0",
-    "fastify": "^5.0.0",
-    "typescript": "^5.0.0",
-    "tsup": "^8.0.0",
     "@antfu/eslint-config": "^4.0.0",
+    "@arethetypeswrong/cli": "^0.17.0",
+    "@emnapi/core": "^1.7.1",
+    "@emnapi/runtime": "^1.7.1",
+    "@faker-js/faker": "^9.0.0",
+    "@nuxt/test-utils": "^3.0.0",
+    "@size-limit/preset-small-lib": "^11.0.0",
+    "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "^3.0.0",
+    "bumpp": "^9.0.0",
+    "conventional-changelog-cli": "^5.0.0",
+    "conventional-changelog-conventionalcommits": "^8.0.0",
     "eslint": "^9.0.0",
     "eslint-plugin-regexp": "^2.0.0",
     "eslint-plugin-sonarjs": "^4.0.0",
     "eslint-plugin-vitest": "^0.5.0",
-    "simple-git-hooks": "^2.0.0",
-    "lint-staged": "^15.0.0",
+    "fast-check": "^4.0.0",
+    "fastify": "^5.0.0",
     "knip": "^5.0.0",
+    "lint-staged": "^15.0.0",
     "publint": "^0.2.0",
-    "@arethetypeswrong/cli": "^0.17.0",
-    "bumpp": "^9.0.0",
-    "conventional-changelog-cli": "^5.0.0",
-    "conventional-changelog-conventionalcommits": "^8.0.0",
+    "simple-git-hooks": "^2.0.0",
     "size-limit": "^11.0.0",
-    "@size-limit/preset-small-lib": "^11.0.0",
-    "@types/node": "^22.0.0",
-    "@emnapi/core": "^1.7.1",
-    "@emnapi/runtime": "^1.7.1"
-  },
-  "peerDependenciesMeta": {
-    "nuxt": {
-      "optional": true
-    },
-    "fastify": {
-      "optional": true
-    }
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^3.0.0",
+    "zod": "4"
   },
   "pnpm": {
     "peerDependencyRules": {
@@ -112,5 +131,14 @@
         "eslint"
       ]
     }
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged",
+    "commit-msg": "node --input-type=module -e \"import {readFileSync} from 'fs'; const msg = readFileSync(process.argv[1], 'utf8').trim(); if (!/^(feat|fix|docs|refactor|test|chore|perf|ci|build|style|revert)(\\\\(.+\\\\))?!?:.+/.test(msg)) { console.error('Invalid commit message. Use conventional commits: feat|fix|docs|refactor|test|chore: message'); process.exit(1); }\" \"$1\""
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix"
+    ]
   }
 }

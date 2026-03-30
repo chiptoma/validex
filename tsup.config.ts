@@ -12,5 +12,5 @@ export default defineConfig({
   dts: true,
   clean: true,
   sourcemap: true,
-  splitting: false,
+  splitting: true,
 })

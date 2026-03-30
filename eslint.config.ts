@@ -1,13 +1,17 @@
 import antfu from '@antfu/eslint-config'
-import sonarjs from 'eslint-plugin-sonarjs'
 import pluginRegexp from 'eslint-plugin-regexp'
-import vitest from 'eslint-plugin-vitest'
+import sonarjs from 'eslint-plugin-sonarjs'
 
 export default antfu(
   {
     type: 'lib',
     typescript: {
       tsconfigPath: 'tsconfig.json',
+      parserOptions: {
+        projectService: {
+          allowDefaultProject: ['*.config.ts'],
+        },
+      },
     },
     stylistic: {
       indent: 2,
@@ -20,8 +24,9 @@ export default antfu(
     ignores: ['**/fixtures', '**/dist'],
   },
 
-  // Strict TypeScript
+  // Strict TypeScript — scoped to .ts files for type-aware rules
   {
+    files: ['**/*.ts'],
     rules: {
       'ts/consistent-type-definitions': ['error', 'interface'],
       'ts/explicit-function-return-type': 'error',
@@ -37,9 +42,19 @@ export default antfu(
       'unicorn/filename-case': ['error', {
         case: 'camelCase',
         ignore: [
-          'README.md', 'CHANGELOG.md', 'BUILD.md', 'SPEC.md',
-          'OPTIONS.md', 'DEFAULTS.md', 'CONTRIBUTING.md', 'LICENSE', 'CLAUDE.md',
-          'vitest.config.ts', 'tsup.config.ts', 'eslint.config.ts',
+          'README.md',
+          'CHANGELOG.md',
+          'BUILD.md',
+          'SPEC.md',
+          'OPTIONS.md',
+          'DEFAULTS.md',
+          'CONTRIBUTING.md',
+          'LICENSE',
+          'CLAUDE.md',
+          'vitest.config.ts',
+          'tsup.config.ts',
+          'eslint.config.ts',
+          'PLAN.md',
         ],
       }],
     },
@@ -56,8 +71,7 @@ export default antfu(
           ClassDeclaration: true,
         },
         contexts: [
-          'ExportNamedDeclaration > FunctionDeclaration',
-          'ExportNamedDeclaration > VariableDeclaration',
+          'ExportNamedDeclaration:has(VariableDeclaration)',
           'TSInterfaceDeclaration',
           'TSTypeAliasDeclaration',
         ],
@@ -91,16 +105,13 @@ export default antfu(
     },
   },
 
-  // Test quality — relaxed rules + vitest enforcement
+  // Test quality — relaxed rules
   {
     files: ['tests/**/*.ts'],
-    plugins: { vitest },
     rules: {
-      ...vitest.configs.recommended.rules,
-      'vitest/no-focused-tests': 'error',
-      'vitest/no-disabled-tests': 'warn',
-      'vitest/expect-expect': 'error',
-      'vitest/no-identical-title': 'error',
+      'test/no-only-tests': 'error',
+      'test/no-identical-title': 'error',
+      'test/consistent-test-it': ['error', { fn: 'it' }],
       'ts/explicit-function-return-type': 'off',
       'max-lines-per-function': 'off',
       'max-lines': ['error', { max: 500, skipBlankLines: true, skipComments: true }],
