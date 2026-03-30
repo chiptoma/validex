@@ -119,7 +119,7 @@ describe('fastify end-to-end', () => {
 
   it('returns 200 for valid POST data', async () => {
     const app = Fastify()
-    await validexPlugin(app)
+    await app.register(validexPlugin)
 
     const bodySchema = z.object({
       email: z.string().email(),
@@ -145,7 +145,7 @@ describe('fastify end-to-end', () => {
 
   it('returns 400 with structured error response for invalid data', async () => {
     const app = Fastify()
-    await validexPlugin(app)
+    await app.register(validexPlugin)
 
     const bodySchema = z.object({
       email: z.string().email(),
@@ -178,7 +178,7 @@ describe('fastify end-to-end', () => {
 
   it('handles multiple routes with different schemas independently', async () => {
     const app = Fastify()
-    await validexPlugin(app)
+    await app.register(validexPlugin)
 
     const userSchema = z.object({
       name: z.string().min(1),
@@ -238,7 +238,7 @@ describe('fastify end-to-end', () => {
 
   it('validates request body via request.validate in handler', async () => {
     const app = Fastify()
-    await validexPlugin(app)
+    await app.register(validexPlugin)
 
     const schema = z.object({ age: z.number().int().min(0) })
 

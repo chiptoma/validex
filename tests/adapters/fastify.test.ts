@@ -1,3 +1,4 @@
+import type { FastifyReply, FastifyRequest } from 'fastify'
 import type { ValidationResult } from '../../src/types'
 import Fastify from 'fastify'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -24,14 +25,14 @@ describe('fastify adapter', () => {
   describe('plugin registration', () => {
     it('should register without options', async () => {
       const app = Fastify()
-      await validexPlugin(app)
+      await app.register(validexPlugin)
       await app.ready()
       await app.close()
     })
 
     it('should register with rules option', async () => {
       const app = Fastify()
-      await validexPlugin(app, {
+      await app.register(validexPlugin, {
         rules: { email: { normalize: true } },
       })
       await app.ready()
@@ -40,7 +41,7 @@ describe('fastify adapter', () => {
 
     it('should register with preload option', async () => {
       const app = Fastify()
-      await validexPlugin(app, {
+      await app.register(validexPlugin, {
         preload: { disposable: true },
       })
       await app.ready()
@@ -70,7 +71,7 @@ describe('fastify adapter', () => {
 
     it('should be accessible as instance decorator in routes', async () => {
       const app = Fastify()
-      await validexPlugin(app)
+      await app.register(validexPlugin)
 
       const schema = z.object({ name: z.string().min(1) })
 
@@ -94,7 +95,7 @@ describe('fastify adapter', () => {
   describe('request.validate decorator', () => {
     it('should validate request body by default', async () => {
       const app = Fastify()
-      await validexPlugin(app)
+      await app.register(validexPlugin)
 
       const schema = z.object({ email: z.string().email() })
 
@@ -116,7 +117,7 @@ describe('fastify adapter', () => {
 
     it('should validate query when source is query', async () => {
       const app = Fastify()
-      await validexPlugin(app)
+      await app.register(validexPlugin)
 
       const schema = z.object({ page: z.string() })
 
@@ -137,7 +138,7 @@ describe('fastify adapter', () => {
 
     it('should validate params when source is params', async () => {
       const app = Fastify()
-      await validexPlugin(app)
+      await app.register(validexPlugin)
 
       const schema = z.object({ id: z.string().min(1) })
 
@@ -158,7 +159,7 @@ describe('fastify adapter', () => {
 
     it('should return errors for invalid request body', async () => {
       const app = Fastify()
-      await validexPlugin(app)
+      await app.register(validexPlugin)
 
       const schema = z.object({ email: z.string().email() })
 
@@ -183,7 +184,7 @@ describe('fastify adapter', () => {
   describe('route-level preValidation', () => {
     it('should auto-validate body when route config has a zod body', async () => {
       const app = Fastify()
-      await validexPlugin(app)
+      await app.register(validexPlugin)
 
       const bodySchema = z.object({ name: z.string().min(1) })
 
@@ -213,7 +214,7 @@ describe('fastify adapter', () => {
 
     it('should skip preValidation when route has no validex config', async () => {
       const app = Fastify()
-      await validexPlugin(app)
+      await app.register(validexPlugin)
 
       app.post('/test', async () => ({ ok: true }))
 
@@ -227,7 +228,7 @@ describe('fastify adapter', () => {
 
     it('should skip preValidation when body is not a zod schema', async () => {
       const app = Fastify()
-      await validexPlugin(app)
+      await app.register(validexPlugin)
 
       app.post('/test', {
         config: { validex: { body: { type: 'object' } } },
@@ -246,10 +247,10 @@ describe('fastify adapter', () => {
       let capturedResult: ValidationResult<unknown> | null = null
 
       const app = Fastify()
-      await validexPlugin(app, {
-        errorHandler: (result, _request, reply) => {
+      await app.register(validexPlugin, {
+        errorHandler: (result: ValidationResult<unknown>, _request: FastifyRequest, reply: FastifyReply) => {
           capturedResult = result
-          reply.status(422).send({ custom: true })
+          void reply.status(422).send({ custom: true })
         },
       })
 

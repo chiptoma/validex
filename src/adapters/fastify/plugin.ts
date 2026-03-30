@@ -12,6 +12,7 @@ import type {
 import type { z } from 'zod'
 import type { GlobalConfig, PreloadOptions, ValidationResult } from '../../types'
 import type { ValidateSource } from './decorators'
+import fp from 'fastify-plugin'
 import { preloadData, setup } from '../../config'
 import { validate } from '../../core/validate'
 import { validateData, validateRequest } from './decorators'
@@ -157,16 +158,16 @@ function buildPreValidationHook(
 // ----------------------------------------------------------
 
 /**
- * Validex Plugin
- * Sets up validex on a Fastify instance. Call directly on the root
- * instance (not via app.register) to avoid Fastify encapsulation.
+ * Validex Plugin Implementation
+ * Sets up validex on a Fastify instance via app.register().
  * Registers app.validate, request.validate, and a preValidation hook.
+ * Wrapped with fastify-plugin to expose decorators at the parent scope.
  *
  * @param app     - The Fastify instance.
  * @param options - Plugin configuration.
  * @returns A promise that resolves when setup is complete.
  */
-export async function validexPlugin(
+async function validexPluginImpl(
   app: FastifyInstance,
   options: ValidexFastifyOptions = {},
 ): Promise<void> {
@@ -183,3 +184,13 @@ export async function validexPlugin(
   app.addHook('preHandler', attachRequestValidate)
   app.addHook('preValidation', buildPreValidationHook(options.errorHandler))
 }
+
+/**
+ * Validex Plugin
+ * Fastify 5 plugin that registers validex decorators and hooks.
+ * Register via app.register(validexPlugin, options).
+ */
+export const validexPlugin = fp(validexPluginImpl, {
+  name: 'validex',
+  fastify: '5.x',
+})

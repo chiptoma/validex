@@ -1647,17 +1647,14 @@ function detectNuxtI18n(installedModules: readonly string[]): boolean
 
 Fastify plugin that registers instance and request decorators for validation, with optional route-level `preValidation`.
 
-#### `validexPlugin(app, options?)`
+#### `validexPlugin`
 
-Sets up validex on a Fastify instance. Call directly -- not via `app.register()` -- to avoid Fastify encapsulation.
+Fastify 5 plugin wrapped with `fastify-plugin`. Register via `app.register()` -- decorators are exposed at the parent scope.
 
-**Signature:**
+**Usage:**
 
 ```ts
-async function validexPlugin(
-  app: FastifyInstance,
-  options?: ValidexFastifyOptions,
-): Promise<void>
+await app.register(validexPlugin, options)
 ```
 
 **`ValidexFastifyOptions` interface:**
@@ -1719,7 +1716,7 @@ import { Email, Password } from 'validex'
 
 const app = Fastify()
 
-await validexPlugin(app, {
+await app.register(validexPlugin, {
   rules: {
     email: { blockDisposable: true },
   },

@@ -129,6 +129,7 @@
   },
   "dependencies": {
     "disposable-email-domains": "^1.0.62",
+    "fastify-plugin": "^5.1.0",
     "libphonenumber-js": "^1.12.41",
     "postal-codes-js": "^2.5.2"
   },

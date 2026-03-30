@@ -169,6 +169,8 @@ import { getParams } from 'validex'
 const params = getParams(zodIssue)
 ```
 
+For the complete translation guide with all 88 error codes and a ready-to-copy template, see [Translation Guide](./docs/I18N.md).
+
 ## Framework Adapters
 
 ### Nuxt
@@ -208,8 +210,7 @@ import { validexPlugin } from 'validex/fastify'
 
 const app = Fastify()
 
-// Call directly — not via app.register()
-await validexPlugin(app, {
+await app.register(validexPlugin, {
   rules: {
     email: { blockDisposable: true },
     password: { length: { min: 10 } },
