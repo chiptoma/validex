@@ -136,7 +136,7 @@ function applyMaxRefine(
  * @param options - Per-call password validation options.
  * @returns A Zod schema that validates password strings.
  */
-export const password = /* @__PURE__ */ createRule<PasswordOptions>({
+export const Password = /* @__PURE__ */ createRule<PasswordOptions>({
   name: 'password',
   defaults: {},
   messages: {

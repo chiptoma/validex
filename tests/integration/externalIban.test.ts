@@ -10,7 +10,7 @@
 
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
-import { iban } from '../../src/rules/iban'
+import { Iban } from '../../src/rules/iban'
 
 // ----------------------------------------------------------
 // HELPERS
@@ -87,7 +87,7 @@ const VALID_IBANS: ReadonlyArray<readonly [string, string]> = [
 // ----------------------------------------------------------
 
 describe('external IBAN corpus — valid IBANs', () => {
-  const schema = iban()
+  const schema = Iban()
 
   it.each(VALID_IBANS)(
     'accepts valid IBAN: %s (%s)',
@@ -103,7 +103,7 @@ describe('external IBAN corpus — valid IBANs', () => {
 // ----------------------------------------------------------
 
 describe('external IBAN corpus — space normalization', () => {
-  const schema = iban()
+  const schema = Iban()
 
   const spacedIbans: ReadonlyArray<readonly [string, string, string]> = [
     ['GB82 WEST 1234 5698 7654 32', 'GB82WEST12345698765432', 'UK with spaces'],
@@ -129,7 +129,7 @@ describe('external IBAN corpus — space normalization', () => {
 // ----------------------------------------------------------
 
 describe('external IBAN corpus — lowercase normalization', () => {
-  const schema = iban()
+  const schema = Iban()
 
   const lowercaseIbans: ReadonlyArray<readonly [string, string, string]> = [
     ['gb82west12345698765432', 'GB82WEST12345698765432', 'UK lowercase'],
@@ -154,7 +154,7 @@ describe('external IBAN corpus — lowercase normalization', () => {
 // ----------------------------------------------------------
 
 describe('external IBAN corpus — corrupted checksum', () => {
-  const schema = iban()
+  const schema = Iban()
 
   it.each(VALID_IBANS)(
     'rejects corrupted IBAN derived from: %s (%s)',
@@ -171,7 +171,7 @@ describe('external IBAN corpus — corrupted checksum', () => {
 // ----------------------------------------------------------
 
 describe('external IBAN corpus — wrong length for country', () => {
-  const schema = iban()
+  const schema = Iban()
 
   const wrongLengthCases: ReadonlyArray<readonly [string, string]> = [
     ['GB82WEST1234569876543', 'UK too short (removed last char)'],
@@ -198,7 +198,7 @@ describe('external IBAN corpus — wrong length for country', () => {
 // ----------------------------------------------------------
 
 describe('external IBAN corpus — unknown country code', () => {
-  const schema = iban()
+  const schema = Iban()
 
   const unknownCountryCases: ReadonlyArray<readonly [string, string]> = [
     ['XX82WEST12345698765432', 'XX is not a valid country code'],
@@ -221,7 +221,7 @@ describe('external IBAN corpus — unknown country code', () => {
 // ----------------------------------------------------------
 
 describe('external IBAN corpus — structural rejections', () => {
-  const schema = iban()
+  const schema = Iban()
 
   const structuralCases: ReadonlyArray<readonly [string, string]> = [
     ['', 'empty string'],

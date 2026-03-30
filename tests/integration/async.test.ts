@@ -10,8 +10,8 @@ import { preloadData } from '../../src/config'
 import { validate } from '../../src/core/validate'
 import { clearCommonPasswordsCache } from '../../src/data/commonPasswords'
 import { resetReservedUsernamesCache } from '../../src/data/reservedUsernames'
-import { email } from '../../src/rules/email'
-import { password } from '../../src/rules/password'
+import { Email } from '../../src/rules/email'
+import { Password } from '../../src/rules/password'
 import { Username } from '../../src/rules/username'
 
 // ----------------------------------------------------------
@@ -36,7 +36,7 @@ describe('full async flow', () => {
   })
 
   it('blocks common password "password" via parseAsync', async () => {
-    const schema = password({
+    const schema = Password({
       blockCommon: true,
       length: { min: 1 },
       uppercase: undefined,
@@ -51,7 +51,7 @@ describe('full async flow', () => {
   })
 
   it('allows a non-common password via parseAsync', async () => {
-    const schema = password({
+    const schema = Password({
       blockCommon: true,
       length: { min: 1 },
       uppercase: undefined,
@@ -80,21 +80,21 @@ describe('full async flow', () => {
   })
 
   it('blocks disposable email domains via parseAsync', async () => {
-    const schema = email({ blockDisposable: true })
+    const schema = Email({ blockDisposable: true })
 
     const result = await parseAsync(schema, 'test@mailinator.com')
     expect(result.success).toBe(false)
   })
 
   it('allows a legitimate email domain via parseAsync', async () => {
-    const schema = email({ blockDisposable: true })
+    const schema = Email({ blockDisposable: true })
 
     const result = await parseAsync(schema, 'user@gmail.com')
     expect(result.success).toBe(true)
   })
 
   it('validates all three async rules in one schema via validate()', async () => {
-    const passwordSchema = password({
+    const passwordSchema = Password({
       blockCommon: true,
       length: { min: 1 },
       uppercase: undefined,
@@ -105,7 +105,7 @@ describe('full async flow', () => {
     })
 
     const usernameSchema = Username({ blockReserved: true })
-    const emailSchema = email({ blockDisposable: true })
+    const emailSchema = Email({ blockDisposable: true })
 
     const pwResult = await validate(passwordSchema as z.ZodType, 'password')
     expect(pwResult.success).toBe(false)

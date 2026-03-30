@@ -8,7 +8,7 @@
 
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
-import { creditCard } from '../../src/rules/creditCard'
+import { CreditCard } from '../../src/rules/creditCard'
 
 // ----------------------------------------------------------
 // TYPES
@@ -114,7 +114,7 @@ const TEST_CARDS: ReadonlyArray<TestCard> = [
 // ----------------------------------------------------------
 
 describe('external credit card corpus - raw numbers', () => {
-  const schema = creditCard()
+  const schema = CreditCard()
 
   it.each(
     TEST_CARDS.map(c => [c.number, c.label] as const),
@@ -129,7 +129,7 @@ describe('external credit card corpus - raw numbers', () => {
 // ----------------------------------------------------------
 
 describe('external credit card corpus - space-formatted input', () => {
-  const schema = creditCard()
+  const schema = CreditCard()
 
   it.each(
     TEST_CARDS.map(c => [formatWithSpaces(c.number), c.label] as const),
@@ -144,7 +144,7 @@ describe('external credit card corpus - space-formatted input', () => {
 // ----------------------------------------------------------
 
 describe('external credit card corpus - hyphen-formatted input', () => {
-  const schema = creditCard()
+  const schema = CreditCard()
 
   it.each(
     TEST_CARDS.map(c => [formatWithHyphens(c.number), c.label] as const),
@@ -159,7 +159,7 @@ describe('external credit card corpus - hyphen-formatted input', () => {
 // ----------------------------------------------------------
 
 describe('external credit card corpus - broken Luhn checksum', () => {
-  const schema = creditCard()
+  const schema = CreditCard()
 
   it.each(
     TEST_CARDS.map(c => [breakLuhn(c.number), c.label] as const),
@@ -180,8 +180,8 @@ describe('external credit card corpus - issuer detection', () => {
     'card %s is detected as %s (%s)',
     async (number: string, issuer: string, _label: string) => {
       // Create a schema that only allows this specific issuer
-      const allowSchema = creditCard({
-        allowIssuers: [issuer as Parameters<typeof creditCard>[0] extends
+      const allowSchema = CreditCard({
+        allowIssuers: [issuer as Parameters<typeof CreditCard>[0] extends
         { allowIssuers?: infer T } ? (T extends ReadonlyArray<infer U> ? U : never) : never],
       })
 
@@ -197,7 +197,7 @@ describe('external credit card corpus - issuer detection', () => {
     async (number: string, issuer: string, _label: string) => {
       // Pick an issuer that differs from the card's actual issuer
       const otherIssuer = issuer === 'visa' ? 'mastercard' : 'visa'
-      const blockSchema = creditCard({
+      const blockSchema = CreditCard({
         allowIssuers: [otherIssuer],
       })
 

@@ -18,38 +18,38 @@ pnpm add validex zod
 ### Single rule
 
 ```ts
-import { email } from 'validex'
+import { Email } from 'validex'
 
-const Email = email()
-Email.parse('hello@example.com') // OK
-Email.parse('not-an-email')      // throws ZodError
+const EmailSchema = Email()
+EmailSchema.parse('hello@example.com') // OK
+EmailSchema.parse('not-an-email')      // throws ZodError
 ```
 
 ### Rule with options
 
 ```ts
-import { password } from 'validex'
+import { Password } from 'validex'
 
-const Password = password({
+const PasswordSchema = Password({
   minLength: 10,
   requireUppercase: true,
   requireNumber: true,
   requireSpecial: true,
 })
 
-Password.parse('Str0ng!Pass') // OK
+PasswordSchema.parse('Str0ng!Pass') // OK
 ```
 
 ### Composed schema with `validate()`
 
 ```ts
 import { z } from 'zod'
-import { email, password } from 'validex'
+import { Email, Password } from 'validex'
 import { validate } from 'validex/utilities'
 
 const LoginSchema = z.object({
-  email: email(),
-  password: password({ minLength: 8 }),
+  email: Email(),
+  password: Password({ minLength: 8 }),
 })
 
 const result = validate(LoginSchema, {
@@ -69,8 +69,8 @@ if (result.success) {
 Import only what you use. Email validation alone is **1.9 kB** (Brotli).
 
 ```ts
-// Only email lands in your bundle — nothing else
-import { email } from 'validex'
+// Only Email lands in your bundle — nothing else
+import { Email } from 'validex'
 ```
 
 Bundlers (Vite, Rollup, esbuild, webpack 5) eliminate unused rules at build time. Every rule factory is annotated with `/*#__PURE__*/` so dead-code elimination works out of the box.
@@ -87,38 +87,38 @@ Bundlers (Vite, Rollup, esbuild, webpack 5) eliminate unused rules at build time
 
 | Rule | Import | Description |
 | --- | --- | --- |
-| Email | `email` | Email address with optional MX-like and disposable checks |
-| Password | `password` | Strength rules: length, casing, digits, specials, common-password ban |
-| PasswordConfirmation | `passwordConfirmation` | Confirms two password fields match |
+| Email | `Email` | Email address with optional MX-like and disposable checks |
+| Password | `Password` | Strength rules: length, casing, digits, specials, common-password ban |
+| PasswordConfirmation | `PasswordConfirmation` | Confirms two password fields match |
 | PersonName | `PersonName` | Human name with unicode support and length limits |
 | BusinessName | `BusinessName` | Company/organization name validation |
-| Phone | `phone` | International phone via libphonenumber-js |
-| Website | `website` | URL restricted to http/https with optional www |
-| URL | `url` | General URL with protocol and format validation |
+| Phone | `Phone` | International phone via libphonenumber-js |
+| Website | `Website` | URL restricted to http/https with optional www |
+| URL | `Url` | General URL with protocol and format validation |
 | Username | `Username` | Alphanumeric with configurable separators and reserved-word ban |
 | Slug | `Slug` | URL-safe slug (lowercase, hyphens, length limits) |
-| PostalCode | `postalCode` | Country-aware postal/ZIP code |
+| PostalCode | `PostalCode` | Country-aware postal/ZIP code |
 | LicenseKey | `LicenseKey` | Software license key format (groups, separators, charset) |
-| UUID | `uuid` | UUID v1-v7 validation |
-| JWT | `jwt` | JSON Web Token structure and optional claim checks |
-| DateTime | `dateTime` | Date/time string with format and range constraints |
+| UUID | `Uuid` | UUID v1-v7 validation |
+| JWT | `Jwt` | JSON Web Token structure and optional claim checks |
+| DateTime | `DateTime` | Date/time string with format and range constraints |
 | Token | `Token` | Generic token validation (hex, base64, nanoid, etc.) |
-| Text | `text` | Free text with length, word count, and pattern rules |
+| Text | `Text` | Free text with length, word count, and pattern rules |
 | Country | `Country` | ISO 3166 country code (alpha-2, alpha-3, numeric) |
 | Currency | `Currency` | ISO 4217 currency code |
 | Color | `Color` | Hex, RGB, HSL, and named CSS color formats |
-| CreditCard | `creditCard` | Card number with Luhn check and issuer detection |
-| IBAN | `iban` | International Bank Account Number with country patterns |
-| VatNumber | `vatNumber` | EU VAT identification number |
-| MacAddress | `macAddress` | MAC address (colon, hyphen, and dot notations) |
-| IpAddress | `ipAddress` | IPv4 and IPv6 with optional CIDR notation |
+| CreditCard | `CreditCard` | Card number with Luhn check and issuer detection |
+| IBAN | `Iban` | International Bank Account Number with country patterns |
+| VatNumber | `VatNumber` | EU VAT identification number |
+| MacAddress | `MacAddress` | MAC address (colon, hyphen, and dot notations) |
+| IpAddress | `IpAddress` | IPv4 and IPv6 with optional CIDR notation |
 
 ## Configuration
 
 Use `setup()` to apply defaults globally or per-rule:
 
 ```ts
-import { setup, email, password } from 'validex'
+import { setup, Email, Password } from 'validex'
 
 setup({
   rules: {
@@ -131,8 +131,8 @@ setup({
 })
 
 // Rules now use your defaults — no need to pass options every time
-const Email = email()
-const Password = password()
+const EmailSchema = Email()
+const PasswordSchema = Password()
 ```
 
 Options merge in three tiers: **global defaults** < **setup() config** < **per-call options**.
@@ -170,12 +170,12 @@ export default defineNuxtPlugin(() => {
 ```vue
 <script setup lang="ts">
 import { useValidation } from 'validex/nuxt'
-import { email, password } from 'validex'
+import { Email, Password } from 'validex'
 import { z } from 'zod'
 
 const schema = z.object({
-  email: email(),
-  password: password(),
+  email: Email(),
+  password: Password(),
 })
 
 const { errors, validate, isValid } = useValidation(schema)
@@ -187,7 +187,7 @@ const { errors, validate, isValid } = useValidation(schema)
 ```ts
 import Fastify from 'fastify'
 import { validexPlugin } from 'validex/fastify'
-import { email, password } from 'validex'
+import { Email, Password } from 'validex'
 import { z } from 'zod'
 
 const app = Fastify()
@@ -197,8 +197,8 @@ await app.register(validexPlugin)
 app.post('/login', {
   schema: {
     body: z.object({
-      email: email(),
-      password: password(),
+      email: Email(),
+      password: Password(),
     }),
   },
 }, async (request) => {
@@ -233,9 +233,9 @@ HexColor.parse('#ff00aacc') // OK
 ### Custom function
 
 ```ts
-import { email } from 'validex'
+import { Email } from 'validex'
 
-const WorkEmail = email({
+const WorkEmail = Email({
   customFn: (value) => {
     if (value.endsWith('@gmail.com')) return 'Use your work email'
     return true
@@ -246,9 +246,9 @@ const WorkEmail = email({
 ### Custom regex
 
 ```ts
-import { text } from 'validex'
+import { Text } from 'validex'
 
-const NoHtml = text({
+const NoHtml = Text({
   regex: { pattern: /^[^<>]+$/, message: 'HTML tags not allowed' },
 })
 ```
@@ -259,8 +259,8 @@ Measured with [size-limit](https://github.com/ai/size-limit), Brotli compression
 
 | Import | Size (Brotli) |
 | --- | --- |
-| `email` only | 1.9 kB |
-| `email` + `password` | 3.5 kB |
+| `Email` only | 1.9 kB |
+| `Email` + `Password` | 3.5 kB |
 | Full library (all 25 rules) | 13 kB |
 
 Data files (common passwords, country codes, IBAN patterns) are loaded on demand and not included in the base bundle.

@@ -6,7 +6,7 @@
 
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
-import { postalCode } from '../../src/rules/postalCode'
+import { PostalCode } from '../../src/rules/postalCode'
 
 // ----------------------------------------------------------
 // HELPERS
@@ -46,7 +46,7 @@ describe('postalCode (valid)', () => {
     { country: 'ES', value: '28001' },
     { country: 'NL', value: '1012 AB' },
   ])('accepts $country: $value', async ({ country, value }) => {
-    const schema = postalCode({ country })
+    const schema = PostalCode({ country })
     const result = await parseAsync(schema, value)
     expect(result.success).toBe(true)
   })
@@ -65,19 +65,19 @@ describe('postalCode (invalid)', () => {
     { country: 'DE', value: 'ABCDE', desc: 'letters for Germany' },
     { country: 'FR', value: 'ABCDE', desc: 'letters for France' },
   ])('rejects $desc: $value', async ({ country, value }) => {
-    const schema = postalCode({ country })
+    const schema = PostalCode({ country })
     const result = await parseAsync(schema, value)
     expect(result.success).toBe(false)
   })
 
   it('rejects empty string', async () => {
-    const schema = postalCode({ country: 'US' })
+    const schema = PostalCode({ country: 'US' })
     const result = await parseAsync(schema, '')
     expect(result.success).toBe(false)
   })
 
   it('rejects random strings', async () => {
-    const schema = postalCode({ country: 'US' })
+    const schema = PostalCode({ country: 'US' })
     const result = await parseAsync(schema, 'not-a-postal-code')
     expect(result.success).toBe(false)
   })
@@ -89,8 +89,8 @@ describe('postalCode (invalid)', () => {
 
 describe('postalCode (country switching)', () => {
   it('validates same code differently per country', async () => {
-    const usSchema = postalCode({ country: 'US' })
-    const deSchema = postalCode({ country: 'DE' })
+    const usSchema = PostalCode({ country: 'US' })
+    const deSchema = PostalCode({ country: 'DE' })
 
     const usResult = await parseAsync(usSchema, '10115')
     const deResult = await parseAsync(deSchema, '10115')
@@ -101,7 +101,7 @@ describe('postalCode (country switching)', () => {
   })
 
   it('uK code invalid for US', async () => {
-    const schema = postalCode({ country: 'US' })
+    const schema = PostalCode({ country: 'US' })
     const result = await parseAsync(schema, 'SW1A 1AA')
     expect(result.success).toBe(false)
   })
@@ -113,7 +113,7 @@ describe('postalCode (country switching)', () => {
 
 describe('postalCode (regex override)', () => {
   it('uses custom regex when provided', async () => {
-    const schema = postalCode({
+    const schema = PostalCode({
       country: 'XX',
       regex: /^\d{4}$/,
     })
@@ -125,7 +125,7 @@ describe('postalCode (regex override)', () => {
   })
 
   it('custom regex overrides country validation', async () => {
-    const schema = postalCode({
+    const schema = PostalCode({
       country: 'US',
       regex: /^[A-Z]{3}$/,
     })
@@ -140,13 +140,13 @@ describe('postalCode (regex override)', () => {
 
 describe('postalCode (normalization)', () => {
   it('uppercases lowercase input', async () => {
-    const schema = postalCode({ country: 'GB' })
+    const schema = PostalCode({ country: 'GB' })
     const result = await parseAsync(schema, 'sw1a 1aa')
     expect(result.success).toBe(true)
   })
 
   it('trims whitespace', async () => {
-    const schema = postalCode({ country: 'US' })
+    const schema = PostalCode({ country: 'US' })
     const result = await parseAsync(schema, '  12345  ')
     expect(result.success).toBe(true)
   })
@@ -157,7 +157,7 @@ describe('postalCode (normalization)', () => {
 // ----------------------------------------------------------
 
 describe('postalCode (security)', () => {
-  const schema = postalCode({ country: 'US' })
+  const schema = PostalCode({ country: 'US' })
 
   it.each([
     '12345<script>alert(1)</script>',

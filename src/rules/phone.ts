@@ -32,6 +32,10 @@ export interface PhoneOptions extends BaseRuleOptions {
   readonly requireCountryCode?: boolean | undefined
   /** Output format for the normalized phone number. */
   readonly format?: 'e164' | 'international' | 'national' | undefined
+  /** Which metadata bundle libphonenumber-js should use. */
+  readonly metadata?: 'min' | 'mobile' | 'max' | 'custom' | undefined
+  /** Path to a custom metadata JSON file (used when metadata is 'custom'). */
+  readonly customMetadataPath?: string | undefined
 }
 
 // ----------------------------------------------------------
@@ -143,7 +147,7 @@ function validatePhoneConstraints(
  * @param options - Per-call phone validation options.
  * @returns A Zod schema that validates phone number strings.
  */
-export const phone = /* @__PURE__ */ createRule<PhoneOptions>({
+export const Phone = /* @__PURE__ */ createRule<PhoneOptions>({
   name: 'phone',
   defaults: {},
   messages: {

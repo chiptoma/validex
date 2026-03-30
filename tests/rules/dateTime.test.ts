@@ -5,21 +5,21 @@
 
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
-import { dateTime } from '../../src/rules/dateTime'
+import { DateTime } from '../../src/rules/dateTime'
 import { testRuleContract } from '../helpers/testRule'
 
 // ----------------------------------------------------------
 // CONTRACT TESTS
 // ----------------------------------------------------------
 
-testRuleContract('dateTime', dateTime as (opts?: Record<string, unknown>) => unknown, 'dateTime')
+testRuleContract('dateTime', DateTime as (opts?: Record<string, unknown>) => unknown, 'dateTime')
 
 // ----------------------------------------------------------
 // VALID ISO DATETIMES
 // ----------------------------------------------------------
 
 describe('dateTime (valid ISO)', () => {
-  const schema = dateTime() as z.ZodType
+  const schema = DateTime() as z.ZodType
 
   const validValues: ReadonlyArray<string> = [
     '2025-03-29T14:30:00Z',
@@ -42,7 +42,7 @@ describe('dateTime (valid ISO)', () => {
 // ----------------------------------------------------------
 
 describe('dateTime (invalid ISO)', () => {
-  const schema = dateTime() as z.ZodType
+  const schema = DateTime() as z.ZodType
 
   const invalidValues: ReadonlyArray<string> = [
     'not-a-date',
@@ -67,7 +67,7 @@ describe('dateTime (invalid ISO)', () => {
 // ----------------------------------------------------------
 
 describe('dateTime (date format)', () => {
-  const schema = dateTime({ format: 'date' }) as z.ZodType
+  const schema = DateTime({ format: 'date' }) as z.ZodType
 
   it('accepts valid date', () => {
     expect(schema.safeParse('2025-03-29').success).toBe(true)
@@ -96,7 +96,7 @@ describe('dateTime (date format)', () => {
 // ----------------------------------------------------------
 
 describe('dateTime (time format)', () => {
-  const schema = dateTime({ format: 'time' }) as z.ZodType
+  const schema = DateTime({ format: 'time' }) as z.ZodType
 
   it('accepts valid time', () => {
     expect(schema.safeParse('14:30:00').success).toBe(true)
@@ -121,17 +121,17 @@ describe('dateTime (time format)', () => {
 
 describe('dateTime (precision)', () => {
   it('accepts datetime with matching precision', () => {
-    const schema = dateTime({ precision: 3 }) as z.ZodType
+    const schema = DateTime({ precision: 3 }) as z.ZodType
     expect(schema.safeParse('2025-03-29T14:30:00.123Z').success).toBe(true)
   })
 
   it('rejects datetime with wrong precision', () => {
-    const schema = dateTime({ precision: 3 }) as z.ZodType
+    const schema = DateTime({ precision: 3 }) as z.ZodType
     expect(schema.safeParse('2025-03-29T14:30:00Z').success).toBe(false)
   })
 
   it('accepts time with matching precision', () => {
-    const schema = dateTime({ format: 'time', precision: 3 }) as z.ZodType
+    const schema = DateTime({ format: 'time', precision: 3 }) as z.ZodType
     expect(schema.safeParse('14:30:00.123').success).toBe(true)
   })
 })
@@ -142,22 +142,22 @@ describe('dateTime (precision)', () => {
 
 describe('dateTime (offset and local)', () => {
   it('accepts offset datetime by default', () => {
-    const schema = dateTime() as z.ZodType
+    const schema = DateTime() as z.ZodType
     expect(schema.safeParse('2025-03-29T14:30:00+02:00').success).toBe(true)
   })
 
   it('rejects local datetime by default', () => {
-    const schema = dateTime() as z.ZodType
+    const schema = DateTime() as z.ZodType
     expect(schema.safeParse('2025-03-29T14:30:00').success).toBe(false)
   })
 
   it('accepts local datetime when allowLocal is true', () => {
-    const schema = dateTime({ allowLocal: true }) as z.ZodType
+    const schema = DateTime({ allowLocal: true }) as z.ZodType
     expect(schema.safeParse('2025-03-29T14:30:00').success).toBe(true)
   })
 
   it('rejects offset when allowOffset is false', () => {
-    const schema = dateTime({ allowOffset: false }) as z.ZodType
+    const schema = DateTime({ allowOffset: false }) as z.ZodType
     expect(schema.safeParse('2025-03-29T14:30:00+02:00').success).toBe(false)
   })
 })
@@ -168,23 +168,23 @@ describe('dateTime (offset and local)', () => {
 
 describe('dateTime (future/past)', () => {
   it('rejects future date when allowFuture is false', () => {
-    const schema = dateTime({ allowFuture: false }) as z.ZodType
+    const schema = DateTime({ allowFuture: false }) as z.ZodType
     const futureDate = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
     expect(schema.safeParse(futureDate).success).toBe(false)
   })
 
   it('accepts past date when allowFuture is false', () => {
-    const schema = dateTime({ allowFuture: false }) as z.ZodType
+    const schema = DateTime({ allowFuture: false }) as z.ZodType
     expect(schema.safeParse('2020-01-01T00:00:00Z').success).toBe(true)
   })
 
   it('rejects past date when allowPast is false', () => {
-    const schema = dateTime({ allowPast: false }) as z.ZodType
+    const schema = DateTime({ allowPast: false }) as z.ZodType
     expect(schema.safeParse('2020-01-01T00:00:00Z').success).toBe(false)
   })
 
   it('accepts future date when allowPast is false', () => {
-    const schema = dateTime({ allowPast: false }) as z.ZodType
+    const schema = DateTime({ allowPast: false }) as z.ZodType
     const futureDate = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
     expect(schema.safeParse(futureDate).success).toBe(true)
   })
@@ -196,27 +196,27 @@ describe('dateTime (future/past)', () => {
 
 describe('dateTime (min/max)', () => {
   it('accepts date at minimum boundary', () => {
-    const schema = dateTime({ min: '2025-01-01T00:00:00Z' }) as z.ZodType
+    const schema = DateTime({ min: '2025-01-01T00:00:00Z' }) as z.ZodType
     expect(schema.safeParse('2025-01-01T00:00:00Z').success).toBe(true)
   })
 
   it('rejects date before minimum', () => {
-    const schema = dateTime({ min: '2025-01-01T00:00:00Z' }) as z.ZodType
+    const schema = DateTime({ min: '2025-01-01T00:00:00Z' }) as z.ZodType
     expect(schema.safeParse('2024-12-31T23:59:59Z').success).toBe(false)
   })
 
   it('accepts date at maximum boundary', () => {
-    const schema = dateTime({ max: '2025-12-31T23:59:59Z' }) as z.ZodType
+    const schema = DateTime({ max: '2025-12-31T23:59:59Z' }) as z.ZodType
     expect(schema.safeParse('2025-12-31T23:59:59Z').success).toBe(true)
   })
 
   it('rejects date after maximum', () => {
-    const schema = dateTime({ max: '2025-12-31T23:59:59Z' }) as z.ZodType
+    const schema = DateTime({ max: '2025-12-31T23:59:59Z' }) as z.ZodType
     expect(schema.safeParse('2026-01-01T00:00:00Z').success).toBe(false)
   })
 
   it('accepts date within min/max range', () => {
-    const schema = dateTime({
+    const schema = DateTime({
       min: '2025-01-01T00:00:00Z',
       max: '2025-12-31T23:59:59Z',
     }) as z.ZodType
@@ -224,7 +224,7 @@ describe('dateTime (min/max)', () => {
   })
 
   it('accepts Date objects as min/max', () => {
-    const schema = dateTime({
+    const schema = DateTime({
       min: new Date('2025-01-01T00:00:00Z'),
       max: new Date('2025-12-31T23:59:59Z'),
     }) as z.ZodType
@@ -238,7 +238,7 @@ describe('dateTime (min/max)', () => {
 
 describe('dateTime (normalization)', () => {
   it('trims whitespace', () => {
-    const schema = dateTime() as z.ZodType
+    const schema = DateTime() as z.ZodType
     const result = schema.safeParse('  2025-03-29T14:30:00Z  ')
     expect(result.success).toBe(true)
     if (result.success) {
@@ -252,7 +252,7 @@ describe('dateTime (normalization)', () => {
 // ----------------------------------------------------------
 
 describe('dateTime (security)', () => {
-  const schema = dateTime() as z.ZodType
+  const schema = DateTime() as z.ZodType
 
   const payloads: ReadonlyArray<string> = [
     '<script>alert("xss")</script>',

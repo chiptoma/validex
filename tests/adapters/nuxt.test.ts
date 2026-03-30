@@ -15,7 +15,7 @@ import {
   useValidation,
 } from '../../src/adapters/nuxt'
 import { getConfig, resetConfig } from '../../src/config'
-import { email } from '../../src/rules/email'
+import { Email } from '../../src/rules/email'
 import { PersonName } from '../../src/rules/personName'
 
 // ----------------------------------------------------------
@@ -222,7 +222,7 @@ describe('nuxt adapter — useValidation with validex rules', () => {
   it('validates with validex email and PersonName rules — valid', async () => {
     const schema = z.object({
       name: PersonName() as z.ZodType,
-      email: email() as z.ZodType,
+      email: Email() as z.ZodType,
     })
     const v = useValidation(schema)
     const result = await v.validate({
@@ -237,7 +237,7 @@ describe('nuxt adapter — useValidation with validex rules', () => {
   it('validates with validex email and PersonName rules — invalid', async () => {
     const schema = z.object({
       name: PersonName() as z.ZodType,
-      email: email() as z.ZodType,
+      email: Email() as z.ZodType,
     })
     const v = useValidation(schema)
     const result = await v.validate({ name: '', email: '' })
@@ -248,7 +248,7 @@ describe('nuxt adapter — useValidation with validex rules', () => {
 
   it('firstErrors has one message per field', async () => {
     const schema = z.object({
-      email: email() as z.ZodType,
+      email: Email() as z.ZodType,
     })
     const v = useValidation(schema)
     await v.validate({ email: '' })
@@ -269,7 +269,7 @@ describe('nuxt adapter — useValidation reactive wrapper pattern', () => {
   afterEach(() => resetConfig())
 
   it('getters reflect state changes after validation — invalid', async () => {
-    const schema = z.object({ email: email() as z.ZodType })
+    const schema = z.object({ email: Email() as z.ZodType })
     const v = useValidation(schema)
 
     // Simulate wrapping: snapshot state via getters (as a Vue ref would)
@@ -287,7 +287,7 @@ describe('nuxt adapter — useValidation reactive wrapper pattern', () => {
   })
 
   it('getters reflect valid transition', async () => {
-    const schema = z.object({ email: email() as z.ZodType })
+    const schema = z.object({ email: Email() as z.ZodType })
     const v = useValidation(schema)
 
     await v.validate({ email: '' })
@@ -323,7 +323,7 @@ describe('nuxt adapter — useValidation reactive wrapper pattern', () => {
   })
 
   it('getters always return fresh state (no stale closures)', async () => {
-    const schema = z.object({ email: email() as z.ZodType })
+    const schema = z.object({ email: Email() as z.ZodType })
     const v = useValidation(schema)
 
     // Capture getter references once (as a component setup would)

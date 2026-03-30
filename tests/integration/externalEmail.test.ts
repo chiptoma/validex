@@ -9,7 +9,7 @@
 
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
-import { email } from '../../src/rules/email'
+import { Email } from '../../src/rules/email'
 
 // ----------------------------------------------------------
 // HELPERS
@@ -35,7 +35,7 @@ function parse(
 // ----------------------------------------------------------
 
 describe('external email corpus - valid addresses', () => {
-  const schema = email()
+  const schema = Email()
 
   const validCases: ReadonlyArray<readonly [string, string]> = [
     // Standard format - local@domain.tld
@@ -78,7 +78,7 @@ describe('external email corpus - valid addresses', () => {
 // ----------------------------------------------------------
 
 describe('external email corpus - invalid addresses', () => {
-  const schema = email()
+  const schema = Email()
 
   const invalidCases: ReadonlyArray<readonly [string, string]> = [
     // No @ sign at all
@@ -130,7 +130,7 @@ describe('external email corpus - invalid addresses', () => {
 // ----------------------------------------------------------
 
 describe('external email corpus - conscious deviations', () => {
-  const schema = email()
+  const schema = Email()
 
   // Bare numeric domains like 123.123.123.123 (without brackets) are
   // rejected by Zod's z.string().email(). While the cjaoude corpus lists
@@ -189,7 +189,7 @@ describe('external email corpus - conscious deviations', () => {
 // ----------------------------------------------------------
 
 describe('external email corpus - normalization', () => {
-  const schema = email()
+  const schema = Email()
 
   it('lowercases and trims by default', () => {
     const result = parse(schema, '  User@Example.COM  ')
@@ -198,7 +198,7 @@ describe('external email corpus - normalization', () => {
   })
 
   it('preserves original case when normalize is false', () => {
-    const rawSchema = email({ normalize: false })
+    const rawSchema = Email({ normalize: false })
     const result = parse(rawSchema, 'User@Example.COM')
     expect(result.success).toBe(true)
     expect(result.data).toBe('User@Example.COM')

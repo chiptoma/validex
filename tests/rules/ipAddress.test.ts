@@ -5,21 +5,21 @@
 
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
-import { ipAddress } from '../../src/rules/ipAddress'
+import { IpAddress } from '../../src/rules/ipAddress'
 import { testRuleContract } from '../helpers/testRule'
 
 // ----------------------------------------------------------
 // CONTRACT TESTS
 // ----------------------------------------------------------
 
-testRuleContract('ipAddress', ipAddress as (opts?: Record<string, unknown>) => unknown, 'ipAddress')
+testRuleContract('ipAddress', IpAddress as (opts?: Record<string, unknown>) => unknown, 'ipAddress')
 
 // ----------------------------------------------------------
 // VALID IPV4
 // ----------------------------------------------------------
 
 describe('ipAddress (valid IPv4)', () => {
-  const schema = ipAddress() as z.ZodType
+  const schema = IpAddress() as z.ZodType
 
   const validIps: ReadonlyArray<string> = [
     '192.168.1.1',
@@ -42,7 +42,7 @@ describe('ipAddress (valid IPv4)', () => {
 // ----------------------------------------------------------
 
 describe('ipAddress (valid IPv6)', () => {
-  const schema = ipAddress() as z.ZodType
+  const schema = IpAddress() as z.ZodType
 
   const validIps: ReadonlyArray<string> = [
     '::1',
@@ -63,7 +63,7 @@ describe('ipAddress (valid IPv6)', () => {
 // ----------------------------------------------------------
 
 describe('ipAddress (invalid)', () => {
-  const schema = ipAddress() as z.ZodType
+  const schema = IpAddress() as z.ZodType
 
   const invalidIps: ReadonlyArray<string> = [
     '999.999.999.999',
@@ -87,27 +87,27 @@ describe('ipAddress (invalid)', () => {
 
 describe('ipAddress (version filtering)', () => {
   it('v4 accepts IPv4', () => {
-    const schema = ipAddress({ version: 'v4' }) as z.ZodType
+    const schema = IpAddress({ version: 'v4' }) as z.ZodType
     expect(schema.safeParse('192.168.1.1').success).toBe(true)
   })
 
   it('v4 rejects IPv6', () => {
-    const schema = ipAddress({ version: 'v4' }) as z.ZodType
+    const schema = IpAddress({ version: 'v4' }) as z.ZodType
     expect(schema.safeParse('::1').success).toBe(false)
   })
 
   it('v6 accepts IPv6', () => {
-    const schema = ipAddress({ version: 'v6' }) as z.ZodType
+    const schema = IpAddress({ version: 'v6' }) as z.ZodType
     expect(schema.safeParse('::1').success).toBe(true)
   })
 
   it('v6 rejects IPv4', () => {
-    const schema = ipAddress({ version: 'v6' }) as z.ZodType
+    const schema = IpAddress({ version: 'v6' }) as z.ZodType
     expect(schema.safeParse('192.168.1.1').success).toBe(false)
   })
 
   it('any accepts both IPv4 and IPv6', () => {
-    const schema = ipAddress({ version: 'any' }) as z.ZodType
+    const schema = IpAddress({ version: 'any' }) as z.ZodType
     expect(schema.safeParse('192.168.1.1').success).toBe(true)
     expect(schema.safeParse('::1').success).toBe(true)
   })
@@ -119,22 +119,22 @@ describe('ipAddress (version filtering)', () => {
 
 describe('ipAddress (CIDR)', () => {
   it('rejects CIDR when allowCidr is false (default)', () => {
-    const schema = ipAddress() as z.ZodType
+    const schema = IpAddress() as z.ZodType
     expect(schema.safeParse('192.168.0.0/24').success).toBe(false)
   })
 
   it('accepts IPv4 CIDR when allowCidr is true', () => {
-    const schema = ipAddress({ allowCidr: true }) as z.ZodType
+    const schema = IpAddress({ allowCidr: true }) as z.ZodType
     expect(schema.safeParse('192.168.0.0/24').success).toBe(true)
   })
 
   it('accepts IPv6 CIDR when allowCidr is true', () => {
-    const schema = ipAddress({ allowCidr: true }) as z.ZodType
+    const schema = IpAddress({ allowCidr: true }) as z.ZodType
     expect(schema.safeParse('2001:db8::/32').success).toBe(true)
   })
 
   it('rejects plain IP when allowCidr is true (CIDR required)', () => {
-    const schema = ipAddress({ allowCidr: true }) as z.ZodType
+    const schema = IpAddress({ allowCidr: true }) as z.ZodType
     expect(schema.safeParse('192.168.1.1').success).toBe(false)
   })
 })
@@ -145,12 +145,12 @@ describe('ipAddress (CIDR)', () => {
 
 describe('ipAddress (allowPrivate)', () => {
   it('accepts private IPv4 by default', () => {
-    const schema = ipAddress({ version: 'v4' }) as z.ZodType
+    const schema = IpAddress({ version: 'v4' }) as z.ZodType
     expect(schema.safeParse('192.168.1.1').success).toBe(true)
   })
 
   it('rejects private IPv4 when allowPrivate is false', () => {
-    const schema = ipAddress({ version: 'v4', allowPrivate: false }) as z.ZodType
+    const schema = IpAddress({ version: 'v4', allowPrivate: false }) as z.ZodType
     const privateIps: ReadonlyArray<string> = [
       '10.0.0.1',
       '172.16.0.1',
@@ -163,19 +163,19 @@ describe('ipAddress (allowPrivate)', () => {
   })
 
   it('accepts public IPv4 when allowPrivate is false', () => {
-    const schema = ipAddress({ version: 'v4', allowPrivate: false }) as z.ZodType
+    const schema = IpAddress({ version: 'v4', allowPrivate: false }) as z.ZodType
     expect(schema.safeParse('8.8.8.8').success).toBe(true)
     expect(schema.safeParse('1.1.1.1').success).toBe(true)
   })
 
   it('rejects private IPv6 when allowPrivate is false', () => {
-    const schema = ipAddress({ version: 'v6', allowPrivate: false }) as z.ZodType
+    const schema = IpAddress({ version: 'v6', allowPrivate: false }) as z.ZodType
     expect(schema.safeParse('::1').success).toBe(false)
     expect(schema.safeParse('fe80::1').success).toBe(false)
   })
 
   it('accepts public IPv6 when allowPrivate is false', () => {
-    const schema = ipAddress({ version: 'v6', allowPrivate: false }) as z.ZodType
+    const schema = IpAddress({ version: 'v6', allowPrivate: false }) as z.ZodType
     expect(schema.safeParse('2001:db8::1').success).toBe(true)
   })
 })
@@ -186,7 +186,7 @@ describe('ipAddress (allowPrivate)', () => {
 
 describe('ipAddress (normalization)', () => {
   it('trims whitespace', () => {
-    const schema = ipAddress() as z.ZodType
+    const schema = IpAddress() as z.ZodType
     const result = schema.safeParse('  8.8.8.8  ')
     expect(result.success).toBe(true)
     if (result.success) {
@@ -200,7 +200,7 @@ describe('ipAddress (normalization)', () => {
 // ----------------------------------------------------------
 
 describe('ipAddress (security)', () => {
-  const schema = ipAddress() as z.ZodType
+  const schema = IpAddress() as z.ZodType
 
   const payloads: ReadonlyArray<string> = [
     '<script>alert("xss")</script>',

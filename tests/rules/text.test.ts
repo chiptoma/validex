@@ -7,7 +7,7 @@
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
 import { getParams } from '../../src/core/getParams'
-import { text } from '../../src/rules/text'
+import { Text } from '../../src/rules/text'
 import { testRuleContract } from '../helpers/testRule'
 
 // ----------------------------------------------------------
@@ -50,7 +50,7 @@ function getErrorCodes(schema: unknown, value: unknown): ReadonlyArray<string> {
 
 testRuleContract(
   'text',
-  text as (opts?: Record<string, unknown>) => unknown,
+  Text as (opts?: Record<string, unknown>) => unknown,
   'text',
 )
 
@@ -59,7 +59,7 @@ testRuleContract(
 // ----------------------------------------------------------
 
 describe('text (valid)', () => {
-  const schema = text()
+  const schema = Text()
 
   it.each([
     'Hello world',
@@ -84,7 +84,7 @@ describe('text (valid)', () => {
 // ----------------------------------------------------------
 
 describe('text (invalid)', () => {
-  const schema = text()
+  const schema = Text()
 
   it('rejects empty string', () => {
     expect(parse(schema, '').success).toBe(false)
@@ -103,22 +103,22 @@ describe('text (invalid)', () => {
 
 describe('text (length)', () => {
   it('rejects text shorter than min length', () => {
-    const schema = text({ length: { min: 5 } })
+    const schema = Text({ length: { min: 5 } })
     expect(parse(schema, 'Hi').success).toBe(false)
   })
 
   it('accepts text at min length', () => {
-    const schema = text({ length: { min: 5 } })
+    const schema = Text({ length: { min: 5 } })
     expect(parse(schema, 'Hello').success).toBe(true)
   })
 
   it('rejects text longer than max length', () => {
-    const schema = text({ length: { max: 10 } })
+    const schema = Text({ length: { max: 10 } })
     expect(parse(schema, 'This is way too long').success).toBe(false)
   })
 
   it('accepts text at max length', () => {
-    const schema = text({ length: { max: 10 } })
+    const schema = Text({ length: { max: 10 } })
     expect(parse(schema, '1234567890').success).toBe(true)
   })
 })
@@ -128,7 +128,7 @@ describe('text (length)', () => {
 // ----------------------------------------------------------
 
 describe('text (noEmails)', () => {
-  const schema = text({ noEmails: true })
+  const schema = Text({ noEmails: true })
 
   it('rejects text containing email address', () => {
     const result = parse(schema, 'contact test@example.com for info')
@@ -147,7 +147,7 @@ describe('text (noEmails)', () => {
 // ----------------------------------------------------------
 
 describe('text (noUrls)', () => {
-  const schema = text({ noUrls: true })
+  const schema = Text({ noUrls: true })
 
   it('rejects text containing URL', () => {
     const result = parse(schema, 'visit https://example.com today')
@@ -170,7 +170,7 @@ describe('text (noUrls)', () => {
 // ----------------------------------------------------------
 
 describe('text (noHtml)', () => {
-  const schema = text({ noHtml: true })
+  const schema = Text({ noHtml: true })
 
   it('rejects text containing HTML tags', () => {
     const result = parse(schema, 'this is <b>bold</b> text')
@@ -193,7 +193,7 @@ describe('text (noHtml)', () => {
 // ----------------------------------------------------------
 
 describe('text (noPhoneNumbers)', () => {
-  const schema = text({ noPhoneNumbers: true })
+  const schema = Text({ noPhoneNumbers: true })
 
   it('rejects text containing phone number', () => {
     const result = parse(schema, 'call +34 612 345 678 today')
@@ -213,14 +213,14 @@ describe('text (noPhoneNumbers)', () => {
 
 describe('text (words)', () => {
   it('rejects text exceeding max words', () => {
-    const schema = text({ words: { max: 2 } })
+    const schema = Text({ words: { max: 2 } })
     const result = parse(schema, 'one two three')
     expect(result.success).toBe(false)
     expect(getErrorCodes(schema, 'one two three')).toContain('maxWords')
   })
 
   it('accepts text within max words', () => {
-    const schema = text({ words: { max: 3 } })
+    const schema = Text({ words: { max: 3 } })
     expect(parse(schema, 'one two three').success).toBe(true)
   })
 })
@@ -231,14 +231,14 @@ describe('text (words)', () => {
 
 describe('text (consecutive)', () => {
   it('rejects text with too many consecutive characters', () => {
-    const schema = text({ consecutive: { max: 3 } })
+    const schema = Text({ consecutive: { max: 3 } })
     const result = parse(schema, 'aaaa text')
     expect(result.success).toBe(false)
     expect(getErrorCodes(schema, 'aaaa text')).toContain('maxConsecutive')
   })
 
   it('accepts text within consecutive limit', () => {
-    const schema = text({ consecutive: { max: 3 } })
+    const schema = Text({ consecutive: { max: 3 } })
     expect(parse(schema, 'aaa text').success).toBe(true)
   })
 })
@@ -249,17 +249,17 @@ describe('text (consecutive)', () => {
 
 describe('text (combined)', () => {
   it('rejects email when both noEmails and noUrls are enabled', () => {
-    const schema = text({ noEmails: true, noUrls: true })
+    const schema = Text({ noEmails: true, noUrls: true })
     expect(parse(schema, 'email me at test@example.com').success).toBe(false)
   })
 
   it('rejects URL when both noEmails and noUrls are enabled', () => {
-    const schema = text({ noEmails: true, noUrls: true })
+    const schema = Text({ noEmails: true, noUrls: true })
     expect(parse(schema, 'visit https://example.com').success).toBe(false)
   })
 
   it('accepts clean text when both noEmails and noUrls are enabled', () => {
-    const schema = text({ noEmails: true, noUrls: true })
+    const schema = Text({ noEmails: true, noUrls: true })
     expect(parse(schema, 'clean text here').success).toBe(true)
   })
 })
@@ -270,13 +270,13 @@ describe('text (combined)', () => {
 
 describe('text (regex)', () => {
   it('validates against custom regex', () => {
-    const schema = text({ regex: /^[A-Z]+$/ })
+    const schema = Text({ regex: /^[A-Z]+$/ })
     expect(parse(schema, 'HELLO').success).toBe(true)
     expect(parse(schema, 'hello').success).toBe(false)
   })
 
   it('applies regex in addition to length', () => {
-    const schema = text({ regex: /^[a-z]+$/, length: { max: 5 } })
+    const schema = Text({ regex: /^[a-z]+$/, length: { max: 5 } })
     expect(parse(schema, 'hi').success).toBe(true)
     expect(parse(schema, 'toolong').success).toBe(false)
     expect(parse(schema, 'HI').success).toBe(false)
@@ -288,7 +288,7 @@ describe('text (regex)', () => {
 // ----------------------------------------------------------
 
 describe('text (security)', () => {
-  const schema = text({ noHtml: true, noUrls: true })
+  const schema = Text({ noHtml: true, noUrls: true })
 
   it.each([
     '<script>alert("xss")</script>',

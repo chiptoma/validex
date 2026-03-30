@@ -2,9 +2,9 @@ import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
 import { BusinessName } from '../../src/rules/businessName'
 import { Color } from '../../src/rules/color'
-import { email } from '../../src/rules/email'
+import { Email } from '../../src/rules/email'
 import { PersonName } from '../../src/rules/personName'
-import { uuid } from '../../src/rules/uuid'
+import { Uuid } from '../../src/rules/uuid'
 import {
   generateColors,
   generateCompanyNames,
@@ -53,7 +53,7 @@ describe('personName — faker fuzz (1000 names across 5 locales)', () => {
 // ----------------------------------------------------------
 
 describe('email — faker fuzz (1000 emails)', () => {
-  const schema = email() as z.ZodType
+  const schema = Email() as z.ZodType
 
   it.each(emails.map(e => ({ value: e })))(
     'should accept "$value"',
@@ -87,7 +87,7 @@ describe('businessName — faker fuzz (1000 names across 5 locales)', () => {
 // ----------------------------------------------------------
 
 describe('uuid — faker fuzz (100 UUIDs)', () => {
-  const schema = uuid() as z.ZodType
+  const schema = Uuid() as z.ZodType
 
   it.each(uuids.map(u => ({ value: u })))(
     'should accept "$value"',

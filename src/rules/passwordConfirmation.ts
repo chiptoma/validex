@@ -10,7 +10,7 @@ import type { z } from 'zod'
 import type { BaseRuleOptions } from '../types'
 import type { PasswordOptions } from './password'
 import { registerMessages } from '../core/errorMap'
-import { password } from './password'
+import { Password } from './password'
 
 // ----------------------------------------------------------
 // TYPES
@@ -26,12 +26,12 @@ export interface PasswordConfirmationOptions extends BaseRuleOptions {
 }
 
 // ----------------------------------------------------------
-// MESSAGE REGISTRATION
+// MESSAGES
 // ----------------------------------------------------------
 
-registerMessages('confirmation', {
+const MESSAGES = {
   mismatch: 'Passwords must match',
-})
+}
 
 // ----------------------------------------------------------
 // RULE FACTORY
@@ -46,18 +46,23 @@ registerMessages('confirmation', {
  * @param options - Per-call options (passwordField is metadata for recipes).
  * @returns A Zod schema that validates the confirmation string.
  */
-export function passwordConfirmation(
-  options?: Partial<PasswordConfirmationOptions>,
-): unknown {
-  const _field = options?.passwordField ?? 'password'
-  const passthrough: Record<string, unknown> = {}
-  if (options?.label !== undefined)
-    passthrough['label'] = options.label
-  if (options?.emptyToUndefined !== undefined)
-    passthrough['emptyToUndefined'] = options.emptyToUndefined
-  if (options?.normalize !== undefined)
-    passthrough['normalize'] = options.normalize
-  if (options?.customFn !== undefined)
-    passthrough['customFn'] = options.customFn
-  return password(passthrough as Partial<PasswordOptions>) as z.ZodType
-}
+export const PasswordConfirmation = /* @__PURE__ */ (() => {
+  let registered = false
+  return (options?: Partial<PasswordConfirmationOptions>): unknown => {
+    if (!registered) {
+      registerMessages('confirmation', MESSAGES)
+      registered = true
+    }
+    const _field = options?.passwordField ?? 'password'
+    const passthrough: Record<string, unknown> = {}
+    if (options?.label !== undefined)
+      passthrough['label'] = options.label
+    if (options?.emptyToUndefined !== undefined)
+      passthrough['emptyToUndefined'] = options.emptyToUndefined
+    if (options?.normalize !== undefined)
+      passthrough['normalize'] = options.normalize
+    if (options?.customFn !== undefined)
+      passthrough['customFn'] = options.customFn
+    return Password(passthrough as Partial<PasswordOptions>) as z.ZodType
+  }
+})()

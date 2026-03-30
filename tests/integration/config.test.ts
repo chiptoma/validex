@@ -9,8 +9,8 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { getConfig, resetConfig, setup } from '../../src/config'
 import { registerCustomError } from '../../src/core/customError'
 import { getParams } from '../../src/core/getParams'
-import { email } from '../../src/rules/email'
-import { password } from '../../src/rules/password'
+import { Email } from '../../src/rules/email'
+import { Password } from '../../src/rules/password'
 
 // ----------------------------------------------------------
 // HELPERS
@@ -69,7 +69,7 @@ describe('config integration', () => {
       setup({ i18n: { enabled: true } })
       registerCustomError()
 
-      const schema = email() as z.ZodType
+      const schema = Email() as z.ZodType
       const params = await getAsyncErrorParams(schema, 'not-an-email')
       expect(params.length).toBeGreaterThan(0)
 
@@ -82,7 +82,7 @@ describe('config integration', () => {
       setup({ i18n: { enabled: true } })
       registerCustomError()
 
-      const schema = email() as z.ZodType
+      const schema = Email() as z.ZodType
       const params = await getAsyncErrorParams(schema, '')
 
       // Empty string with emptyToUndefined triggers required-like error
@@ -111,7 +111,7 @@ describe('config integration', () => {
       })
       registerCustomError()
 
-      const schema = email() as z.ZodType
+      const schema = Email() as z.ZodType
       const params = await getAsyncErrorParams(schema, 'bad-email')
 
       // Verify getParams produces a key that could be passed to t()
@@ -144,7 +144,7 @@ describe('config integration', () => {
       setup({ rules: { email: { blockPlusAlias: true } } })
       registerCustomError()
 
-      const schema = email() as z.ZodType
+      const schema = Email() as z.ZodType
       const plusResult = await parseAsync(schema, 'user+tag@example.com')
       expect(plusResult.success).toBe(false)
 
@@ -156,7 +156,7 @@ describe('config integration', () => {
       setup({ rules: { email: { blockPlusAlias: true } } })
       registerCustomError()
 
-      const schema = password() as z.ZodType
+      const schema = Password() as z.ZodType
       const result = await parseAsync(schema, 'MyStr0ng!Pass')
       expect(result.success).toBe(true)
     })
@@ -172,7 +172,7 @@ describe('config integration', () => {
       registerCustomError()
 
       // Per-call override: blockPlusAlias = false
-      const schema = email({ blockPlusAlias: false }) as z.ZodType
+      const schema = Email({ blockPlusAlias: false }) as z.ZodType
       const result = await parseAsync(schema, 'user+tag@example.com')
       expect(result.success).toBe(true)
     })
@@ -190,7 +190,7 @@ describe('config integration', () => {
       // Per-call: blockPlusAlias = undefined removes the key entirely
       // Three-tier merge: undefined means intentional removal,
       // so Tier 1 default (false) applies
-      const schema = email({ blockPlusAlias: undefined }) as z.ZodType
+      const schema = Email({ blockPlusAlias: undefined }) as z.ZodType
       const result = await parseAsync(schema, 'user+tag@example.com')
       expect(result.success).toBe(true)
     })

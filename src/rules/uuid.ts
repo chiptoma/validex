@@ -38,7 +38,7 @@ const UUID_VERSION_INDEX = 14
  * @param options - Per-call UUID validation options.
  * @returns A Zod schema that validates UUID strings.
  */
-export const uuid = /* @__PURE__ */ createRule<UUIDOptions>({
+export const Uuid = /* @__PURE__ */ createRule<UUIDOptions>({
   name: 'uuid',
   defaults: {},
   messages: {

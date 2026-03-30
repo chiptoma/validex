@@ -11,10 +11,10 @@ import { resetConfig, setup } from '../../src/config'
 import { registerCustomError } from '../../src/core/customError'
 import { getParams } from '../../src/core/getParams'
 import { validate } from '../../src/core/validate'
-import { email } from '../../src/rules/email'
-import { password } from '../../src/rules/password'
+import { Email } from '../../src/rules/email'
+import { Password } from '../../src/rules/password'
 import { PersonName } from '../../src/rules/personName'
-import { postalCode } from '../../src/rules/postalCode'
+import { PostalCode } from '../../src/rules/postalCode'
 import { Slug } from '../../src/rules/slug'
 
 // ----------------------------------------------------------
@@ -48,9 +48,9 @@ describe('error system integration', () => {
       registerCustomError()
 
       const schema = zod.object({
-        email: email() as z.ZodType,
+        email: Email() as z.ZodType,
         name: PersonName() as z.ZodType,
-        password: password() as z.ZodType,
+        password: Password() as z.ZodType,
       })
 
       const result = await validate(schema, {
@@ -73,9 +73,9 @@ describe('error system integration', () => {
       registerCustomError()
 
       const schema = zod.object({
-        email: email() as z.ZodType,
+        email: Email() as z.ZodType,
         name: PersonName() as z.ZodType,
-        password: password() as z.ZodType,
+        password: Password() as z.ZodType,
       })
 
       const result = await validate(schema, {
@@ -102,7 +102,7 @@ describe('error system integration', () => {
       registerCustomError()
 
       const schema = zod.object({
-        email: email({
+        email: Email({
           customFn: (v: string) => v.endsWith('.org') || 'Must be .org',
         }) as z.ZodType,
         name: PersonName({
@@ -123,7 +123,7 @@ describe('error system integration', () => {
       registerCustomError()
 
       const schema = zod.object({
-        email: email({
+        email: Email({
           customFn: (v: string) => v.endsWith('.org') || 'Must be .org',
         }) as z.ZodType,
         name: PersonName({
@@ -146,7 +146,7 @@ describe('error system integration', () => {
       registerCustomError()
 
       const schema = zod.object({
-        email: email({
+        email: Email({
           customFn: (v: string) => v.endsWith('.org') || 'Must be .org',
         }) as z.ZodType,
         name: PersonName({
@@ -219,12 +219,12 @@ describe('error system integration', () => {
 
       const schema = zod.object({
         billing: zod.object({
-          email: email() as z.ZodType,
+          email: Email() as z.ZodType,
           address: zod.object({
-            postalCode: postalCode({ country: 'US' }) as z.ZodType,
+            postalCode: PostalCode({ country: 'US' }) as z.ZodType,
           }),
         }),
-        password: password() as z.ZodType,
+        password: Password() as z.ZodType,
       })
 
       const result = await validate(schema, {
@@ -249,9 +249,9 @@ describe('error system integration', () => {
 
       const schema = zod.object({
         billing: zod.object({
-          email: email() as z.ZodType,
+          email: Email() as z.ZodType,
         }),
-        password: password() as z.ZodType,
+        password: Password() as z.ZodType,
       })
 
       const result = await validate(schema, {
@@ -272,12 +272,12 @@ describe('error system integration', () => {
 
       const schema = zod.object({
         billing: zod.object({
-          email: email() as z.ZodType,
+          email: Email() as z.ZodType,
           address: zod.object({
-            postalCode: postalCode({ country: 'US' }) as z.ZodType,
+            postalCode: PostalCode({ country: 'US' }) as z.ZodType,
           }),
         }),
-        password: password() as z.ZodType,
+        password: Password() as z.ZodType,
       })
 
       const result = await validate(schema, {
@@ -313,7 +313,7 @@ describe('error system integration', () => {
       registerCustomError()
 
       const schema = zod.object({
-        email: email() as z.ZodType,
+        email: Email() as z.ZodType,
       })
 
       const result = await validate(schema, { email: '' })
@@ -333,8 +333,8 @@ describe('error system integration', () => {
       registerCustomError()
 
       const schema = zod.object({
-        email: email() as z.ZodType,
-        password: password() as z.ZodType,
+        email: Email() as z.ZodType,
+        password: Password() as z.ZodType,
       })
 
       const result = await validate(schema, {
@@ -356,8 +356,8 @@ describe('error system integration', () => {
       registerCustomError()
 
       const schema = zod.object({
-        email: email() as z.ZodType,
-        password: password() as z.ZodType,
+        email: Email() as z.ZodType,
+        password: Password() as z.ZodType,
       })
 
       const result = await validate(schema, {

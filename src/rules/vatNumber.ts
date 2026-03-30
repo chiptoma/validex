@@ -95,7 +95,7 @@ function extractCountryAndNumber(
  * @param options - Per-call VAT number validation options.
  * @returns A Zod schema that validates VAT number strings.
  */
-export const vatNumber = /* @__PURE__ */ createRule<VatNumberOptions>({
+export const VatNumber = /* @__PURE__ */ createRule<VatNumberOptions>({
   name: 'vatNumber',
   defaults: {},
   messages: {

@@ -6,7 +6,7 @@
 
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
-import { jwt } from '../../src/rules/jwt'
+import { Jwt } from '../../src/rules/jwt'
 
 // ----------------------------------------------------------
 // HELPERS
@@ -66,7 +66,7 @@ function nowSeconds(): number {
 // ----------------------------------------------------------
 
 describe('jwt (valid)', () => {
-  const schema = jwt()
+  const schema = Jwt()
 
   it.each([
     createTestJwt({ alg: 'HS256', typ: 'JWT' }, { sub: '1234567890' }),
@@ -92,7 +92,7 @@ describe('jwt (valid)', () => {
 // ----------------------------------------------------------
 
 describe('jwt (invalid structure)', () => {
-  const schema = jwt()
+  const schema = Jwt()
 
   it.each([
     'not.a.jwt',
@@ -118,7 +118,7 @@ describe('jwt (invalid structure)', () => {
 
 describe('jwt (checkExpiry)', () => {
   it('rejects expired token', async () => {
-    const schema = jwt({ checkExpiry: true })
+    const schema = Jwt({ checkExpiry: true })
     const token = createTestJwt(
       { alg: 'HS256' },
       { exp: nowSeconds() - 3600 },
@@ -128,7 +128,7 @@ describe('jwt (checkExpiry)', () => {
   })
 
   it('accepts non-expired token', async () => {
-    const schema = jwt({ checkExpiry: true })
+    const schema = Jwt({ checkExpiry: true })
     const token = createTestJwt(
       { alg: 'HS256' },
       { exp: nowSeconds() + 3600 },
@@ -144,7 +144,7 @@ describe('jwt (checkExpiry)', () => {
 
 describe('jwt (checkNotBefore)', () => {
   it('rejects token with nbf in future', async () => {
-    const schema = jwt({ checkNotBefore: true })
+    const schema = Jwt({ checkNotBefore: true })
     const token = createTestJwt(
       { alg: 'HS256' },
       { nbf: nowSeconds() + 3600 },
@@ -154,7 +154,7 @@ describe('jwt (checkNotBefore)', () => {
   })
 
   it('accepts token with nbf in past', async () => {
-    const schema = jwt({ checkNotBefore: true })
+    const schema = Jwt({ checkNotBefore: true })
     const token = createTestJwt(
       { alg: 'HS256' },
       { nbf: nowSeconds() - 60 },
@@ -170,7 +170,7 @@ describe('jwt (checkNotBefore)', () => {
 
 describe('jwt (clockTolerance)', () => {
   it('accepts token expired by 10s with 30s tolerance', async () => {
-    const schema = jwt({ checkExpiry: true, clockTolerance: 30 })
+    const schema = Jwt({ checkExpiry: true, clockTolerance: 30 })
     const token = createTestJwt(
       { alg: 'HS256' },
       { exp: nowSeconds() - 10 },
@@ -180,7 +180,7 @@ describe('jwt (clockTolerance)', () => {
   })
 
   it('rejects token expired by 60s with 30s tolerance', async () => {
-    const schema = jwt({ checkExpiry: true, clockTolerance: 30 })
+    const schema = Jwt({ checkExpiry: true, clockTolerance: 30 })
     const token = createTestJwt(
       { alg: 'HS256' },
       { exp: nowSeconds() - 60 },
@@ -196,14 +196,14 @@ describe('jwt (clockTolerance)', () => {
 
 describe('jwt (requireExpiry)', () => {
   it('rejects token without exp claim', async () => {
-    const schema = jwt({ requireExpiry: true })
+    const schema = Jwt({ requireExpiry: true })
     const token = createTestJwt({ alg: 'HS256' }, { sub: 'user' })
     const result = await parseAsync(schema, token)
     expect(result.success).toBe(false)
   })
 
   it('accepts token with exp claim', async () => {
-    const schema = jwt({ requireExpiry: true })
+    const schema = Jwt({ requireExpiry: true })
     const token = createTestJwt(
       { alg: 'HS256' },
       { exp: nowSeconds() + 3600 },
@@ -219,14 +219,14 @@ describe('jwt (requireExpiry)', () => {
 
 describe('jwt (requireClaims)', () => {
   it('rejects token missing required claim', async () => {
-    const schema = jwt({ requireClaims: ['sub'] })
+    const schema = Jwt({ requireClaims: ['sub'] })
     const token = createTestJwt({ alg: 'HS256' }, { iss: 'test' })
     const result = await parseAsync(schema, token)
     expect(result.success).toBe(false)
   })
 
   it('accepts token with all required claims', async () => {
-    const schema = jwt({ requireClaims: ['sub', 'iss'] })
+    const schema = Jwt({ requireClaims: ['sub', 'iss'] })
     const token = createTestJwt(
       { alg: 'HS256' },
       { sub: 'user', iss: 'test' },
@@ -236,7 +236,7 @@ describe('jwt (requireClaims)', () => {
   })
 
   it('rejects token missing one of multiple required claims', async () => {
-    const schema = jwt({ requireClaims: ['sub', 'iss', 'aud'] })
+    const schema = Jwt({ requireClaims: ['sub', 'iss', 'aud'] })
     const token = createTestJwt(
       { alg: 'HS256' },
       { sub: 'user', iss: 'test' },
@@ -252,7 +252,7 @@ describe('jwt (requireClaims)', () => {
 
 describe('jwt (allowAlgorithms)', () => {
   it('rejects token with disallowed algorithm', async () => {
-    const schema = jwt({ allowAlgorithms: ['RS256'] })
+    const schema = Jwt({ allowAlgorithms: ['RS256'] })
     const token = createTestJwt(
       { alg: 'HS256', typ: 'JWT' },
       { sub: 'user' },
@@ -262,7 +262,7 @@ describe('jwt (allowAlgorithms)', () => {
   })
 
   it('accepts token with allowed algorithm', async () => {
-    const schema = jwt({ allowAlgorithms: ['RS256', 'HS256'] })
+    const schema = Jwt({ allowAlgorithms: ['RS256', 'HS256'] })
     const token = createTestJwt(
       { alg: 'HS256', typ: 'JWT' },
       { sub: 'user' },
@@ -278,7 +278,7 @@ describe('jwt (allowAlgorithms)', () => {
 
 describe('jwt (emptyToUndefined)', () => {
   it('rejects empty string by default', async () => {
-    const schema = jwt()
+    const schema = Jwt()
     const result = await parseAsync(schema, '')
     expect(result.success).toBe(false)
   })
@@ -289,7 +289,7 @@ describe('jwt (emptyToUndefined)', () => {
 // ----------------------------------------------------------
 
 describe('jwt (security)', () => {
-  const schema = jwt()
+  const schema = Jwt()
 
   it.each([
     '<script>alert(1)</script>.payload.sig',

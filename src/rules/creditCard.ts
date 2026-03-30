@@ -152,7 +152,7 @@ function detectIssuer(
  * @param options - Per-call credit card validation options.
  * @returns A Zod schema that validates credit card number strings.
  */
-export const creditCard = /* @__PURE__ */ createRule<CreditCardOptions>({
+export const CreditCard = /* @__PURE__ */ createRule<CreditCardOptions>({
   name: 'creditCard',
   defaults: {},
   messages: {

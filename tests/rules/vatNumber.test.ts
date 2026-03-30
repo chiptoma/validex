@@ -6,7 +6,7 @@
 
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
-import { vatNumber } from '../../src/rules/vatNumber'
+import { VatNumber } from '../../src/rules/vatNumber'
 
 // ----------------------------------------------------------
 // HELPERS
@@ -32,7 +32,7 @@ async function parseAsync(
 // ----------------------------------------------------------
 
 describe('vatNumber (valid with prefix)', () => {
-  const schema = vatNumber()
+  const schema = VatNumber()
 
   it.each([
     'DE123456789',
@@ -59,19 +59,19 @@ describe('vatNumber (valid with prefix)', () => {
 
 describe('vatNumber (country option)', () => {
   it('accepts number without prefix when country is set', async () => {
-    const schema = vatNumber({ country: 'DE' })
+    const schema = VatNumber({ country: 'DE' })
     const result = await parseAsync(schema, '123456789')
     expect(result.success).toBe(true)
   })
 
   it('accepts number with prefix when country is set', async () => {
-    const schema = vatNumber({ country: 'DE' })
+    const schema = VatNumber({ country: 'DE' })
     const result = await parseAsync(schema, 'DE123456789')
     expect(result.success).toBe(true)
   })
 
   it('rejects mismatched country format', async () => {
-    const schema = vatNumber({ country: 'DE' })
+    const schema = VatNumber({ country: 'DE' })
     const result = await parseAsync(schema, 'FR123')
     expect(result.success).toBe(false)
   })
@@ -83,19 +83,19 @@ describe('vatNumber (country option)', () => {
 
 describe('vatNumber (normalization)', () => {
   it('normalizes lowercase to uppercase', async () => {
-    const schema = vatNumber()
+    const schema = VatNumber()
     const result = await parseAsync(schema, 'de123456789')
     expect(result.success).toBe(true)
   })
 
   it('strips spaces (Austria example)', async () => {
-    const schema = vatNumber()
+    const schema = VatNumber()
     const result = await parseAsync(schema, 'AT U12345678')
     expect(result.success).toBe(true)
   })
 
   it('trims whitespace', async () => {
-    const schema = vatNumber()
+    const schema = VatNumber()
     const result = await parseAsync(schema, '  DE123456789  ')
     expect(result.success).toBe(true)
   })
@@ -107,13 +107,13 @@ describe('vatNumber (normalization)', () => {
 
 describe('vatNumber (requirePrefix)', () => {
   it('accepts value with prefix when requirePrefix is true', async () => {
-    const schema = vatNumber({ country: 'DE', requirePrefix: true })
+    const schema = VatNumber({ country: 'DE', requirePrefix: true })
     const result = await parseAsync(schema, 'DE123456789')
     expect(result.success).toBe(true)
   })
 
   it('rejects value without prefix when requirePrefix is true', async () => {
-    const schema = vatNumber({ country: 'DE', requirePrefix: true })
+    const schema = VatNumber({ country: 'DE', requirePrefix: true })
     const result = await parseAsync(schema, '123456789')
     expect(result.success).toBe(false)
   })
@@ -124,7 +124,7 @@ describe('vatNumber (requirePrefix)', () => {
 // ----------------------------------------------------------
 
 describe('vatNumber (invalid)', () => {
-  const schema = vatNumber()
+  const schema = VatNumber()
 
   it.each([
     'XX123456789',
@@ -147,7 +147,7 @@ describe('vatNumber (invalid)', () => {
 
 describe('vatNumber (emptyToUndefined)', () => {
   it('rejects empty string by default', async () => {
-    const schema = vatNumber()
+    const schema = VatNumber()
     const result = await parseAsync(schema, '')
     expect(result.success).toBe(false)
   })
@@ -158,7 +158,7 @@ describe('vatNumber (emptyToUndefined)', () => {
 // ----------------------------------------------------------
 
 describe('vatNumber (security)', () => {
-  const schema = vatNumber()
+  const schema = VatNumber()
 
   it.each([
     'DE123456789<script>alert(1)</script>',

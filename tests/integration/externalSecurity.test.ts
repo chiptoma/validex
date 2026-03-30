@@ -12,11 +12,11 @@
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
 import { BusinessName } from '../../src/rules/businessName'
-import { email } from '../../src/rules/email'
+import { Email } from '../../src/rules/email'
 import { LicenseKey } from '../../src/rules/licenseKey'
 import { PersonName } from '../../src/rules/personName'
 import { Slug } from '../../src/rules/slug'
-import { text } from '../../src/rules/text'
+import { Text } from '../../src/rules/text'
 import { Username } from '../../src/rules/username'
 import injectionPayloads from '../fixtures/security.injection.json'
 import xssPayloads from '../fixtures/security.xss.json'
@@ -48,7 +48,7 @@ const FORMAT_RULES: ReadonlyArray<RuleEntry> = [
   { name: 'BusinessName', factory: BusinessName },
   { name: 'Username', factory: Username },
   { name: 'Slug', factory: Slug },
-  { name: 'Email', factory: email },
+  { name: 'Email', factory: Email },
   { name: 'LicenseKey', factory: LicenseKey },
 ]
 
@@ -87,8 +87,8 @@ const REDOS_RULES: ReadonlyArray<RuleEntry> = [
   { name: 'BusinessName', factory: BusinessName },
   { name: 'Username', factory: Username },
   { name: 'Slug', factory: Slug },
-  { name: 'Email', factory: email },
-  { name: 'Text', factory: text },
+  { name: 'Email', factory: Email },
+  { name: 'Text', factory: Text },
 ]
 
 // ----------------------------------------------------------

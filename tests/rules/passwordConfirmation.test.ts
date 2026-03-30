@@ -7,7 +7,7 @@
 
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
-import { passwordConfirmation } from '../../src/rules/passwordConfirmation'
+import { PasswordConfirmation } from '../../src/rules/passwordConfirmation'
 
 // ----------------------------------------------------------
 // HELPERS
@@ -22,7 +22,7 @@ function parse(schema: unknown, value: unknown): { success: boolean } {
 // ----------------------------------------------------------
 
 describe('passwordConfirmation (basic)', () => {
-  const schema = passwordConfirmation()
+  const schema = PasswordConfirmation()
 
   it('accepts a valid password string', () => {
     expect(parse(schema, 'P@ssw0rd!').success).toBe(true)
@@ -47,17 +47,17 @@ describe('passwordConfirmation (basic)', () => {
 
 describe('passwordConfirmation (options)', () => {
   it('defaults passwordField to "password"', () => {
-    const schema = passwordConfirmation()
+    const schema = PasswordConfirmation()
     expect(schema).toBeDefined()
   })
 
   it('accepts custom passwordField option', () => {
-    const schema = passwordConfirmation({ passwordField: 'newPassword' })
+    const schema = PasswordConfirmation({ passwordField: 'newPassword' })
     expect(schema).toBeDefined()
   })
 
   it('passes label through to underlying schema', () => {
-    const schema = passwordConfirmation({ label: 'Confirm' })
+    const schema = PasswordConfirmation({ label: 'Confirm' })
     expect(parse(schema, 'P@ssw0rd!').success).toBe(true)
   })
 })
@@ -67,7 +67,7 @@ describe('passwordConfirmation (options)', () => {
 // ----------------------------------------------------------
 
 describe('passwordConfirmation (empty and whitespace)', () => {
-  const schema = passwordConfirmation()
+  const schema = PasswordConfirmation()
 
   it('rejects empty password and empty confirmation equally', () => {
     const result = parse(schema, '')
@@ -88,7 +88,7 @@ describe('passwordConfirmation (empty and whitespace)', () => {
 // ----------------------------------------------------------
 
 describe('passwordConfirmation (unicode and special characters)', () => {
-  const schema = passwordConfirmation()
+  const schema = PasswordConfirmation()
 
   it('accepts unicode passwords that meet composition rules', () => {
     expect(parse(schema, 'Contraseña1!').success).toBe(true)
@@ -116,7 +116,7 @@ describe('passwordConfirmation (unicode and special characters)', () => {
 // ----------------------------------------------------------
 
 describe('passwordConfirmation (length extremes)', () => {
-  const schema = passwordConfirmation()
+  const schema = PasswordConfirmation()
 
   it('accepts very long matching passwords (1000+ chars)', () => {
     const longPwd = `A${'b'.repeat(997)}1!z`
@@ -140,13 +140,13 @@ describe('passwordConfirmation (length extremes)', () => {
 
 describe('passwordConfirmation (passwordField option)', () => {
   it('creates a schema with custom passwordField "currentPassword"', () => {
-    const schema = passwordConfirmation({ passwordField: 'currentPassword' })
+    const schema = PasswordConfirmation({ passwordField: 'currentPassword' })
     expect(schema).toBeDefined()
     expect(parse(schema, 'V@lid8pwd!').success).toBe(true)
   })
 
   it('creates a schema with custom passwordField "newPass"', () => {
-    const schema = passwordConfirmation({ passwordField: 'newPass' })
+    const schema = PasswordConfirmation({ passwordField: 'newPass' })
     expect(schema).toBeDefined()
     expect(parse(schema, 'V@lid8pwd!').success).toBe(true)
   })
@@ -157,7 +157,7 @@ describe('passwordConfirmation (passwordField option)', () => {
 // ----------------------------------------------------------
 
 describe('passwordConfirmation (null and undefined)', () => {
-  const schema = passwordConfirmation()
+  const schema = PasswordConfirmation()
 
   it('rejects null input', () => {
     expect(parse(schema, null).success).toBe(false)

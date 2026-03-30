@@ -6,21 +6,21 @@
 
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
-import { url } from '../../src/rules/url'
+import { Url } from '../../src/rules/url'
 import { testRuleContract } from '../helpers/testRule'
 
 // ----------------------------------------------------------
 // CONTRACT TESTS
 // ----------------------------------------------------------
 
-testRuleContract('url', url as (opts?: Record<string, unknown>) => unknown, 'url')
+testRuleContract('url', Url as (opts?: Record<string, unknown>) => unknown, 'url')
 
 // ----------------------------------------------------------
 // VALID URLS
 // ----------------------------------------------------------
 
 describe('url (valid)', () => {
-  const schema = url() as z.ZodType
+  const schema = Url() as z.ZodType
 
   const validUrls: ReadonlyArray<string> = [
     'https://example.com',
@@ -48,7 +48,7 @@ describe('url (valid)', () => {
 // ----------------------------------------------------------
 
 describe('url (invalid)', () => {
-  const schema = url() as z.ZodType
+  const schema = Url() as z.ZodType
 
   const invalidUrls: ReadonlyArray<string> = [
     'not-a-url',
@@ -70,25 +70,25 @@ describe('url (invalid)', () => {
 
 describe('url (protocols)', () => {
   it('rejects ftp by default', () => {
-    const schema = url() as z.ZodType
+    const schema = Url() as z.ZodType
     const result = schema.safeParse('ftp://files.example.com')
     expect(result.success).toBe(false)
   })
 
   it('accepts ftp when explicitly allowed', () => {
-    const schema = url({ protocols: ['ftp'] }) as z.ZodType
+    const schema = Url({ protocols: ['ftp'] }) as z.ZodType
     const result = schema.safeParse('ftp://files.example.com')
     expect(result.success).toBe(true)
   })
 
   it('rejects https when only ftp is allowed', () => {
-    const schema = url({ protocols: ['ftp'] }) as z.ZodType
+    const schema = Url({ protocols: ['ftp'] }) as z.ZodType
     const result = schema.safeParse('https://example.com')
     expect(result.success).toBe(false)
   })
 
   it('accepts multiple allowed protocols', () => {
-    const schema = url({ protocols: ['http', 'https', 'ftp'] }) as z.ZodType
+    const schema = Url({ protocols: ['http', 'https', 'ftp'] }) as z.ZodType
     expect(schema.safeParse('http://example.com').success).toBe(true)
     expect(schema.safeParse('https://example.com').success).toBe(true)
     expect(schema.safeParse('ftp://files.example.com').success).toBe(true)
@@ -101,19 +101,19 @@ describe('url (protocols)', () => {
 
 describe('url (requireTLD)', () => {
   it('rejects URL without TLD by default', () => {
-    const schema = url() as z.ZodType
+    const schema = Url() as z.ZodType
     const result = schema.safeParse('http://localhost')
     expect(result.success).toBe(false)
   })
 
   it('accepts URL without TLD when requireTLD: false', () => {
-    const schema = url({ requireTLD: false }) as z.ZodType
+    const schema = Url({ requireTLD: false }) as z.ZodType
     const result = schema.safeParse('http://localhost')
     expect(result.success).toBe(true)
   })
 
   it('accepts URL with port but no TLD when requireTLD: false', () => {
-    const schema = url({ requireTLD: false }) as z.ZodType
+    const schema = Url({ requireTLD: false }) as z.ZodType
     const result = schema.safeParse('http://localhost:3000')
     expect(result.success).toBe(true)
   })
@@ -125,19 +125,19 @@ describe('url (requireTLD)', () => {
 
 describe('url (allowAuth)', () => {
   it('rejects userinfo by default', () => {
-    const schema = url() as z.ZodType
+    const schema = Url() as z.ZodType
     const result = schema.safeParse('http://user:pass@host.com')
     expect(result.success).toBe(false)
   })
 
   it('accepts userinfo when allowAuth: true', () => {
-    const schema = url({ allowAuth: true, requireTLD: false }) as z.ZodType
+    const schema = Url({ allowAuth: true, requireTLD: false }) as z.ZodType
     const result = schema.safeParse('http://user:pass@host.com')
     expect(result.success).toBe(true)
   })
 
   it('rejects username-only auth by default', () => {
-    const schema = url() as z.ZodType
+    const schema = Url() as z.ZodType
     const result = schema.safeParse('http://admin@host.com')
     expect(result.success).toBe(false)
   })
@@ -148,7 +148,7 @@ describe('url (allowAuth)', () => {
 // ----------------------------------------------------------
 
 describe('url (allowQuery: false)', () => {
-  const schema = url({ allowQuery: false }) as z.ZodType
+  const schema = Url({ allowQuery: false }) as z.ZodType
 
   it('accepts URL without query', () => {
     const result = schema.safeParse('https://example.com/path')
@@ -166,7 +166,7 @@ describe('url (allowQuery: false)', () => {
 // ----------------------------------------------------------
 
 describe('url (blockDomains)', () => {
-  const schema = url({ blockDomains: ['evil.com'] }) as z.ZodType
+  const schema = Url({ blockDomains: ['evil.com'] }) as z.ZodType
 
   it('rejects blocked domain', () => {
     const result = schema.safeParse('https://evil.com')
@@ -185,7 +185,7 @@ describe('url (blockDomains)', () => {
 })
 
 describe('url (allowDomains)', () => {
-  const schema = url({ allowDomains: ['example.com'] }) as z.ZodType
+  const schema = Url({ allowDomains: ['example.com'] }) as z.ZodType
 
   it('accepts allowed domain', () => {
     const result = schema.safeParse('https://example.com')
@@ -204,7 +204,7 @@ describe('url (allowDomains)', () => {
 
 describe('url (normalization)', () => {
   it('trims whitespace', () => {
-    const schema = url() as z.ZodType
+    const schema = Url() as z.ZodType
     const result = schema.safeParse('  https://example.com  ')
     expect(result.success).toBe(true)
     if (result.success) {
@@ -218,7 +218,7 @@ describe('url (normalization)', () => {
 // ----------------------------------------------------------
 
 describe('url (security)', () => {
-  const schema = url() as z.ZodType
+  const schema = Url() as z.ZodType
 
   const payloads: ReadonlyArray<string> = [
     '<script>alert("xss")</script>',

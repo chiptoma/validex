@@ -169,7 +169,7 @@ function hasNoQuery(value: string): boolean {
  * @param options - Optional website validation options.
  * @returns A Zod schema that validates website URLs.
  */
-export const website = /* @__PURE__ */ createRule<WebsiteOptions>({
+export const Website = /* @__PURE__ */ createRule<WebsiteOptions>({
   name: 'website',
   defaults: {},
   messages: {

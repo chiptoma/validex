@@ -5,7 +5,7 @@
 
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
-import { macAddress } from '../../src/rules/macAddress'
+import { MacAddress } from '../../src/rules/macAddress'
 import { testRuleContract } from '../helpers/testRule'
 
 // ----------------------------------------------------------
@@ -14,7 +14,7 @@ import { testRuleContract } from '../helpers/testRule'
 
 testRuleContract(
   'macAddress',
-  macAddress as (opts?: Record<string, unknown>) => unknown,
+  MacAddress as (opts?: Record<string, unknown>) => unknown,
   'macAddress',
 )
 
@@ -23,7 +23,7 @@ testRuleContract(
 // ----------------------------------------------------------
 
 describe('macAddress (valid, colon delimiter)', () => {
-  const schema = macAddress() as z.ZodType
+  const schema = MacAddress() as z.ZodType
 
   const validMacs: ReadonlyArray<string> = [
     '00:1A:2B:3C:4D:5E',
@@ -50,7 +50,7 @@ describe('macAddress (valid, colon delimiter)', () => {
 // ----------------------------------------------------------
 
 describe('macAddress (invalid)', () => {
-  const schema = macAddress() as z.ZodType
+  const schema = MacAddress() as z.ZodType
 
   const invalidMacs: ReadonlyArray<string> = [
     '00:1A:2B:3C:4D',
@@ -79,37 +79,37 @@ describe('macAddress (invalid)', () => {
 
 describe('macAddress (delimiter options)', () => {
   it('accepts hyphen-delimited when delimiter is "-"', () => {
-    const schema = macAddress({ delimiter: '-' }) as z.ZodType
+    const schema = MacAddress({ delimiter: '-' }) as z.ZodType
     const result = schema.safeParse('00-1A-2B-3C-4D-5E')
     expect(result.success).toBe(true)
   })
 
   it('rejects colon-delimited when delimiter is "-"', () => {
-    const schema = macAddress({ delimiter: '-' }) as z.ZodType
+    const schema = MacAddress({ delimiter: '-' }) as z.ZodType
     const result = schema.safeParse('00:1A:2B:3C:4D:5E')
     expect(result.success).toBe(false)
   })
 
   it('accepts no-delimiter format when delimiter is "none"', () => {
-    const schema = macAddress({ delimiter: 'none' }) as z.ZodType
+    const schema = MacAddress({ delimiter: 'none' }) as z.ZodType
     const result = schema.safeParse('001A2B3C4D5E')
     expect(result.success).toBe(true)
   })
 
   it('rejects colon-delimited when delimiter is "none"', () => {
-    const schema = macAddress({ delimiter: 'none' }) as z.ZodType
+    const schema = MacAddress({ delimiter: 'none' }) as z.ZodType
     const result = schema.safeParse('00:1A:2B:3C:4D:5E')
     expect(result.success).toBe(false)
   })
 
   it('rejects hyphen-delimited with default colon delimiter', () => {
-    const schema = macAddress() as z.ZodType
+    const schema = MacAddress() as z.ZodType
     const result = schema.safeParse('00-1A-2B-3C-4D-5E')
     expect(result.success).toBe(false)
   })
 
   it('accepts lowercase with hyphen delimiter', () => {
-    const schema = macAddress({ delimiter: '-' }) as z.ZodType
+    const schema = MacAddress({ delimiter: '-' }) as z.ZodType
     const result = schema.safeParse('aa-bb-cc-dd-ee-ff')
     expect(result.success).toBe(true)
   })
@@ -121,13 +121,13 @@ describe('macAddress (delimiter options)', () => {
 
 describe('macAddress (normalization)', () => {
   it('trims whitespace when normalize is true', () => {
-    const schema = macAddress() as z.ZodType
+    const schema = MacAddress() as z.ZodType
     const result = schema.safeParse('  00:1A:2B:3C:4D:5E  ')
     expect(result.success).toBe(true)
   })
 
   it('rejects whitespace when normalize is false', () => {
-    const schema = macAddress({ normalize: false }) as z.ZodType
+    const schema = MacAddress({ normalize: false }) as z.ZodType
     const result = schema.safeParse('  00:1A:2B:3C:4D:5E  ')
     expect(result.success).toBe(false)
   })
@@ -138,7 +138,7 @@ describe('macAddress (normalization)', () => {
 // ----------------------------------------------------------
 
 describe('macAddress (security)', () => {
-  const schema = macAddress() as z.ZodType
+  const schema = MacAddress() as z.ZodType
 
   const payloads: ReadonlyArray<string> = [
     '<script>alert("xss")</script>',

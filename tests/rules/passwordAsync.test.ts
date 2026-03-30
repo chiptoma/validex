@@ -6,7 +6,7 @@
 import type { z } from 'zod'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { clearCommonPasswordsCache } from '../../src/data/commonPasswords'
-import { password } from '../../src/rules/password'
+import { Password } from '../../src/rules/password'
 
 // ----------------------------------------------------------
 // HELPERS
@@ -29,7 +29,7 @@ describe('password — blockCommon async', () => {
   })
 
   it('rejects a top-100 common password with blockCommon: true', async () => {
-    const schema = password({
+    const schema = Password({
       blockCommon: true,
       length: { min: 1 },
       uppercase: undefined,
@@ -43,7 +43,7 @@ describe('password — blockCommon async', () => {
   })
 
   it('rejects a common password with blockCommon: "basic"', async () => {
-    const schema = password({
+    const schema = Password({
       blockCommon: 'basic',
       length: { min: 1 },
       uppercase: undefined,
@@ -57,7 +57,7 @@ describe('password — blockCommon async', () => {
   })
 
   it('allows a non-common password with blockCommon: true', async () => {
-    const schema = password({
+    const schema = Password({
       blockCommon: true,
       length: { min: 1 },
       uppercase: undefined,
@@ -71,7 +71,7 @@ describe('password — blockCommon async', () => {
   })
 
   it('is case-insensitive when checking common passwords', async () => {
-    const schema = password({
+    const schema = Password({
       blockCommon: true,
       length: { min: 1 },
       uppercase: undefined,
@@ -85,7 +85,7 @@ describe('password — blockCommon async', () => {
   })
 
   it('does not block common passwords when blockCommon is false', async () => {
-    const schema = password({
+    const schema = Password({
       blockCommon: false,
       length: { min: 1 },
       uppercase: undefined,
@@ -99,7 +99,7 @@ describe('password — blockCommon async', () => {
   })
 
   it('does not block common passwords when blockCommon is undefined', async () => {
-    const schema = password({
+    const schema = Password({
       length: { min: 1 },
       uppercase: undefined,
       lowercase: undefined,
@@ -112,7 +112,7 @@ describe('password — blockCommon async', () => {
   })
 
   it('works on second call using cached data', async () => {
-    const schema = password({
+    const schema = Password({
       blockCommon: true,
       length: { min: 1 },
       uppercase: undefined,

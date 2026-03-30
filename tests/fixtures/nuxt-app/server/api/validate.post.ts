@@ -5,11 +5,11 @@
 
 import { z } from 'zod'
 import { validate } from '~validex/core/validate'
-import { email } from '~validex/rules/email'
+import { Email } from '~validex/rules/email'
 
 const schema = z.object({
   name: z.string().min(2),
-  email: email() as z.ZodType,
+  email: Email() as z.ZodType,
 })
 
 export default defineEventHandler(async (event) => {

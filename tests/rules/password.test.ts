@@ -6,7 +6,7 @@
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
 import { getParams } from '../../src/core/getParams'
-import { password } from '../../src/rules/password'
+import { Password } from '../../src/rules/password'
 import { testRuleContract } from '../helpers/testRule'
 
 // ----------------------------------------------------------
@@ -33,7 +33,7 @@ function getErrorCodes(schema: unknown, value: unknown): ReadonlyArray<string> {
 
 testRuleContract(
   'password',
-  password as (opts?: Record<string, unknown>) => unknown,
+  Password as (opts?: Record<string, unknown>) => unknown,
   'password',
 )
 
@@ -42,7 +42,7 @@ testRuleContract(
 // ----------------------------------------------------------
 
 describe('password (valid)', () => {
-  const schema = password()
+  const schema = Password()
 
   it.each([
     'P@ssw0rd!',
@@ -66,7 +66,7 @@ describe('password (valid)', () => {
 // ----------------------------------------------------------
 
 describe('password (invalid)', () => {
-  const schema = password()
+  const schema = Password()
 
   it.each([
     ['password', 'no uppercase, digit, or special'],
@@ -88,7 +88,7 @@ describe('password (invalid)', () => {
 // ----------------------------------------------------------
 
 describe('password (error codes)', () => {
-  const schema = password()
+  const schema = Password()
 
   it('reports minUppercase for missing uppercase', () => {
     const codes = getErrorCodes(schema, 'password1!')
@@ -124,16 +124,16 @@ describe('password (error codes)', () => {
 
 describe('password (consecutive)', () => {
   it('rejects password with 4 consecutive identical characters', () => {
-    const codes = getErrorCodes(password(), 'Paaaaw0rd!')
+    const codes = getErrorCodes(Password(), 'Paaaaw0rd!')
     expect(codes).toContain('maxConsecutive')
   })
 
   it('accepts password with exactly 3 consecutive characters', () => {
-    expect(parse(password(), 'Paaa1!bb').success).toBe(true)
+    expect(parse(Password(), 'Paaa1!bb').success).toBe(true)
   })
 
   it('respects custom consecutive limit', () => {
-    const strict = password({ consecutive: { max: 2 } })
+    const strict = Password({ consecutive: { max: 2 } })
     const codes = getErrorCodes(strict, 'Paaa1!bb')
     expect(codes).toContain('maxConsecutive')
   })
@@ -145,18 +145,18 @@ describe('password (consecutive)', () => {
 
 describe('password (length)', () => {
   it('rejects password shorter than min length', () => {
-    const schema = password({ length: { min: 12, max: 128 } })
+    const schema = Password({ length: { min: 12, max: 128 } })
     expect(parse(schema, 'P@ss1!Ab').success).toBe(false)
   })
 
   it('rejects password longer than max length', () => {
-    const schema = password({ length: { min: 8, max: 16 } })
+    const schema = Password({ length: { min: 8, max: 16 } })
     const long = `P@ssw0rd!${'a'.repeat(20)}`
     expect(parse(schema, long).success).toBe(false)
   })
 
   it('accepts password within custom range', () => {
-    const schema = password({ length: { min: 10, max: 20 } })
+    const schema = Password({ length: { min: 10, max: 20 } })
     expect(parse(schema, 'P@ssw0rd!!').success).toBe(true)
   })
 })
@@ -167,13 +167,13 @@ describe('password (length)', () => {
 
 describe('password (maxUppercase)', () => {
   it('rejects password exceeding max uppercase', () => {
-    const schema = password({ uppercase: { min: 1, max: 3 } })
+    const schema = Password({ uppercase: { min: 1, max: 3 } })
     const codes = getErrorCodes(schema, 'ABCD!efg1')
     expect(codes).toContain('maxUppercase')
   })
 
   it('accepts password within max uppercase', () => {
-    const schema = password({ uppercase: { min: 1, max: 3 } })
+    const schema = Password({ uppercase: { min: 1, max: 3 } })
     expect(parse(schema, 'ABc!efg1h').success).toBe(true)
   })
 })
@@ -184,7 +184,7 @@ describe('password (maxUppercase)', () => {
 
 describe('password (normalize)', () => {
   it('does not alter case by default (normalize: false)', () => {
-    const schema = password() as z.ZodType
+    const schema = Password() as z.ZodType
     const result = schema.safeParse('P@ssw0rd!')
     expect(result.success).toBe(true)
     if (result.success) {
@@ -193,7 +193,7 @@ describe('password (normalize)', () => {
   })
 
   it('trims whitespace when normalize is true', () => {
-    const schema = password({ normalize: true }) as z.ZodType
+    const schema = Password({ normalize: true }) as z.ZodType
     const result = schema.safeParse('  P@ssw0rd!  ')
     expect(result.success).toBe(true)
     if (result.success) {
@@ -207,7 +207,7 @@ describe('password (normalize)', () => {
 // ----------------------------------------------------------
 
 describe('password (security)', () => {
-  const schema = password()
+  const schema = Password()
 
   it.each([
     '<script>alert("xss")</script>',

@@ -161,7 +161,7 @@ function checkNoQuery(value: string): boolean {
  * @param options - Optional URL validation options.
  * @returns A Zod schema that validates URL strings.
  */
-export const url = /* @__PURE__ */ createRule<URLOptions>({
+export const Url = /* @__PURE__ */ createRule<URLOptions>({
   name: 'url',
   defaults: {},
   messages: {

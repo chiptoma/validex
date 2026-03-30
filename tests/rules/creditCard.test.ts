@@ -6,7 +6,7 @@
 
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
-import { creditCard } from '../../src/rules/creditCard'
+import { CreditCard } from '../../src/rules/creditCard'
 import { testRuleContract } from '../helpers/testRule'
 
 // ----------------------------------------------------------
@@ -34,7 +34,7 @@ async function parseAsync(
 
 testRuleContract(
   'creditCard',
-  creditCard as (opts?: Record<string, unknown>) => unknown,
+  CreditCard as (opts?: Record<string, unknown>) => unknown,
   'creditCard',
 )
 
@@ -43,7 +43,7 @@ testRuleContract(
 // ----------------------------------------------------------
 
 describe('creditCard (valid)', () => {
-  const schema = creditCard()
+  const schema = CreditCard()
 
   it.each([
     '4532015112830366',
@@ -67,7 +67,7 @@ describe('creditCard (valid)', () => {
 // ----------------------------------------------------------
 
 describe('creditCard (invalid)', () => {
-  const schema = creditCard()
+  const schema = CreditCard()
 
   it.each([
     '1234567890123456',
@@ -91,7 +91,7 @@ describe('creditCard (invalid)', () => {
 // ----------------------------------------------------------
 
 describe('creditCard (formatted input)', () => {
-  const schema = creditCard()
+  const schema = CreditCard()
 
   it('accepts card with spaces', async () => {
     const result = await parseAsync(schema, '4532 0151 1283 0366')
@@ -114,7 +114,7 @@ describe('creditCard (formatted input)', () => {
 // ----------------------------------------------------------
 
 describe('creditCard (allowIssuers)', () => {
-  const schema = creditCard({ allowIssuers: ['visa'] })
+  const schema = CreditCard({ allowIssuers: ['visa'] })
 
   it('accepts Visa when allowed', async () => {
     const result = await parseAsync(schema, '4532015112830366')
@@ -137,7 +137,7 @@ describe('creditCard (allowIssuers)', () => {
 // ----------------------------------------------------------
 
 describe('creditCard (blockIssuers)', () => {
-  const schema = creditCard({ blockIssuers: ['amex'] })
+  const schema = CreditCard({ blockIssuers: ['amex'] })
 
   it('rejects blocked Amex', async () => {
     const result = await parseAsync(schema, '371449635398431')
@@ -161,13 +161,13 @@ describe('creditCard (blockIssuers)', () => {
 
 describe('creditCard (Luhn)', () => {
   it('fails when last digit of valid card is modified', async () => {
-    const schema = creditCard()
+    const schema = CreditCard()
     const result = await parseAsync(schema, '4532015112830365')
     expect(result.success).toBe(false)
   })
 
   it('fails when middle digit is modified', async () => {
-    const schema = creditCard()
+    const schema = CreditCard()
     const result = await parseAsync(schema, '4532015112830466')
     expect(result.success).toBe(false)
   })
@@ -179,7 +179,7 @@ describe('creditCard (Luhn)', () => {
 
 describe('creditCard (emptyToUndefined)', () => {
   it('rejects empty string by default', async () => {
-    const schema = creditCard()
+    const schema = CreditCard()
     const result = await parseAsync(schema, '')
     expect(result.success).toBe(false)
   })
@@ -190,7 +190,7 @@ describe('creditCard (emptyToUndefined)', () => {
 // ----------------------------------------------------------
 
 describe('creditCard (security)', () => {
-  const schema = creditCard()
+  const schema = CreditCard()
 
   it.each([
     '4532015112830366<script>alert(1)</script>',

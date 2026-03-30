@@ -72,7 +72,7 @@ function extractLocalPart(email: string): string {
  * @param options - Per-call email validation options.
  * @returns A Zod schema that validates email strings.
  */
-export const email = /* @__PURE__ */ createRule<EmailOptions>({
+export const Email = /* @__PURE__ */ createRule<EmailOptions>({
   name: 'email',
   defaults: {},
   messages: {

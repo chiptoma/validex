@@ -226,7 +226,7 @@ function validateTemporal(
  * @param options - Per-call JWT validation options.
  * @returns A Zod schema that validates JWT strings.
  */
-export const jwt = /* @__PURE__ */ createRule<JWTOptions>({
+export const Jwt = /* @__PURE__ */ createRule<JWTOptions>({
   name: 'jwt',
   defaults: {},
   messages: {

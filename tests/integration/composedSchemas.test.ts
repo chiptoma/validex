@@ -10,16 +10,16 @@ import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
 import { validate } from '../../src/core/validate'
 import { Country } from '../../src/rules/country'
-import { creditCard } from '../../src/rules/creditCard'
-import { email } from '../../src/rules/email'
-import { jwt } from '../../src/rules/jwt'
-import { password } from '../../src/rules/password'
+import { CreditCard } from '../../src/rules/creditCard'
+import { Email } from '../../src/rules/email'
+import { Jwt } from '../../src/rules/jwt'
+import { Password } from '../../src/rules/password'
 import { PersonName } from '../../src/rules/personName'
-import { phone } from '../../src/rules/phone'
-import { postalCode } from '../../src/rules/postalCode'
-import { text } from '../../src/rules/text'
+import { Phone } from '../../src/rules/phone'
+import { PostalCode } from '../../src/rules/postalCode'
+import { Text } from '../../src/rules/text'
 import { Username } from '../../src/rules/username'
-import { website } from '../../src/rules/website'
+import { Website } from '../../src/rules/website'
 
 // ----------------------------------------------------------
 // HELPERS
@@ -62,8 +62,8 @@ function nowSeconds(): number {
 
 describe('composed: register form', () => {
   const registerSchema = z.object({
-    email: email() as z.ZodType,
-    password: password() as z.ZodType,
+    email: Email() as z.ZodType,
+    password: Password() as z.ZodType,
     username: Username() as z.ZodType,
   })
 
@@ -155,8 +155,8 @@ describe('composed: register form', () => {
 
 describe('composed: login form', () => {
   const loginSchema = z.object({
-    email: email() as z.ZodType,
-    password: password() as z.ZodType,
+    email: Email() as z.ZodType,
+    password: Password() as z.ZodType,
   })
 
   it('accepts valid login credentials', async () => {
@@ -210,9 +210,9 @@ describe('composed: login form', () => {
 describe('composed: profile form', () => {
   const profileSchema = z.object({
     name: PersonName() as z.ZodType,
-    phone: (phone() as z.ZodType).optional(),
-    website: (website() as z.ZodType).optional(),
-    bio: (text({ noHtml: true }) as z.ZodType).optional(),
+    phone: (Phone() as z.ZodType).optional(),
+    website: (Website() as z.ZodType).optional(),
+    bio: (Text({ noHtml: true }) as z.ZodType).optional(),
   })
 
   it('accepts valid profile with all fields', async () => {
@@ -276,8 +276,8 @@ describe('composed: profile form', () => {
 
 describe('composed: payment form', () => {
   const paymentSchema = z.object({
-    cardNumber: creditCard() as z.ZodType,
-    postalCode: postalCode({ country: 'US' }) as z.ZodType,
+    cardNumber: CreditCard() as z.ZodType,
+    postalCode: PostalCode({ country: 'US' }) as z.ZodType,
     country: Country() as z.ZodType,
   })
 
@@ -333,7 +333,7 @@ describe('composed: payment form', () => {
 // ----------------------------------------------------------
 
 describe('composed: auth token (JWT)', () => {
-  const tokenSchema = jwt({
+  const tokenSchema = Jwt({
     checkExpiry: true,
     requireClaims: ['sub', 'iss'],
     allowAlgorithms: ['HS256', 'RS256'],

@@ -6,7 +6,7 @@
 
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
-import { phone } from '../../src/rules/phone'
+import { Phone } from '../../src/rules/phone'
 
 // ----------------------------------------------------------
 // HELPERS
@@ -32,7 +32,7 @@ async function parseAsync(
 // ----------------------------------------------------------
 
 describe('phone (valid)', () => {
-  const schema = phone()
+  const schema = Phone()
 
   it.each([
     { label: 'Spain', value: '+34612345678' },
@@ -56,7 +56,7 @@ describe('phone (valid)', () => {
 // ----------------------------------------------------------
 
 describe('phone (invalid)', () => {
-  const schema = phone()
+  const schema = Phone()
 
   it.each([
     { desc: 'too short', value: '12345' },
@@ -77,13 +77,13 @@ describe('phone (invalid)', () => {
 
 describe('phone (requireCountryCode)', () => {
   it('rejects number without + when requireCountryCode is true', async () => {
-    const schema = phone({ requireCountryCode: true, country: 'US' })
+    const schema = Phone({ requireCountryCode: true, country: 'US' })
     const result = await parseAsync(schema, '2125551234')
     expect(result.success).toBe(false)
   })
 
   it('accepts number with + when requireCountryCode is true', async () => {
-    const schema = phone({ requireCountryCode: true })
+    const schema = Phone({ requireCountryCode: true })
     const result = await parseAsync(schema, '+12125551234')
     expect(result.success).toBe(true)
   })
@@ -94,7 +94,7 @@ describe('phone (requireCountryCode)', () => {
 // ----------------------------------------------------------
 
 describe('phone (allowCountries)', () => {
-  const schema = phone({ allowCountries: ['US'] })
+  const schema = Phone({ allowCountries: ['US'] })
 
   it('accepts US number when US is allowed', async () => {
     const result = await parseAsync(schema, '+12125551234')
@@ -112,7 +112,7 @@ describe('phone (allowCountries)', () => {
 // ----------------------------------------------------------
 
 describe('phone (blockCountries)', () => {
-  const schema = phone({ blockCountries: ['RU'] })
+  const schema = Phone({ blockCountries: ['RU'] })
 
   it('rejects RU number when RU is blocked', async () => {
     const result = await parseAsync(schema, '+79161234567')
@@ -131,7 +131,7 @@ describe('phone (blockCountries)', () => {
 
 describe('phone (format)', () => {
   it('formats as E.164 by default', async () => {
-    const schema = phone({ format: 'e164' })
+    const schema = Phone({ format: 'e164' })
     const result = await parseAsync(schema, '+1 212 555 1234')
     expect(result.success).toBe(true)
     if (result.success) {
@@ -140,7 +140,7 @@ describe('phone (format)', () => {
   })
 
   it('formats as international', async () => {
-    const schema = phone({ format: 'international' })
+    const schema = Phone({ format: 'international' })
     const result = await parseAsync(schema, '+12125551234')
     expect(result.success).toBe(true)
     if (result.success) {
@@ -149,7 +149,7 @@ describe('phone (format)', () => {
   })
 
   it('formats as national', async () => {
-    const schema = phone({ format: 'national', country: 'US' })
+    const schema = Phone({ format: 'national', country: 'US' })
     const result = await parseAsync(schema, '+12125551234')
     expect(result.success).toBe(true)
     if (result.success) {
@@ -163,7 +163,7 @@ describe('phone (format)', () => {
 // ----------------------------------------------------------
 
 describe('phone (security)', () => {
-  const schema = phone()
+  const schema = Phone()
 
   it.each([
     '+1<script>alert(1)</script>',

@@ -178,7 +178,7 @@ function applyPrivateRefinement(
  * @param options - Per-call ipAddress validation options.
  * @returns A Zod schema that validates IP address strings.
  */
-export const ipAddress = /* @__PURE__ */ createRule<IpAddressOptions>({
+export const IpAddress = /* @__PURE__ */ createRule<IpAddressOptions>({
   name: 'ipAddress',
   defaults: {},
   messages: {

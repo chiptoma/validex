@@ -35,7 +35,7 @@ export interface PostalCodeOptions extends FormatRuleOptions {
  * @param options - Per-call postal code validation options.
  * @returns A Zod schema that validates postal code strings.
  */
-export const postalCode = /* @__PURE__ */ createRule<PostalCodeOptions>({
+export const PostalCode = /* @__PURE__ */ createRule<PostalCodeOptions>({
   name: 'postalCode',
   defaults: {},
   messages: {

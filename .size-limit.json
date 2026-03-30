@@ -1,8 +1,8 @@
 [
   {
-    "name": "Core (email + password)",
+    "name": "Core (Email + Password)",
     "path": "dist/index.js",
-    "import": "{ email, password }",
+    "import": "{ Email, Password }",
     "limit": "25 kB",
     "ignore": ["zod", "libphonenumber-js", "libphonenumber-js/core", "postal-codes-js", "disposable-email-domains", "fastify", "fastify-plugin"]
   },

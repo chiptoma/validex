@@ -8,12 +8,12 @@
 import type { z } from 'zod'
 import * as fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
-import { creditCard } from '../../src/rules/creditCard'
-import { email } from '../../src/rules/email'
-import { password } from '../../src/rules/password'
+import { CreditCard } from '../../src/rules/creditCard'
+import { Email } from '../../src/rules/email'
+import { Password } from '../../src/rules/password'
 import { PersonName } from '../../src/rules/personName'
 import { Slug } from '../../src/rules/slug'
-import { uuid } from '../../src/rules/uuid'
+import { Uuid } from '../../src/rules/uuid'
 
 // ----------------------------------------------------------
 // CONSTANTS
@@ -53,7 +53,7 @@ function verifyLuhn(digits: string): boolean {
 // ----------------------------------------------------------
 
 describe('email — property-based', () => {
-  const schema = email() as z.ZodType
+  const schema = Email() as z.ZodType
 
   it('accepted emails always contain exactly one @', () => {
     fc.assert(
@@ -153,7 +153,7 @@ describe('personName — property-based', () => {
 // ----------------------------------------------------------
 
 describe('password — property-based', () => {
-  const schema = password() as z.ZodType
+  const schema = Password() as z.ZodType
 
   it('accepted passwords have length between 8 and 128', () => {
     fc.assert(
@@ -257,7 +257,7 @@ describe('slug — property-based', () => {
 // ----------------------------------------------------------
 
 describe('uUID — property-based', () => {
-  const schema = uuid() as z.ZodType
+  const schema = Uuid() as z.ZodType
 
   it('accepted UUIDs match the UUID format', () => {
     fc.assert(
@@ -287,7 +287,7 @@ describe('uUID — property-based', () => {
 
   it('version-specific UUID has correct version nibble', () => {
     for (const version of [1, 3, 4, 5, 7] as const) {
-      const versionSchema = uuid({ version }) as z.ZodType
+      const versionSchema = Uuid({ version }) as z.ZodType
 
       fc.assert(
         fc.property(fc.string(), (input) => {
@@ -309,12 +309,12 @@ describe('uUID — property-based', () => {
 
 describe('all rules — empty string fails', () => {
   const rules: ReadonlyArray<{ readonly name: string, readonly factory: () => unknown }> = [
-    { name: 'email', factory: () => email() },
+    { name: 'email', factory: () => Email() },
     { name: 'PersonName', factory: () => PersonName() },
-    { name: 'password', factory: () => password() },
+    { name: 'password', factory: () => Password() },
     { name: 'Slug', factory: () => Slug() },
-    { name: 'uuid', factory: () => uuid() },
-    { name: 'creditCard', factory: () => creditCard() },
+    { name: 'uuid', factory: () => Uuid() },
+    { name: 'creditCard', factory: () => CreditCard() },
   ]
 
   for (const rule of rules) {
@@ -331,7 +331,7 @@ describe('all rules — empty string fails', () => {
 // ----------------------------------------------------------
 
 describe('creditCard — property-based', () => {
-  const schema = creditCard() as z.ZodType
+  const schema = CreditCard() as z.ZodType
 
   it('accepted card numbers contain only digits', () => {
     fc.assert(

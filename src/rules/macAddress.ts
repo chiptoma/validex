@@ -62,7 +62,7 @@ function getPattern(delimiter: string): RegExp {
  * @param options - Per-call MAC address validation options.
  * @returns A Zod schema that validates MAC address strings.
  */
-export const macAddress = /* @__PURE__ */ createRule<MacAddressOptions>({
+export const MacAddress = /* @__PURE__ */ createRule<MacAddressOptions>({
   name: 'macAddress',
   defaults: {},
   messages: {

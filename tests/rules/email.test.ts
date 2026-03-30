@@ -7,7 +7,7 @@
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
 import { getParams } from '../../src/core/getParams'
-import { email } from '../../src/rules/email'
+import { Email } from '../../src/rules/email'
 import { testRuleContract } from '../helpers/testRule'
 
 // ----------------------------------------------------------
@@ -83,7 +83,7 @@ async function getAsyncErrorCodes(schema: unknown, value: unknown): Promise<Read
 
 testRuleContract(
   'email',
-  email as (opts?: Record<string, unknown>) => unknown,
+  Email as (opts?: Record<string, unknown>) => unknown,
   'email',
 )
 
@@ -92,7 +92,7 @@ testRuleContract(
 // ----------------------------------------------------------
 
 describe('email (valid)', () => {
-  const schema = email()
+  const schema = Email()
 
   it.each([
     'user@example.com',
@@ -116,7 +116,7 @@ describe('email (valid)', () => {
 // ----------------------------------------------------------
 
 describe('email (invalid)', () => {
-  const schema = email()
+  const schema = Email()
 
   it.each([
     'not-an-email',
@@ -145,7 +145,7 @@ describe('email (invalid)', () => {
 
 describe('email (normalization)', () => {
   it('normalizes uppercase to lowercase', () => {
-    const schema = email()
+    const schema = Email()
     const result = parse(schema, 'USER@EXAMPLE.COM')
     expect(result.success).toBe(true)
     if (result.success) {
@@ -154,7 +154,7 @@ describe('email (normalization)', () => {
   })
 
   it('trims whitespace', () => {
-    const schema = email()
+    const schema = Email()
     const result = parse(schema, '  user@example.com  ')
     expect(result.success).toBe(true)
     if (result.success) {
@@ -163,7 +163,7 @@ describe('email (normalization)', () => {
   })
 
   it('preserves original case when normalize is false', () => {
-    const schema = email({ normalize: false })
+    const schema = Email({ normalize: false })
     const result = parse(schema, 'User@Example.COM')
     expect(result.success).toBe(true)
     if (result.success) {
@@ -177,7 +177,7 @@ describe('email (normalization)', () => {
 // ----------------------------------------------------------
 
 describe('email (blockPlusAlias)', () => {
-  const schema = email({ blockPlusAlias: true })
+  const schema = Email({ blockPlusAlias: true })
 
   it('rejects plus alias when blocked', () => {
     const result = parse(schema, 'user+tag@gmail.com')
@@ -195,7 +195,7 @@ describe('email (blockPlusAlias)', () => {
 // ----------------------------------------------------------
 
 describe('email (allowDomains)', () => {
-  const schema = email({ allowDomains: ['example.com', 'test.org'] })
+  const schema = Email({ allowDomains: ['example.com', 'test.org'] })
 
   it('accepts email with allowed domain', () => {
     expect(parse(schema, 'user@example.com').success).toBe(true)
@@ -217,7 +217,7 @@ describe('email (allowDomains)', () => {
 // ----------------------------------------------------------
 
 describe('email (blockDomains)', () => {
-  const schema = email({ blockDomains: ['evil.com', 'spam.net'] })
+  const schema = Email({ blockDomains: ['evil.com', 'spam.net'] })
 
   it('rejects email with blocked domain', () => {
     const result = parse(schema, 'user@evil.com')
@@ -235,7 +235,7 @@ describe('email (blockDomains)', () => {
 // ----------------------------------------------------------
 
 describe('email (allowSubdomains)', () => {
-  const schema = email({ allowSubdomains: false })
+  const schema = Email({ allowSubdomains: false })
 
   it('rejects subdomain email when subdomains not allowed', () => {
     const result = parse(schema, 'user@sub.domain.com')
@@ -253,7 +253,7 @@ describe('email (allowSubdomains)', () => {
 // ----------------------------------------------------------
 
 describe('email (blockDisposable)', () => {
-  const schema = email({ blockDisposable: true })
+  const schema = Email({ blockDisposable: true })
 
   it('rejects known disposable email domain', async () => {
     const result = await parseAsync(schema, 'user@mailinator.com')
@@ -273,7 +273,7 @@ describe('email (blockDisposable)', () => {
 // ----------------------------------------------------------
 
 describe('email (security)', () => {
-  const schema = email()
+  const schema = Email()
 
   it.each([
     '<script>alert("xss")</script>@evil.com',

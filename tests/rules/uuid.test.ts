@@ -5,21 +5,21 @@
 
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
-import { uuid } from '../../src/rules/uuid'
+import { Uuid } from '../../src/rules/uuid'
 import { testRuleContract } from '../helpers/testRule'
 
 // ----------------------------------------------------------
 // CONTRACT TESTS
 // ----------------------------------------------------------
 
-testRuleContract('uuid', uuid as (opts?: Record<string, unknown>) => unknown, 'uuid')
+testRuleContract('uuid', Uuid as (opts?: Record<string, unknown>) => unknown, 'uuid')
 
 // ----------------------------------------------------------
 // VALID UUIDS
 // ----------------------------------------------------------
 
 describe('uuid (valid)', () => {
-  const schema = uuid() as z.ZodType
+  const schema = Uuid() as z.ZodType
 
   const validUuids: ReadonlyArray<string> = [
     '550e8400-e29b-41d4-a716-446655440000',
@@ -46,7 +46,7 @@ describe('uuid (valid)', () => {
 // ----------------------------------------------------------
 
 describe('uuid (invalid)', () => {
-  const schema = uuid() as z.ZodType
+  const schema = Uuid() as z.ZodType
 
   const invalidUuids: ReadonlyArray<string> = [
     '550e8400-e29b-41d4-a716',
@@ -75,37 +75,37 @@ describe('uuid (invalid)', () => {
 
 describe('uuid (version filtering)', () => {
   it('accepts v4 UUID when version is 4', () => {
-    const schema = uuid({ version: 4 }) as z.ZodType
+    const schema = Uuid({ version: 4 }) as z.ZodType
     const result = schema.safeParse('550e8400-e29b-41d4-a716-446655440000')
     expect(result.success).toBe(true)
   })
 
   it('rejects v1 UUID when version is 4', () => {
-    const schema = uuid({ version: 4 }) as z.ZodType
+    const schema = Uuid({ version: 4 }) as z.ZodType
     const result = schema.safeParse('6ba7b810-9dad-11d1-80b4-00c04fd430c8')
     expect(result.success).toBe(false)
   })
 
   it('accepts v1 UUID when version is 1', () => {
-    const schema = uuid({ version: 1 }) as z.ZodType
+    const schema = Uuid({ version: 1 }) as z.ZodType
     const result = schema.safeParse('6ba7b810-9dad-11d1-80b4-00c04fd430c8')
     expect(result.success).toBe(true)
   })
 
   it('rejects v4 UUID when version is 1', () => {
-    const schema = uuid({ version: 1 }) as z.ZodType
+    const schema = Uuid({ version: 1 }) as z.ZodType
     const result = schema.safeParse('550e8400-e29b-41d4-a716-446655440000')
     expect(result.success).toBe(false)
   })
 
   it('accepts v7 UUID when version is 7', () => {
-    const schema = uuid({ version: 7 }) as z.ZodType
+    const schema = Uuid({ version: 7 }) as z.ZodType
     const result = schema.safeParse('01867b2c-a0dd-7e2c-9c8e-83a2e0c9d7f1')
     expect(result.success).toBe(true)
   })
 
   it('accepts any version when version is "any"', () => {
-    const schema = uuid({ version: 'any' }) as z.ZodType
+    const schema = Uuid({ version: 'any' }) as z.ZodType
     expect(schema.safeParse('550e8400-e29b-41d4-a716-446655440000').success).toBe(true)
     expect(schema.safeParse('6ba7b810-9dad-11d1-80b4-00c04fd430c8').success).toBe(true)
   })
@@ -117,7 +117,7 @@ describe('uuid (version filtering)', () => {
 
 describe('uuid (normalization)', () => {
   it('accepts uppercase UUID and normalizes to lowercase', () => {
-    const schema = uuid() as z.ZodType
+    const schema = Uuid() as z.ZodType
     const result = schema.safeParse('550E8400-E29B-41D4-A716-446655440000')
     expect(result.success).toBe(true)
     if (result.success) {
@@ -126,7 +126,7 @@ describe('uuid (normalization)', () => {
   })
 
   it('accepts mixed-case UUID and normalizes', () => {
-    const schema = uuid() as z.ZodType
+    const schema = Uuid() as z.ZodType
     const result = schema.safeParse('550e8400-E29B-41d4-A716-446655440000')
     expect(result.success).toBe(true)
     if (result.success) {
@@ -135,7 +135,7 @@ describe('uuid (normalization)', () => {
   })
 
   it('trims whitespace from UUID', () => {
-    const schema = uuid() as z.ZodType
+    const schema = Uuid() as z.ZodType
     const result = schema.safeParse('  550e8400-e29b-41d4-a716-446655440000  ')
     expect(result.success).toBe(true)
     if (result.success) {
@@ -144,7 +144,7 @@ describe('uuid (normalization)', () => {
   })
 
   it('preserves original case when normalize is false', () => {
-    const schema = uuid({ normalize: false }) as z.ZodType
+    const schema = Uuid({ normalize: false }) as z.ZodType
     const upper = schema.safeParse('550E8400-E29B-41D4-A716-446655440000')
     expect(upper.success).toBe(true)
     if (upper.success) {
@@ -158,7 +158,7 @@ describe('uuid (normalization)', () => {
 // ----------------------------------------------------------
 
 describe('uuid (security)', () => {
-  const schema = uuid() as z.ZodType
+  const schema = Uuid() as z.ZodType
 
   const payloads: ReadonlyArray<string> = [
     '<script>alert("xss")</script>',

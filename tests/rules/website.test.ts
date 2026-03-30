@@ -6,21 +6,21 @@
 
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
-import { website } from '../../src/rules/website'
+import { Website } from '../../src/rules/website'
 import { testRuleContract } from '../helpers/testRule'
 
 // ----------------------------------------------------------
 // CONTRACT TESTS
 // ----------------------------------------------------------
 
-testRuleContract('website', website as (opts?: Record<string, unknown>) => unknown, 'website')
+testRuleContract('website', Website as (opts?: Record<string, unknown>) => unknown, 'website')
 
 // ----------------------------------------------------------
 // VALID WEBSITES
 // ----------------------------------------------------------
 
 describe('website (valid)', () => {
-  const schema = website() as z.ZodType
+  const schema = Website() as z.ZodType
 
   const validWebsites: ReadonlyArray<string> = [
     'https://example.com',
@@ -48,7 +48,7 @@ describe('website (valid)', () => {
 // ----------------------------------------------------------
 
 describe('website (invalid)', () => {
-  const schema = website() as z.ZodType
+  const schema = Website() as z.ZodType
 
   const invalidWebsites: ReadonlyArray<string> = [
     'ftp://example.com',
@@ -70,7 +70,7 @@ describe('website (invalid)', () => {
 
 describe('website (normalization)', () => {
   it('auto-prepends https:// to bare domains', () => {
-    const schema = website() as z.ZodType
+    const schema = Website() as z.ZodType
     const result = schema.safeParse('example.com')
     expect(result.success).toBe(true)
     if (result.success) {
@@ -79,7 +79,7 @@ describe('website (normalization)', () => {
   })
 
   it('lowercases the URL', () => {
-    const schema = website() as z.ZodType
+    const schema = Website() as z.ZodType
     const result = schema.safeParse('HTTPS://EXAMPLE.COM')
     expect(result.success).toBe(true)
     if (result.success) {
@@ -88,7 +88,7 @@ describe('website (normalization)', () => {
   })
 
   it('trims whitespace', () => {
-    const schema = website() as z.ZodType
+    const schema = Website() as z.ZodType
     const result = schema.safeParse('  https://example.com  ')
     expect(result.success).toBe(true)
     if (result.success) {
@@ -102,7 +102,7 @@ describe('website (normalization)', () => {
 // ----------------------------------------------------------
 
 describe('website (requireHttps)', () => {
-  const schema = website({ requireHttps: true }) as z.ZodType
+  const schema = Website({ requireHttps: true }) as z.ZodType
 
   it('accepts https URL', () => {
     const result = schema.safeParse('https://example.com')
@@ -120,7 +120,7 @@ describe('website (requireHttps)', () => {
 // ----------------------------------------------------------
 
 describe('website (requireWww)', () => {
-  const schema = website({ requireWww: true }) as z.ZodType
+  const schema = Website({ requireWww: true }) as z.ZodType
 
   it('accepts URL with www prefix', () => {
     const result = schema.safeParse('https://www.example.com')
@@ -138,7 +138,7 @@ describe('website (requireWww)', () => {
 // ----------------------------------------------------------
 
 describe('website (allowPath: false)', () => {
-  const schema = website({ allowPath: false }) as z.ZodType
+  const schema = Website({ allowPath: false }) as z.ZodType
 
   it('accepts URL without path', () => {
     const result = schema.safeParse('https://example.com')
@@ -157,13 +157,13 @@ describe('website (allowPath: false)', () => {
 
 describe('website (allowQuery)', () => {
   it('rejects query string by default', () => {
-    const schema = website() as z.ZodType
+    const schema = Website() as z.ZodType
     const result = schema.safeParse('https://example.com?q=1')
     expect(result.success).toBe(false)
   })
 
   it('accepts query string when allowQuery: true', () => {
-    const schema = website({ allowQuery: true }) as z.ZodType
+    const schema = Website({ allowQuery: true }) as z.ZodType
     const result = schema.safeParse('https://example.com?q=1')
     expect(result.success).toBe(true)
   })
@@ -174,7 +174,7 @@ describe('website (allowQuery)', () => {
 // ----------------------------------------------------------
 
 describe('website (blockDomains)', () => {
-  const schema = website({ blockDomains: ['evil.com'] }) as z.ZodType
+  const schema = Website({ blockDomains: ['evil.com'] }) as z.ZodType
 
   it('rejects blocked domain', () => {
     const result = schema.safeParse('https://evil.com')
@@ -193,7 +193,7 @@ describe('website (blockDomains)', () => {
 })
 
 describe('website (allowDomains)', () => {
-  const schema = website({ allowDomains: ['example.com'] }) as z.ZodType
+  const schema = Website({ allowDomains: ['example.com'] }) as z.ZodType
 
   it('accepts allowed domain', () => {
     const result = schema.safeParse('https://example.com')
@@ -216,7 +216,7 @@ describe('website (allowDomains)', () => {
 // ----------------------------------------------------------
 
 describe('website (allowSubdomains: false)', () => {
-  const schema = website({ allowSubdomains: false }) as z.ZodType
+  const schema = Website({ allowSubdomains: false }) as z.ZodType
 
   it('accepts base domain', () => {
     const result = schema.safeParse('https://example.com')
@@ -239,7 +239,7 @@ describe('website (allowSubdomains: false)', () => {
 // ----------------------------------------------------------
 
 describe('website (security)', () => {
-  const schema = website() as z.ZodType
+  const schema = Website() as z.ZodType
 
   const payloads: ReadonlyArray<string> = [
     '<script>alert("xss")</script>',

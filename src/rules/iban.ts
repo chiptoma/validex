@@ -108,7 +108,7 @@ function validateMod97(iban: string): boolean {
  * @param options - Per-call IBAN validation options.
  * @returns A Zod schema that validates IBAN strings.
  */
-export const iban = /* @__PURE__ */ createRule<IbanOptions>({
+export const Iban = /* @__PURE__ */ createRule<IbanOptions>({
   name: 'iban',
   defaults: {},
   messages: {

@@ -164,7 +164,7 @@ function applyRangeRefinements(
  * @param options - Per-call dateTime validation options.
  * @returns A Zod schema that validates date/time strings.
  */
-export const dateTime = /* @__PURE__ */ createRule<DateTimeOptions>({
+export const DateTime = /* @__PURE__ */ createRule<DateTimeOptions>({
   name: 'dateTime',
   defaults: {},
   messages: {

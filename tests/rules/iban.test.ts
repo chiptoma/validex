@@ -6,7 +6,7 @@
 
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
-import { iban } from '../../src/rules/iban'
+import { Iban } from '../../src/rules/iban'
 import { testRuleContract } from '../helpers/testRule'
 
 // ----------------------------------------------------------
@@ -34,7 +34,7 @@ async function parseAsync(
 
 testRuleContract(
   'iban',
-  iban as (opts?: Record<string, unknown>) => unknown,
+  Iban as (opts?: Record<string, unknown>) => unknown,
   'iban',
 )
 
@@ -43,7 +43,7 @@ testRuleContract(
 // ----------------------------------------------------------
 
 describe('iban (valid)', () => {
-  const schema = iban()
+  const schema = Iban()
 
   it.each([
     'DE89370400440532013000',
@@ -67,7 +67,7 @@ describe('iban (valid)', () => {
 // ----------------------------------------------------------
 
 describe('iban (invalid)', () => {
-  const schema = iban()
+  const schema = Iban()
 
   it.each([
     'DE00370400440532013000',
@@ -92,7 +92,7 @@ describe('iban (invalid)', () => {
 // ----------------------------------------------------------
 
 describe('iban (formatted input)', () => {
-  const schema = iban()
+  const schema = Iban()
 
   it('accepts IBAN with spaces', async () => {
     const result = await parseAsync(schema, 'DE89 3704 0044 0532 0130 00')
@@ -115,7 +115,7 @@ describe('iban (formatted input)', () => {
 // ----------------------------------------------------------
 
 describe('iban (allowCountries)', () => {
-  const schema = iban({ allowCountries: ['DE', 'GB'] })
+  const schema = Iban({ allowCountries: ['DE', 'GB'] })
 
   it('accepts allowed country DE', async () => {
     const result = await parseAsync(schema, 'DE89370400440532013000')
@@ -138,7 +138,7 @@ describe('iban (allowCountries)', () => {
 // ----------------------------------------------------------
 
 describe('iban (blockCountries)', () => {
-  const schema = iban({ blockCountries: ['ES'] })
+  const schema = Iban({ blockCountries: ['ES'] })
 
   it('rejects blocked country ES', async () => {
     const result = await parseAsync(schema, 'ES9121000418450200051332')
@@ -157,13 +157,13 @@ describe('iban (blockCountries)', () => {
 
 describe('iban (MOD-97)', () => {
   it('fails when a digit is modified', async () => {
-    const schema = iban()
+    const schema = Iban()
     const result = await parseAsync(schema, 'DE89370400440532013001')
     expect(result.success).toBe(false)
   })
 
   it('fails when check digits are wrong', async () => {
-    const schema = iban()
+    const schema = Iban()
     const result = await parseAsync(schema, 'DE00370400440532013000')
     expect(result.success).toBe(false)
   })
@@ -175,7 +175,7 @@ describe('iban (MOD-97)', () => {
 
 describe('iban (emptyToUndefined)', () => {
   it('rejects empty string by default', async () => {
-    const schema = iban()
+    const schema = Iban()
     const result = await parseAsync(schema, '')
     expect(result.success).toBe(false)
   })
@@ -186,7 +186,7 @@ describe('iban (emptyToUndefined)', () => {
 // ----------------------------------------------------------
 
 describe('iban (security)', () => {
-  const schema = iban()
+  const schema = Iban()
 
   it.each([
     'DE89370400440532013000<script>alert(1)</script>',

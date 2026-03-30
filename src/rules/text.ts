@@ -47,7 +47,7 @@ export interface TextOptions extends FormatRuleOptions {
  * @param options - Per-call text validation options.
  * @returns A Zod schema that validates text strings.
  */
-export const text = /* @__PURE__ */ createRule<TextOptions>({
+export const Text = /* @__PURE__ */ createRule<TextOptions>({
   name: 'text',
   defaults: {},
   messages: {
