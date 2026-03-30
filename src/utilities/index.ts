@@ -1,1 +1,7 @@
-// validex/utilities — re-exports all utilities
+// ==============================================================================
+// UTILITIES BARREL
+// Re-exports all schema utility functions.
+// ==============================================================================
+
+export { requiredWhen } from './requiredWhen'
+export { sameAs } from './sameAs'
