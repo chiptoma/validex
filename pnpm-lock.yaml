@@ -96,6 +96,9 @@ importers:
       vitest:
         specifier: ^3.0.0
         version: 3.2.4(@types/debug@4.1.13)(@types/node@22.19.15)(jiti@2.6.1)(yaml@2.8.3)
+      zod:
+        specifier: '4'
+        version: 4.3.6
 
 packages:
 
