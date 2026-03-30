@@ -76,11 +76,24 @@
         "types": "./dist/adapters/fastify/index.d.cts",
         "default": "./dist/adapters/fastify/index.cjs"
       }
+    },
+    "./locales/en": {
+      "import": {
+        "types": "./dist/locales/en.d.ts",
+        "default": "./dist/locales/en.js"
+      },
+      "require": {
+        "types": "./dist/locales/en.d.cts",
+        "default": "./dist/locales/en.cjs"
+      }
     }
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "validex": "./dist/cli/index.js"
+  },
   "files": [
     "CHANGELOG.md",
     "LICENSE",

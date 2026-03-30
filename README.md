@@ -160,6 +160,13 @@ Keys follow the pattern `validation.messages.{namespace}.{code}`:
 - `validation.messages.password.tooShort`
 - `validation.messages.username.reserved`
 
+Generate translation templates with the CLI:
+
+```bash
+npx validex fr de es --output ./locales
+npx validex ja --empty --output ./locales
+```
+
 Use `getParams()` to extract structured error metadata from Zod issues:
 
 ```ts

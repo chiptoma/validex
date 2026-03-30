@@ -1,0 +1,176 @@
+{
+  "lang": "en",
+  "validation": {
+    "labels": {
+      "email": "Email",
+      "personName": "Name",
+      "businessName": "Business Name",
+      "password": "Password",
+      "passwordConfirmation": "Password Confirmation",
+      "phone": "Phone",
+      "website": "Website",
+      "url": "URL",
+      "username": "Username",
+      "slug": "Slug",
+      "postalCode": "Postal Code",
+      "licenseKey": "License Key",
+      "uuid": "UUID",
+      "jwt": "Token",
+      "dateTime": "Date/Time",
+      "token": "Token",
+      "text": "Text",
+      "country": "Country",
+      "currency": "Currency",
+      "color": "Color",
+      "creditCard": "Credit Card",
+      "iban": "IBAN",
+      "vatNumber": "VAT Number",
+      "macAddress": "MAC Address",
+      "ipAddress": "IP Address"
+    },
+    "messages": {
+      "base": {
+        "required": "{{label}} is required",
+        "min": "{{label}} must be at least {{minimum}} characters",
+        "max": "{{label}} must be at most {{maximum}} characters",
+        "type": "{{label}} must be a {{expected}}",
+        "format": "{{label}} is not valid"
+      },
+      "string": {
+        "minUppercase": "{{label}} must have at least {{minimum}} uppercase characters",
+        "minLowercase": "{{label}} must have at least {{minimum}} lowercase characters",
+        "minDigits": "{{label}} must have at least {{minimum}} digits",
+        "minSpecial": "{{label}} must have at least {{minimum}} special characters",
+        "maxUppercase": "{{label}} must have at most {{maximum}} uppercase characters",
+        "maxConsecutive": "{{label}} must not have more than {{maximum}} consecutive identical characters",
+        "maxWords": "{{label}} must have at most {{maximum}} words",
+        "noSpaces": "{{label}} must not contain spaces"
+      },
+      "email": {
+        "invalid": "{{label}} is not a valid email address",
+        "disposableBlocked": "Disposable email addresses are not allowed",
+        "plusAliasBlocked": "Plus alias email addresses are not allowed",
+        "domainBlocked": "Email domain '{{domain}}' is not allowed",
+        "domainNotAllowed": "Email domain '{{domain}}' is not in the allowed list",
+        "subdomainNotAllowed": "Subdomain email addresses are not allowed"
+      },
+      "personName": {
+        "invalid": "{{label}} is not a valid name",
+        "maxWords": "{{label}} must have at most {{maximum}} words",
+        "boundary": "{{label}} must start and end with a letter",
+        "maxConsecutive": "{{label}} must not repeat the same character more than {{maximum}} times"
+      },
+      "businessName": {
+        "invalid": "{{label}} is not a valid business name",
+        "boundary": "{{label}} must start and end with an alphanumeric character",
+        "maxConsecutive": "{{label}} must not repeat the same character more than {{maximum}} times"
+      },
+      "password": {
+        "minUppercase": "{{label}} must have at least {{minimum}} uppercase characters",
+        "minLowercase": "{{label}} must have at least {{minimum}} lowercase characters",
+        "minDigits": "{{label}} must have at least {{minimum}} digits",
+        "minSpecial": "{{label}} must have at least {{minimum}} special characters",
+        "maxUppercase": "{{label}} must have at most {{maximum}} uppercase characters",
+        "maxConsecutive": "{{label}} must not have more than {{maximum}} consecutive identical characters",
+        "commonBlocked": "This password is too common"
+      },
+      "confirmation": {
+        "mismatch": "Passwords must match"
+      },
+      "phone": {
+        "invalid": "{{label}} is not a valid phone number",
+        "requireMobile": "{{label}} must be a mobile phone number",
+        "countryBlocked": "Phone numbers from '{{country}}' are not allowed",
+        "countryNotAllowed": "Phone numbers from '{{country}}' are not in the allowed list"
+      },
+      "website": {
+        "invalid": "{{label}} is not a valid website URL",
+        "domainBlocked": "Domain '{{domain}}' is not allowed",
+        "domainNotAllowed": "Domain '{{domain}}' is not in the allowed list",
+        "subdomainNotAllowed": "Subdomain URLs are not allowed"
+      },
+      "url": {
+        "invalid": "{{label}} is not a valid URL",
+        "protocolNotAllowed": "Protocol '{{protocol}}' is not allowed",
+        "domainBlocked": "Domain '{{domain}}' is not allowed",
+        "domainNotAllowed": "Domain '{{domain}}' is not in the allowed list"
+      },
+      "username": {
+        "invalid": "{{label}} is not a valid username",
+        "reservedBlocked": "The username '{{value}}' is reserved",
+        "boundary": "{{label}} must start and end with an alphanumeric character",
+        "maxConsecutive": "{{label}} must not repeat the same character more than {{maximum}} times"
+      },
+      "slug": {
+        "invalid": "{{label}} is not a valid slug"
+      },
+      "postalCode": {
+        "invalid": "{{label}} is not a valid postal code"
+      },
+      "licenseKey": {
+        "invalid": "{{label}} is not a valid license key"
+      },
+      "uuid": {
+        "invalid": "{{label}} is not a valid UUID"
+      },
+      "jwt": {
+        "invalid": "{{label}} is not a valid JWT",
+        "expired": "This token has expired",
+        "notYetValid": "This token is not yet valid",
+        "missingClaim": "Required claim '{{claim}}' is missing",
+        "algorithmNotAllowed": "Algorithm '{{algorithm}}' is not allowed"
+      },
+      "dateTime": {
+        "invalid": "{{label}} is not a valid date",
+        "tooEarly": "{{label}} must be after {{minimum}}",
+        "tooLate": "{{label}} must be before {{maximum}}",
+        "noFuture": "{{label}} must not be in the future",
+        "noPast": "{{label}} must not be in the past"
+      },
+      "token": {
+        "invalid": "{{label}} is not a valid {{type}} token"
+      },
+      "text": {
+        "noEmails": "{{label}} must not contain email addresses",
+        "noUrls": "{{label}} must not contain URLs",
+        "noPhoneNumbers": "{{label}} must not contain phone numbers",
+        "noHtml": "{{label}} must not contain HTML",
+        "maxWords": "{{label}} must have at most {{maximum}} words",
+        "maxConsecutive": "{{label}} must not repeat the same character more than {{maximum}} times"
+      },
+      "country": {
+        "invalid": "{{label}} is not a valid country code",
+        "blocked": "Country '{{country}}' is not allowed",
+        "notAllowed": "Country '{{country}}' is not in the allowed list"
+      },
+      "currency": {
+        "invalid": "{{label}} is not a valid currency code",
+        "blocked": "Currency '{{currency}}' is not allowed",
+        "notAllowed": "Currency '{{currency}}' is not in the allowed list"
+      },
+      "color": {
+        "invalid": "{{label}} is not a valid color"
+      },
+      "creditCard": {
+        "invalid": "{{label}} is not a valid credit card number",
+        "issuerNotAllowed": "Card issuer '{{issuer}}' is not in the allowed list",
+        "issuerBlocked": "Card issuer '{{issuer}}' is not allowed"
+      },
+      "iban": {
+        "invalid": "{{label}} is not a valid IBAN",
+        "countryBlocked": "IBANs from '{{country}}' are not allowed",
+        "countryNotAllowed": "IBANs from '{{country}}' are not in the allowed list"
+      },
+      "vatNumber": {
+        "invalid": "{{label}} is not a valid VAT number"
+      },
+      "macAddress": {
+        "invalid": "{{label}} is not a valid MAC address"
+      },
+      "ipAddress": {
+        "invalid": "{{label}} is not a valid IP address",
+        "privateNotAllowed": "Private IP addresses are not allowed"
+      }
+    }
+  }
+}
