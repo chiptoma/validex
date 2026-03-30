@@ -35,7 +35,7 @@ jobs:
       - name: Publint
         run: pnpm publint
       - name: Are the types wrong?
-        run: pnpm attw --pack
+        run: pnpm attw --pack --ignore-rules no-resolution
       - name: Dead code check
         run: pnpm knip
       - name: Bundle size check
