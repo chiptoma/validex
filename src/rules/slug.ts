@@ -27,6 +27,9 @@ export interface SlugOptions extends FormatRuleOptions {
 // HELPERS
 // ----------------------------------------------------------
 
+const ESCAPE_REGEX_RE = /[.*+?^${}()|[\]\\]/g
+const DEFAULT_SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/
+
 /**
  * Build Slug Pattern
  * Constructs a regex for slug validation with optional extra characters.
@@ -36,10 +39,11 @@ export interface SlugOptions extends FormatRuleOptions {
  */
 function buildSlugPattern(extraChars?: string): RegExp {
   if (extraChars !== undefined && extraChars.length > 0) {
-    const escaped = extraChars.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const escaped = extraChars.replace(ESCAPE_REGEX_RE, '\\$&')
+
     return new RegExp(`^[a-z0-9${escaped}]+(-[a-z0-9${escaped}]+)*$`)
   }
-  return /^[a-z0-9]+(-[a-z0-9]+)*$/
+  return DEFAULT_SLUG_RE
 }
 
 // ----------------------------------------------------------

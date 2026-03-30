@@ -6,7 +6,6 @@
   "ignoreDependencies": [
     "@emnapi/core",
     "@emnapi/runtime",
-    "@nuxt/test-utils",
     "nuxt",
     "conventional-changelog-conventionalcommits",
     "eslint-plugin-vitest"

@@ -7,6 +7,8 @@
 // WORD LIMIT
 // ----------------------------------------------------------
 
+const WHITESPACE_RE = /\s+/
+
 /**
  * Max Words
  * Returns true if value has at most `max` words.
@@ -16,7 +18,7 @@
  * @returns True if the word count is at most `max`.
  */
 export function maxWords(value: string, max: number): boolean {
-  const words = value.split(/\s+/).filter(segment => segment.length > 0)
+  const words = value.split(WHITESPACE_RE).filter(segment => segment.length > 0)
   return words.length <= max
 }
 
@@ -56,6 +58,8 @@ export function maxConsecutive(value: string, max: number): boolean {
 // WHITESPACE CHECK
 // ----------------------------------------------------------
 
+const ANY_WHITESPACE_RE = /\s/
+
 /**
  * No Spaces
  * Returns true if value contains no whitespace characters.
@@ -64,5 +68,5 @@ export function maxConsecutive(value: string, max: number): boolean {
  * @returns True if the string has no spaces, tabs, or newlines.
  */
 export function noSpaces(value: string): boolean {
-  return !/\s/.test(value)
+  return !ANY_WHITESPACE_RE.test(value)
 }

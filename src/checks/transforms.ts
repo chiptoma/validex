@@ -45,6 +45,8 @@ export function toTitleCase(value: string): string {
     .join(' ')
 }
 
+const CAPITALIZE_RE = /(?:^|(?<='))./gu
+
 /**
  * Capitalize Segment
  * Capitalizes a word segment, handling apostrophes within the segment.
@@ -58,7 +60,7 @@ function capitalizeSegment(segment: string): string {
   }
 
   return segment.replace(
-    /(?:^|(?<='))./gu,
+    CAPITALIZE_RE,
     char => char.toUpperCase(),
   )
 }
@@ -66,6 +68,10 @@ function capitalizeSegment(segment: string): string {
 // ----------------------------------------------------------
 // SLUG TRANSFORM
 // ----------------------------------------------------------
+
+const SLUG_NON_ALNUM_RE = /[^a-z\d]+/g
+const SLUG_MULTI_HYPHEN_RE = /-+/g
+const SLUG_EDGE_HYPHEN_RE = /^-|-$/g
 
 /**
  * To Slug
@@ -78,14 +84,16 @@ function capitalizeSegment(segment: string): string {
 export function toSlug(value: string): string {
   return value
     .toLowerCase()
-    .replace(/[^a-z\d]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
+    .replace(SLUG_NON_ALNUM_RE, '-')
+    .replace(SLUG_MULTI_HYPHEN_RE, '-')
+    .replace(SLUG_EDGE_HYPHEN_RE, '')
 }
 
 // ----------------------------------------------------------
 // HTML / WHITESPACE TRANSFORMS
 // ----------------------------------------------------------
+
+const HTML_STRIP_RE = /<[^>]*>/g
 
 /**
  * Strip HTML
@@ -95,8 +103,10 @@ export function toSlug(value: string): string {
  * @returns The string with all HTML tags removed.
  */
 export function stripHtml(value: string): string {
-  return value.replace(/<[^>]*>/g, '')
+  return value.replace(HTML_STRIP_RE, '')
 }
+
+const MULTI_WHITESPACE_RE = /\s+/g
 
 /**
  * Collapse Whitespace
@@ -106,5 +116,5 @@ export function stripHtml(value: string): string {
  * @returns The string with collapsed whitespace.
  */
 export function collapseWhitespace(value: string): string {
-  return value.replace(/\s+/g, ' ').trim()
+  return value.replace(MULTI_WHITESPACE_RE, ' ').trim()
 }

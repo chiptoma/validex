@@ -41,6 +41,8 @@ export interface BusinessNameOptions extends FormatRuleOptions {
 /** Default non-letter/digit characters allowed in business names. */
 const DEFAULT_EXTRA = ' &.,-\'()'
 
+const ESCAPE_REGEX_RE = /[-.*+?^${}()|[\]\\]/g
+
 /**
  * Escape Regex Chars
  * Escapes special regex characters in a string.
@@ -49,7 +51,7 @@ const DEFAULT_EXTRA = ' &.,-\'()'
  * @returns The escaped string safe for use in a character class.
  */
 function escapeRegexChars(str: string): string {
-  return str.replace(/[-.*+?^${}()|[\]\\]/g, '\\$&')
+  return str.replace(ESCAPE_REGEX_RE, '\\$&')
 }
 
 /**
@@ -78,6 +80,9 @@ function buildBusinessCharsetRegex(
   return new RegExp(`^[\\p{L}\\p{Nd}${extra}]+$`, 'u')
 }
 
+const BOUNDARY_ALPHA_RE = /^\p{L}$/u
+const BOUNDARY_ALPHANUMERIC_RE = /^[\p{L}\p{Nd}]$/u
+
 /**
  * Check Boundary
  * Validates that the first and last characters satisfy the boundary constraint.
@@ -92,11 +97,9 @@ function checkBoundary(
   value: string,
   boundary: { start: string, end: string },
 ): boolean {
-  const alphaRe = /^\p{L}$/u
-  const alphanumericRe = /^[\p{L}\p{Nd}]$/u
   const chars = Array.from(value)
   const first = chars[0]
-  const last = chars[chars.length - 1]
+  const last = chars.at(-1)
 
   /* c8 ignore start -- defensive guard; min length constraint prevents empty strings from reaching boundary check */
   if (first === undefined || last === undefined) {
@@ -104,13 +107,13 @@ function checkBoundary(
   }
   /* c8 ignore stop */
 
-  if (boundary.start === 'alpha' && !alphaRe.test(first))
+  if (boundary.start === 'alpha' && !BOUNDARY_ALPHA_RE.test(first))
     return false
-  if (boundary.start === 'alphanumeric' && !alphanumericRe.test(first))
+  if (boundary.start === 'alphanumeric' && !BOUNDARY_ALPHANUMERIC_RE.test(first))
     return false
-  if (boundary.end === 'alpha' && !alphaRe.test(last))
+  if (boundary.end === 'alpha' && !BOUNDARY_ALPHA_RE.test(last))
     return false
-  if (boundary.end === 'alphanumeric' && !alphanumericRe.test(last))
+  if (boundary.end === 'alphanumeric' && !BOUNDARY_ALPHANUMERIC_RE.test(last))
     return false
 
   return true

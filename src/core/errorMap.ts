@@ -12,6 +12,7 @@ import type { ErrorParams } from '../types'
 const LABEL = '{{label}}'
 const MIN = '{{minimum}}'
 const MAX = '{{maximum}}'
+const TEMPLATE_PARAM_RE = /\{\{(\w+)\}\}/g
 
 // ----------------------------------------------------------
 // MESSAGE CATALOG
@@ -170,7 +171,7 @@ export function getErrorMessage(
 ): string {
   const nsMap = MESSAGE_MAP[namespace]
   const template = nsMap?.[code] ?? MESSAGE_MAP['base']?.['format'] ?? ''
-  return template.replace(/\{\{(\w+)\}\}/g, (_match, key: string) => {
+  return template.replace(TEMPLATE_PARAM_RE, (_match, key: string) => {
     const value = params[key]
     return value !== undefined && value !== null ? String(value) : `{{${key}}}`
   })

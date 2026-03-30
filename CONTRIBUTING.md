@@ -20,7 +20,7 @@ pnpm test
 pnpm check:full
 ```
 
-Requires **Node.js 18+** and **pnpm 9+**.
+Requires **Node.js 22+** and **pnpm 9+**.
 
 ## Project Structure
 

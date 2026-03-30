@@ -37,6 +37,8 @@ export interface URLOptions extends BaseRuleOptions {
 // HELPERS
 // ----------------------------------------------------------
 
+const TRAILING_COLON_RE = /:$/
+
 /**
  * Parse URL Safely
  * Wraps URL constructor in a try-catch for safe parsing.
@@ -69,7 +71,7 @@ function checkProtocolAllowed(value: string, protocols: readonly string[]): bool
   if (parsed === undefined)
     return false
   /* c8 ignore stop */
-  return protocols.includes(parsed.protocol.replace(/:$/, ''))
+  return protocols.includes(parsed.protocol.replace(TRAILING_COLON_RE, ''))
 }
 
 /**

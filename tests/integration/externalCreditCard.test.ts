@@ -69,7 +69,7 @@ function formatWithHyphens(num: string): string {
  * @returns A card number with a broken Luhn checksum.
  */
 function breakLuhn(num: string): string {
-  const lastChar = num[num.length - 1] ?? '0'
+  const lastChar = num.at(-1) ?? '0'
   const lastDigit = Number.parseInt(lastChar, 10)
   const newDigit = (lastDigit + 1) % 10
   return num.slice(0, -1) + String(newDigit)

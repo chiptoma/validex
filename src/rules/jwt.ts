@@ -46,6 +46,9 @@ interface JwtParts {
 // HELPERS
 // ----------------------------------------------------------
 
+const BASE64URL_HYPHEN_RE = /-/g
+const BASE64URL_UNDERSCORE_RE = /_/g
+
 /**
  * Base64 URL Decode
  * Decodes a base64url-encoded string to a UTF-8 string.
@@ -54,7 +57,7 @@ interface JwtParts {
  * @returns The decoded UTF-8 string.
  */
 function base64UrlDecode(str: string): string {
-  let base64 = str.replace(/-/g, '+').replace(/_/g, '/')
+  let base64 = str.replace(BASE64URL_HYPHEN_RE, '+').replace(BASE64URL_UNDERSCORE_RE, '/')
   const padding = base64.length % 4
   if (padding === 2)
     base64 += '=='

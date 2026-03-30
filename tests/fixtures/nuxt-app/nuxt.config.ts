@@ -1,6 +1,21 @@
-// Minimal Nuxt fixture config for future @nuxt/test-utils e2e tests.
-// Uses a plain export to avoid requiring nuxt type resolution.
-export default {
-  // We test the validex module functions directly, not via module registration
-  // since our module doesn't use defineNuxtModule from @nuxt/kit
-}
+// ==============================================================================
+// NUXT FIXTURE CONFIG
+// Minimal Nuxt app used by @nuxt/test-utils e2e tests.
+// ==============================================================================
+
+import { resolve } from 'node:path'
+import { defineNuxtConfig } from 'nuxt/config'
+
+const validexRoot = resolve(__dirname, '../../../src')
+
+export default defineNuxtConfig({
+  compatibilityDate: '2025-01-01',
+  alias: {
+    '~validex': validexRoot,
+  },
+  nitro: {
+    alias: {
+      '~validex': validexRoot,
+    },
+  },
+})

@@ -54,6 +54,8 @@ const PATTERN_MAP: Readonly<Record<string, string>> = {
 // HELPERS
 // ----------------------------------------------------------
 
+const ESCAPE_REGEX_RE = /[.*+?^${}()|[\]\\]/g
+
 /**
  * Escape Regex Chars
  * Escapes special regex characters in a string.
@@ -62,7 +64,7 @@ const PATTERN_MAP: Readonly<Record<string, string>> = {
  * @returns The escaped string safe for use in a character class.
  */
 function escapeRegexChars(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return str.replace(ESCAPE_REGEX_RE, '\\$&')
 }
 
 /**
@@ -95,6 +97,9 @@ function buildUsernamePattern(
   return new RegExp(`^[${charClass}]+$`)
 }
 
+const BOUNDARY_ALPHA_RE = /^[a-z]$/
+const BOUNDARY_ALPHANUMERIC_RE = /^[a-z0-9]$/
+
 /**
  * Check Boundary
  * Validates that the first and last characters satisfy the boundary constraint.
@@ -109,20 +114,18 @@ function checkBoundary(
   value: string,
   boundary: { start: string, end: string },
 ): boolean {
-  const alphaRe = /^[a-z]$/
-  const alphanumericRe = /^[a-z0-9]$/
   const first = value.charAt(0)
   const last = value.charAt(value.length - 1)
 
   if (first === '' || last === '')
     return false
-  if (boundary.start === 'alpha' && !alphaRe.test(first))
+  if (boundary.start === 'alpha' && !BOUNDARY_ALPHA_RE.test(first))
     return false
-  if (boundary.start === 'alphanumeric' && !alphanumericRe.test(first))
+  if (boundary.start === 'alphanumeric' && !BOUNDARY_ALPHANUMERIC_RE.test(first))
     return false
-  if (boundary.end === 'alpha' && !alphaRe.test(last))
+  if (boundary.end === 'alpha' && !BOUNDARY_ALPHA_RE.test(last))
     return false
-  if (boundary.end === 'alphanumeric' && !alphanumericRe.test(last))
+  if (boundary.end === 'alphanumeric' && !BOUNDARY_ALPHANUMERIC_RE.test(last))
     return false
 
   return true

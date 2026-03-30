@@ -9,6 +9,8 @@
 // ALPHABETIC
 // ----------------------------------------------------------
 
+const ALPHA_RE = /^\p{L}+$/u
+
 /**
  * Only Alpha
  * Returns true when every character is a unicode letter.
@@ -17,12 +19,14 @@
  * @returns True if the string is non-empty and contains only letters.
  */
 export function onlyAlpha(value: string): boolean {
-  return /^\p{L}+$/u.test(value)
+  return ALPHA_RE.test(value)
 }
 
 // ----------------------------------------------------------
 // NUMERIC
 // ----------------------------------------------------------
+
+const NUMERIC_RE = /^\d+$/
 
 /**
  * Only Numeric
@@ -32,12 +36,14 @@ export function onlyAlpha(value: string): boolean {
  * @returns True if the string is non-empty and contains only digits.
  */
 export function onlyNumeric(value: string): boolean {
-  return /^\d+$/.test(value)
+  return NUMERIC_RE.test(value)
 }
 
 // ----------------------------------------------------------
 // ALPHANUMERIC
 // ----------------------------------------------------------
+
+const ALPHANUMERIC_RE = /^[\p{L}\d]+$/u
 
 /**
  * Only Alphanumeric
@@ -47,12 +53,14 @@ export function onlyNumeric(value: string): boolean {
  * @returns True if the string is non-empty and contains only letters and digits.
  */
 export function onlyAlphanumeric(value: string): boolean {
-  return /^[\p{L}\d]+$/u.test(value)
+  return ALPHANUMERIC_RE.test(value)
 }
 
 // ----------------------------------------------------------
 // ALPHANUMERIC + SPACE + HYPHEN
 // ----------------------------------------------------------
+
+const ALPHANUMERIC_SPACE_HYPHEN_RE = /^[\p{L}\d\s-]+$/u
 
 /**
  * Only Alphanumeric Space Hyphen
@@ -63,12 +71,14 @@ export function onlyAlphanumeric(value: string): boolean {
  * @returns True if the string is non-empty and contains only the allowed set.
  */
 export function onlyAlphanumericSpaceHyphen(value: string): boolean {
-  return /^[\p{L}\d\s-]+$/u.test(value)
+  return ALPHANUMERIC_SPACE_HYPHEN_RE.test(value)
 }
 
 // ----------------------------------------------------------
 // ALPHA + SPACE + HYPHEN
 // ----------------------------------------------------------
+
+const ALPHA_SPACE_HYPHEN_RE = /^[\p{L}\s-]+$/u
 
 /**
  * Only Alpha Space Hyphen
@@ -79,5 +89,5 @@ export function onlyAlphanumericSpaceHyphen(value: string): boolean {
  * @returns True if the string is non-empty and contains only the allowed set.
  */
 export function onlyAlphaSpaceHyphen(value: string): boolean {
-  return /^[\p{L}\s-]+$/u.test(value)
+  return ALPHA_SPACE_HYPHEN_RE.test(value)
 }

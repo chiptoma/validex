@@ -43,6 +43,8 @@ const CHARSET_MAP: Readonly<Record<string, string>> = {
 // HELPERS
 // ----------------------------------------------------------
 
+const ESCAPE_REGEX_RE = /[.*+?^${}()|[\]\\]/g
+
 /**
  * Escape Regex Chars
  * Escapes special regex characters in a string.
@@ -51,7 +53,7 @@ const CHARSET_MAP: Readonly<Record<string, string>> = {
  * @returns The escaped string safe for use in a regex pattern.
  */
 function escapeRegexChars(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return str.replace(ESCAPE_REGEX_RE, '\\$&')
 }
 
 /**

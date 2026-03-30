@@ -27,6 +27,12 @@ export interface VatNumberOptions extends BaseRuleOptions {
 }
 
 // ----------------------------------------------------------
+// CONSTANTS
+// ----------------------------------------------------------
+
+const WHITESPACE_RE = /\s+/g
+
+// ----------------------------------------------------------
 // HELPERS
 // ----------------------------------------------------------
 
@@ -100,7 +106,7 @@ export const vatNumber = /* @__PURE__ */ createRule<VatNumberOptions>({
 
     const schema = opts.normalize !== false
       ? z.string().transform(
-          (v: string): string => v.trim().toUpperCase().replace(/\s+/g, ''),
+          (v: string): string => v.trim().toUpperCase().replace(WHITESPACE_RE, ''),
         )
       : z.string()
 

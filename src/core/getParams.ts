@@ -40,6 +40,10 @@ interface NativeMapping {
 // HELPERS
 // ----------------------------------------------------------
 
+const CAMEL_SPLIT_RE = /([a-z])([A-Z])/g
+const SEPARATOR_RE = /[_-]/g
+const WORD_START_RE = /\b\w/g
+
 /**
  * To Title Case
  * Converts a camelCase or snake_case field name to Title Case.
@@ -49,9 +53,9 @@ interface NativeMapping {
  */
 function toTitleCase(str: string): string {
   return str
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .replace(/[_-]/g, ' ')
-    .replace(/\b\w/g, c => c.toUpperCase())
+    .replace(CAMEL_SPLIT_RE, '$1 $2')
+    .replace(SEPARATOR_RE, ' ')
+    .replace(WORD_START_RE, c => c.toUpperCase())
 }
 
 /**
@@ -101,7 +105,7 @@ function deriveLabel(
     return ''
   if (fallback === 'generic')
     return 'This field'
-  const last = path[path.length - 1]
+  const last = path.at(-1)
   if (last === undefined)
     return 'This field'
   return typeof last === 'string' ? toTitleCase(last) : `Item ${String(last)}`

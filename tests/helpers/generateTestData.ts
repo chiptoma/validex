@@ -53,6 +53,7 @@ function generateWithLocales(
  * @returns Array of email strings.
  */
 export function generateEmails(count: number = 100): string[] {
+  // eslint-disable-next-line e18e/prefer-array-fill -- each call generates a unique random value
   return Array.from({ length: count }, () => faker.internet.email())
 }
 
@@ -90,6 +91,7 @@ export function generateCompanyNames(
  * @returns Array of UUID strings.
  */
 export function generateUuids(count: number = 100): string[] {
+  // eslint-disable-next-line e18e/prefer-array-fill -- each call generates a unique random value
   return Array.from({ length: count }, () => faker.string.uuid())
 }
 
@@ -101,6 +103,7 @@ export function generateUuids(count: number = 100): string[] {
  * @returns Array of URL strings.
  */
 export function generateUrls(count: number = 100): string[] {
+  // eslint-disable-next-line e18e/prefer-array-fill -- each call generates a unique random value
   return Array.from({ length: count }, () => faker.internet.url())
 }
 
@@ -112,6 +115,7 @@ export function generateUrls(count: number = 100): string[] {
  * @returns Array of username strings.
  */
 export function generateUsernames(count: number = 100): string[] {
+  // eslint-disable-next-line e18e/prefer-array-fill -- each call generates a unique random value
   return Array.from({ length: count }, () => faker.internet.username())
 }
 
@@ -123,5 +127,6 @@ export function generateUsernames(count: number = 100): string[] {
  * @returns Array of hex color strings.
  */
 export function generateColors(count: number = 100): string[] {
+  // eslint-disable-next-line e18e/prefer-array-fill -- each call generates a unique random value
   return Array.from({ length: count }, () => faker.color.rgb())
 }

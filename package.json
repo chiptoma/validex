@@ -84,6 +84,9 @@
     "README.md",
     "dist"
   ],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "tsup --watch & vitest",
     "build": "tsup",
@@ -119,39 +122,39 @@
     }
   },
   "dependencies": {
-    "disposable-email-domains": "^1.0.0",
-    "libphonenumber-js": "^1.11.0",
-    "postal-codes-js": "^2.5.0"
+    "disposable-email-domains": "^1.0.62",
+    "libphonenumber-js": "^1.12.41",
+    "postal-codes-js": "^2.5.2"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^4.0.0",
-    "@arethetypeswrong/cli": "^0.17.0",
-    "@emnapi/core": "^1.7.1",
-    "@emnapi/runtime": "^1.7.1",
-    "@faker-js/faker": "^9.0.0",
+    "@antfu/eslint-config": "^7.7.3",
+    "@arethetypeswrong/cli": "^0.18.2",
+    "@emnapi/core": "^1.9.1",
+    "@emnapi/runtime": "^1.9.1",
+    "@faker-js/faker": "^10.4.0",
     "@nuxt/test-utils": "^4.0.0",
-    "@size-limit/preset-small-lib": "^11.0.0",
-    "@types/node": "^22.0.0",
-    "@vitest/coverage-v8": "^3.0.0",
-    "bumpp": "^9.0.0",
+    "@size-limit/preset-small-lib": "^12.0.1",
+    "@types/node": "^25.5.0",
+    "@vitest/coverage-v8": "^4.1.2",
+    "bumpp": "^11.0.1",
     "conventional-changelog-cli": "^5.0.0",
-    "conventional-changelog-conventionalcommits": "^8.0.0",
-    "eslint": "^9.0.0",
-    "eslint-plugin-regexp": "^2.0.0",
-    "eslint-plugin-sonarjs": "^4.0.0",
-    "eslint-plugin-vitest": "^0.5.0",
-    "fast-check": "^4.0.0",
-    "fastify": "^5.0.0",
-    "knip": "^5.0.0",
-    "lint-staged": "^15.0.0",
+    "conventional-changelog-conventionalcommits": "^9.3.1",
+    "eslint": "^10.1.0",
+    "eslint-plugin-regexp": "^3.1.0",
+    "eslint-plugin-sonarjs": "^4.0.2",
+    "eslint-plugin-vitest": "^0.5.4",
+    "fast-check": "^4.6.0",
+    "fastify": "^5.8.4",
+    "knip": "^6.1.0",
+    "lint-staged": "^16.4.0",
     "nuxt": "^4.4.2",
-    "publint": "^0.2.0",
-    "simple-git-hooks": "^2.0.0",
-    "size-limit": "^11.0.0",
-    "tsup": "^8.0.0",
-    "typescript": "^5.0.0",
-    "vitest": "^3.0.0",
-    "zod": "4"
+    "publint": "^0.3.18",
+    "simple-git-hooks": "^2.13.1",
+    "size-limit": "^12.0.1",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.2",
+    "zod": "^4.3.6"
   },
   "pnpm": {
     "peerDependencyRules": {

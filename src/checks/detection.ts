@@ -12,6 +12,8 @@ import { findPhoneNumbersInText } from 'libphonenumber-js'
 // EMAIL DETECTION
 // ----------------------------------------------------------
 
+const EMAIL_RE = /[\w.%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i
+
 /**
  * Contains Email
  * Returns true when the value contains what looks like an email address.
@@ -22,12 +24,15 @@ import { findPhoneNumbersInText } from 'libphonenumber-js'
  * NOTE: Optimised for recall over precision — false positives are acceptable.
  */
 export function containsEmail(value: string): boolean {
-  return /[\w.%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i.test(value)
+  return EMAIL_RE.test(value)
 }
 
 // ----------------------------------------------------------
 // URL DETECTION
 // ----------------------------------------------------------
+
+const URL_PROTOCOL_RE = /https?:\/\/\S+/i
+const URL_WWW_RE = /\bwww\.\S+/i
 
 /**
  * Contains URL
@@ -39,12 +44,14 @@ export function containsEmail(value: string): boolean {
  * NOTE: Detects both protocol-prefixed (http/https) and www-prefixed URLs.
  */
 export function containsUrl(value: string): boolean {
-  return /https?:\/\/\S+/i.test(value) || /\bwww\.\S+/i.test(value)
+  return URL_PROTOCOL_RE.test(value) || URL_WWW_RE.test(value)
 }
 
 // ----------------------------------------------------------
 // HTML DETECTION
 // ----------------------------------------------------------
+
+const HTML_TAG_RE = /<[a-z/][^>]*>/i
 
 /**
  * Contains HTML
@@ -56,7 +63,7 @@ export function containsUrl(value: string): boolean {
  * NOTE: Avoids false positives on comparison operators and emoticons.
  */
 export function containsHtml(value: string): boolean {
-  return /<[a-z/][^>]*>/i.test(value)
+  return HTML_TAG_RE.test(value)
 }
 
 // ----------------------------------------------------------

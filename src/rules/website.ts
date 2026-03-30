@@ -40,6 +40,8 @@ export interface WebsiteOptions extends BaseRuleOptions {
 // HELPERS
 // ----------------------------------------------------------
 
+const PROTOCOL_PREFIX_RE = /^[a-z][a-z\d+\-.]*:/i
+
 /**
  * Normalize Website Input
  * Trims, lowercases, and auto-prepends https:// to bare domains.
@@ -49,7 +51,7 @@ export interface WebsiteOptions extends BaseRuleOptions {
  */
 function normalizeWebsiteInput(value: string): string {
   const normalized = value.trim().toLowerCase()
-  if (/^[a-z][a-z\d+\-.]*:/i.test(normalized))
+  if (PROTOCOL_PREFIX_RE.test(normalized))
     return normalized
   return `https://${normalized}`
 }

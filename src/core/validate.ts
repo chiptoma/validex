@@ -48,7 +48,7 @@ function buildNestedErrors(
       current = current[segment] as Record<string, unknown>
     }
 
-    const lastSegment = String(path[path.length - 1])
+    const lastSegment = String(path.at(-1))
     const existing = current[lastSegment]
     if (Array.isArray(existing)) {
       existing.push(message)
