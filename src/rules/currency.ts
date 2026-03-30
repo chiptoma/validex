@@ -70,10 +70,10 @@ export const Currency = /* @__PURE__ */ createRule<CurrencyOptions>({
     notAllowed: 'This currency is not in the allowed list',
   },
   build: (opts: CurrencyOptions): z.ZodType => {
-    /* v8 ignore start -- defensive fallback; defaults always provide allow/block */
+    /* c8 ignore start -- defensive fallback; defaults always provide allow/block */
     const allow = opts.allowCurrencies ?? []
     const block = opts.blockCurrencies ?? []
-    /* v8 ignore stop */
+    /* c8 ignore stop */
 
     let schema: z.ZodType = opts.normalize !== false
       ? z.string().transform((v: string): string => v.trim().toUpperCase())

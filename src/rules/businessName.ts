@@ -98,11 +98,11 @@ function checkBoundary(
   const first = chars[0]
   const last = chars[chars.length - 1]
 
-  /* v8 ignore start -- defensive guard; min length constraint prevents empty strings from reaching boundary check */
+  /* c8 ignore start -- defensive guard; min length constraint prevents empty strings from reaching boundary check */
   if (first === undefined || last === undefined) {
     return false
   }
-  /* v8 ignore stop */
+  /* c8 ignore stop */
 
   if (boundary.start === 'alpha' && !alphaRe.test(first))
     return false

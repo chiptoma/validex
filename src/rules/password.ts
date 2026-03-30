@@ -55,10 +55,10 @@ function applyLength(
   schema: z.ZodString,
   range: ResolvedRange | undefined,
 ): z.ZodString {
-  /* v8 ignore start -- defensive guard; defaults always provide length range */
+  /* c8 ignore start -- defensive guard; defaults always provide length range */
   if (range === undefined)
     return schema
-  /* v8 ignore stop */
+  /* c8 ignore stop */
   let result = schema
   if (range.min !== undefined)
     result = result.min(range.min)
@@ -85,10 +85,10 @@ function applyMinRefine(
   minCode: string,
   namespace: string,
 ): z.ZodType {
-  /* v8 ignore start -- defensive guard; composition ranges are always provided by defaults */
+  /* c8 ignore start -- defensive guard; composition ranges are always provided by defaults */
   if (range === undefined)
     return schema
-  /* v8 ignore stop */
+  /* c8 ignore stop */
   const min = range.min ?? 0
   if (min <= 0)
     return schema
@@ -195,10 +195,10 @@ export const password = /* @__PURE__ */ createRule<PasswordOptions>({
         : opts.blockCommon
       schema = schema.refine(
         async (v: unknown): Promise<boolean> => {
-          /* v8 ignore start -- defensive type guard; schema is z.string() so v is always string */
+          /* c8 ignore start -- defensive type guard; schema is z.string() so v is always string */
           if (typeof v !== 'string')
             return true
-          /* v8 ignore stop */
+          /* c8 ignore stop */
           try {
             const passwords = getCommonPasswords(tier)
             return !passwords.has(v.toLowerCase())
