@@ -8,7 +8,8 @@ build/
 *.tsbuildinfo
 
 # Test & lint
-coverage/
+/coverage/
+packages/*/coverage/
 .eslintcache
 
 # Logs
