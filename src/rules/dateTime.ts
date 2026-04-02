@@ -56,7 +56,7 @@ function parseToDate(value: Date | string): Date {
  * @param opts - Resolved dateTime options.
  * @returns A Zod string schema with datetime validation.
  */
-function buildDateTimeSchema(opts: DateTimeOptions): z.ZodString {
+function buildDateTimeSchema(opts: DateTimeOptions): z.ZodType {
   const datetimeOpts: { offset?: boolean, local?: boolean, precision?: number } = {}
 
   if (opts.allowOffset !== undefined) {
@@ -69,9 +69,14 @@ function buildDateTimeSchema(opts: DateTimeOptions): z.ZodString {
     datetimeOpts.precision = opts.precision
   }
 
-  return opts.normalize !== false
-    ? z.string().trim().datetime(datetimeOpts)
-    : z.string().datetime(datetimeOpts)
+  const check = z.string().datetime(datetimeOpts)
+  const base = opts.normalize !== false ? z.string().trim() : z.string()
+
+  return base.pipe(z.string().superRefine((v: string, ctx): void => {
+    if (!check.safeParse(v).success) {
+      ctx.addIssue({ code: 'custom', params: { code: 'invalid', namespace: 'dateTime', label: opts.label } })
+    }
+  }))
 }
 
 /**
@@ -79,12 +84,17 @@ function buildDateTimeSchema(opts: DateTimeOptions): z.ZodString {
  * Constructs the date-only base schema.
  *
  * @param opts - Resolved dateTime options.
- * @returns A Zod string schema with date validation.
+ * @returns A Zod schema with date validation.
  */
-function buildDateSchema(opts: DateTimeOptions): z.ZodString {
-  return opts.normalize !== false
-    ? z.string().trim().date()
-    : z.string().date()
+function buildDateSchema(opts: DateTimeOptions): z.ZodType {
+  const check = z.string().date()
+  const base = opts.normalize !== false ? z.string().trim() : z.string()
+
+  return base.pipe(z.string().superRefine((v: string, ctx): void => {
+    if (!check.safeParse(v).success) {
+      ctx.addIssue({ code: 'custom', params: { code: 'invalid', namespace: 'dateTime', label: opts.label } })
+    }
+  }))
 }
 
 /**
@@ -92,17 +102,22 @@ function buildDateSchema(opts: DateTimeOptions): z.ZodString {
  * Constructs the time-only base schema with optional precision.
  *
  * @param opts - Resolved dateTime options.
- * @returns A Zod string schema with time validation.
+ * @returns A Zod schema with time validation.
  */
-function buildTimeSchema(opts: DateTimeOptions): z.ZodString {
+function buildTimeSchema(opts: DateTimeOptions): z.ZodType {
   const timeOpts: { precision?: number } = {}
   if (opts.precision !== undefined) {
     timeOpts.precision = opts.precision
   }
 
-  return opts.normalize !== false
-    ? z.string().trim().time(timeOpts)
-    : z.string().time(timeOpts)
+  const check = z.string().time(timeOpts)
+  const base = opts.normalize !== false ? z.string().trim() : z.string()
+
+  return base.pipe(z.string().superRefine((v: string, ctx): void => {
+    if (!check.safeParse(v).success) {
+      ctx.addIssue({ code: 'custom', params: { code: 'invalid', namespace: 'dateTime', label: opts.label } })
+    }
+  }))
 }
 
 /**
@@ -124,7 +139,7 @@ function applyRangeRefinements(
     result = result.refine(
       // SAFETY: refine callback on z.string() schema; v is always a string
       (v: unknown): boolean => new Date(v as string) >= minDate,
-      { params: { code: 'tooEarly', namespace: 'dateTime', minimum: minDate.toISOString() } },
+      { params: { code: 'tooEarly', namespace: 'dateTime', minimum: minDate.toISOString(), label: opts.label } },
     )
   }
 
@@ -133,7 +148,7 @@ function applyRangeRefinements(
     result = result.refine(
       // SAFETY: refine callback on z.string() schema; v is always a string
       (v: unknown): boolean => new Date(v as string) <= maxDate,
-      { params: { code: 'tooLate', namespace: 'dateTime', maximum: maxDate.toISOString() } },
+      { params: { code: 'tooLate', namespace: 'dateTime', maximum: maxDate.toISOString(), label: opts.label } },
     )
   }
 
@@ -141,7 +156,7 @@ function applyRangeRefinements(
     result = result.refine(
       // SAFETY: refine callback on z.string() schema; v is always a string
       (v: unknown): boolean => new Date(v as string) <= new Date(),
-      { params: { code: 'noFuture', namespace: 'dateTime' } },
+      { params: { code: 'noFuture', namespace: 'dateTime', label: opts.label } },
     )
   }
 
@@ -149,7 +164,7 @@ function applyRangeRefinements(
     result = result.refine(
       // SAFETY: refine callback on z.string() schema; v is always a string
       (v: unknown): boolean => new Date(v as string) >= new Date(),
-      { params: { code: 'noPast', namespace: 'dateTime' } },
+      { params: { code: 'noPast', namespace: 'dateTime', label: opts.label } },
     )
   }
 

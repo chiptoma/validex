@@ -125,7 +125,7 @@ export const VatNumber = /* @__PURE__ */ createRule<VatNumberOptions>({
             return false
           return pattern.test(numberPart)
         },
-        { params: { code: 'invalid', namespace: 'vatNumber' } },
+        { params: { code: 'invalid', namespace: 'vatNumber', label: opts.label } },
       ),
     )
   },

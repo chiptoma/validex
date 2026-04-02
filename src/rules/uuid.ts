@@ -27,6 +27,12 @@ export interface UUIDOptions extends BaseRuleOptions {
 const UUID_VERSION_INDEX = 14
 
 // ----------------------------------------------------------
+// CACHED CHECK SCHEMAS
+// ----------------------------------------------------------
+
+const UUID_FORMAT_CHECK = z.string().uuid()
+
+// ----------------------------------------------------------
 // RULE FACTORY
 // ----------------------------------------------------------
 
@@ -43,15 +49,21 @@ export const Uuid = /* @__PURE__ */ createRule<UUIDOptions>({
   defaults: {},
   messages: {},
   build: (opts: UUIDOptions): unknown => {
-    let schema = opts.normalize !== false
-      ? z.string().trim().toLowerCase().uuid()
-      : z.string().uuid()
+    const base = opts.normalize !== false
+      ? z.string().trim().toLowerCase()
+      : z.string()
+
+    let schema: z.ZodType = base.pipe(z.string().superRefine((v: string, ctx): void => {
+      if (!UUID_FORMAT_CHECK.safeParse(v).success) {
+        ctx.addIssue({ code: 'custom', params: { code: 'invalid', namespace: 'uuid', label: opts.label } })
+      }
+    }))
 
     if (opts.version !== undefined && opts.version !== 'any') {
       const expected = String(opts.version)
       schema = schema.refine(
-        (v: string): boolean => v.charAt(UUID_VERSION_INDEX) === expected,
-        { params: { code: 'invalid', namespace: 'uuid' } },
+        (v: unknown): boolean => typeof v === 'string' && v.charAt(UUID_VERSION_INDEX) === expected,
+        { params: { code: 'invalid', namespace: 'uuid', label: opts.label } },
       )
     }
 

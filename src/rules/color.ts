@@ -123,7 +123,7 @@ export const Color = /* @__PURE__ */ createRule<ColorOptions>({
             default: return false
           }
         },
-        { params: { code: 'invalid', namespace: 'color' } },
+        { params: { code: 'invalid', namespace: 'color', label: opts.label } },
       ),
     )
   },

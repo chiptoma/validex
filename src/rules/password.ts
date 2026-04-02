@@ -8,11 +8,10 @@
 import type { ResolvedRange } from '../internal/resolveRange'
 import type { BaseRuleOptions, Range } from '../types'
 import { z } from 'zod'
-import { hasDigits, hasLowercase, hasSpecial, hasUppercase } from '../checks/composition'
-import { maxConsecutive } from '../checks/limits'
 import { createRule } from '../core/createRule'
 import { resolveRange } from '../internal/resolveRange'
 import { getCommonPasswords, loadCommonPasswords } from '../loaders/commonPasswords'
+import '../augmentation'
 
 // ----------------------------------------------------------
 // TYPES
@@ -49,78 +48,63 @@ export interface PasswordOptions extends BaseRuleOptions {
  *
  * @param schema - The base Zod string schema.
  * @param range  - Resolved length range.
+ * @param label
  * @returns The schema with length constraints applied.
  */
 function applyLength(
   schema: z.ZodString,
   range: ResolvedRange | undefined,
-): z.ZodString {
+  label?: string,
+): z.ZodType {
   /* c8 ignore start -- defensive guard; defaults always provide length range */
   if (range === undefined)
     return schema
   /* c8 ignore stop */
-  let result = schema
-  if (range.min !== undefined)
-    result = result.min(range.min)
-  if (range.max !== undefined)
-    result = result.max(range.max)
-  return result
+  const min = range.min
+  const max = range.max
+  return schema.superRefine((v: string, ctx): void => {
+    if (min !== undefined && v.length < min) {
+      ctx.addIssue({ code: 'custom', params: { code: 'min', namespace: 'base', label, minimum: min } })
+    }
+    if (max !== undefined && v.length > max) {
+      ctx.addIssue({ code: 'custom', params: { code: 'max', namespace: 'base', label, maximum: max } })
+    }
+  })
 }
 
 /**
- * Apply Composition Refine
- * Adds a single .refine() for a composition check (min side).
+ * Apply Block Common
+ * Adds an async refine that rejects common passwords.
  *
- * @param schema    - The current Zod schema.
- * @param check     - The composition check function.
- * @param range     - Resolved range for this character class.
- * @param minCode   - Error code for the minimum constraint.
- * @param namespace - Error namespace.
- * @returns The schema with the refine applied.
+ * @param schema      - The current Zod schema.
+ * @param blockCommon - The tier or boolean flag.
+ * @param label       - Explicit label for error messages.
+ * @returns The schema with the common-password refine applied.
  */
-function applyMinRefine(
+function applyBlockCommon(
   schema: z.ZodType,
-  check: (v: string, min: number, max?: number) => boolean,
-  range: ResolvedRange | undefined,
-  minCode: string,
-  namespace: string,
+  blockCommon: true | 'basic' | 'moderate' | 'strict',
+  label?: string,
 ): z.ZodType {
-  /* c8 ignore start -- defensive guard; composition ranges are always provided by defaults */
-  if (range === undefined)
-    return schema
-  /* c8 ignore stop */
-  const min = range.min ?? 0
-  if (min <= 0)
-    return schema
+  const tier = blockCommon === true || blockCommon === 'basic'
+    ? 'basic' as const
+    : blockCommon
   return schema.refine(
-    (v: unknown): boolean => typeof v === 'string' && check(v, min),
-    { params: { code: minCode, namespace, minimum: min } },
-  )
-}
-
-/**
- * Apply Max Refine
- * Adds a .refine() for the max side of a composition check.
- *
- * @param schema    - The current Zod schema.
- * @param check     - The composition check function.
- * @param range     - Resolved range for this character class.
- * @param maxCode   - Error code for the maximum constraint.
- * @param namespace - Error namespace.
- * @returns The schema with the refine applied.
- */
-function applyMaxRefine(
-  schema: z.ZodType,
-  check: (v: string, min: number, max?: number) => boolean,
-  range: ResolvedRange | undefined,
-  maxCode: string,
-  namespace: string,
-): z.ZodType {
-  if (range?.max === undefined)
-    return schema
-  return schema.refine(
-    (v: unknown): boolean => typeof v === 'string' && check(v, 0, range.max),
-    { params: { code: maxCode, namespace, maximum: range.max } },
+    async (v: unknown): Promise<boolean> => {
+      /* c8 ignore start -- defensive type guard; schema is z.string() so v is always string */
+      if (typeof v !== 'string')
+        return true
+      /* c8 ignore stop */
+      try {
+        const passwords = getCommonPasswords(tier)
+        return !passwords.has(v.toLowerCase())
+      }
+      catch {
+        const passwords = await loadCommonPasswords(tier)
+        return !passwords.has(v.toLowerCase())
+      }
+    },
+    { params: { code: 'commonBlocked', namespace: 'password', label } },
   )
 }
 
@@ -148,50 +132,33 @@ export const Password = /* @__PURE__ */ createRule<PasswordOptions>({
       base = base.trim()
     }
 
-    base = applyLength(base, resolveRange(opts.length))
-
-    let schema: z.ZodType = base
+    let schema: z.ZodType = applyLength(base, resolveRange(opts.length), opts.label)
     const upper = resolveRange(opts.uppercase)
     const lower = resolveRange(opts.lowercase)
     const digit = resolveRange(opts.digits)
     const special = resolveRange(opts.special)
     const consec = resolveRange(opts.consecutive)
+    const lbl = opts.label
 
-    schema = applyMinRefine(schema, hasUppercase, upper, 'minUppercase', ns)
-    schema = applyMaxRefine(schema, hasUppercase, upper, 'maxUppercase', ns)
-    schema = applyMinRefine(schema, hasLowercase, lower, 'minLowercase', ns)
-    schema = applyMinRefine(schema, hasDigits, digit, 'minDigits', ns)
-    schema = applyMinRefine(schema, hasSpecial, special, 'minSpecial', ns)
+    if (upper !== undefined && ((upper.min !== undefined && upper.min > 0) || upper.max !== undefined)) {
+      schema = schema.hasUppercase({ min: upper.min ?? 0, max: upper.max, namespace: ns, label: lbl })
+    }
+    if (lower !== undefined && ((lower.min !== undefined && lower.min > 0) || lower.max !== undefined)) {
+      schema = schema.hasLowercase({ min: lower.min ?? 0, max: lower.max, namespace: ns, label: lbl })
+    }
+    if (digit !== undefined && ((digit.min !== undefined && digit.min > 0) || digit.max !== undefined)) {
+      schema = schema.hasDigits({ min: digit.min ?? 0, max: digit.max, namespace: ns, label: lbl })
+    }
+    if (special !== undefined && ((special.min !== undefined && special.min > 0) || special.max !== undefined)) {
+      schema = schema.hasSpecial({ min: special.min ?? 0, max: special.max, namespace: ns, label: lbl })
+    }
 
     if (consec?.max !== undefined) {
-      const maxVal = consec.max
-      schema = schema.refine(
-        (v: unknown): boolean => typeof v === 'string' && maxConsecutive(v, maxVal),
-        { params: { code: 'maxConsecutive', namespace: ns, maximum: maxVal } },
-      )
+      schema = schema.maxConsecutive({ max: consec.max, namespace: ns, label: lbl })
     }
 
     if (opts.blockCommon !== false && opts.blockCommon !== undefined) {
-      const tier = opts.blockCommon === true || opts.blockCommon === 'basic'
-        ? 'basic' as const
-        : opts.blockCommon
-      schema = schema.refine(
-        async (v: unknown): Promise<boolean> => {
-          /* c8 ignore start -- defensive type guard; schema is z.string() so v is always string */
-          if (typeof v !== 'string')
-            return true
-          /* c8 ignore stop */
-          try {
-            const passwords = getCommonPasswords(tier)
-            return !passwords.has(v.toLowerCase())
-          }
-          catch {
-            const passwords = await loadCommonPasswords(tier)
-            return !passwords.has(v.toLowerCase())
-          }
-        },
-        { params: { code: 'commonBlocked', namespace: 'password' } },
-      )
+      schema = applyBlockCommon(schema, opts.blockCommon, opts.label)
     }
 
     return schema

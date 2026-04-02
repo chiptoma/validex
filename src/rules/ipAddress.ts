@@ -85,6 +85,15 @@ function stripCidr(ip: string): string {
 }
 
 // ----------------------------------------------------------
+// CACHED CHECK SCHEMAS
+// ----------------------------------------------------------
+
+const IPV4_CHECK = z.string().ipv4()
+const IPV6_CHECK = z.string().ipv6()
+const CIDRV4_CHECK = z.string().cidrv4()
+const CIDRV6_CHECK = z.string().cidrv6()
+
+// ----------------------------------------------------------
 // SCHEMA BUILDERS
 // ----------------------------------------------------------
 
@@ -94,13 +103,17 @@ function stripCidr(ip: string): string {
  *
  * @param allowCidr  - Whether to accept CIDR notation.
  * @param normalize  - Whether to apply trim normalization.
+ * @param label      - Explicit label for error messages.
  * @returns A Zod schema for IPv4 addresses.
  */
-function buildV4Schema(allowCidr: boolean, normalize: boolean): z.ZodType {
+function buildV4Schema(allowCidr: boolean, normalize: boolean, label?: string): z.ZodType {
   const base = normalize ? z.string().trim() : z.string()
-  return allowCidr
-    ? base.cidrv4()
-    : base.ipv4()
+  const check = allowCidr ? CIDRV4_CHECK : IPV4_CHECK
+  return base.superRefine((v: string, ctx): void => {
+    if (!check.safeParse(v).success) {
+      ctx.addIssue({ code: 'custom', params: { code: 'invalid', namespace: 'ipAddress', label } })
+    }
+  })
 }
 
 /**
@@ -109,33 +122,39 @@ function buildV4Schema(allowCidr: boolean, normalize: boolean): z.ZodType {
  *
  * @param allowCidr  - Whether to accept CIDR notation.
  * @param normalize  - Whether to apply trim normalization.
+ * @param label      - Explicit label for error messages.
  * @returns A Zod schema for IPv6 addresses.
  */
-function buildV6Schema(allowCidr: boolean, normalize: boolean): z.ZodType {
+function buildV6Schema(allowCidr: boolean, normalize: boolean, label?: string): z.ZodType {
   const base = normalize ? z.string().trim() : z.string()
-  return allowCidr
-    ? base.cidrv6()
-    : base.ipv6()
+  const check = allowCidr ? CIDRV6_CHECK : IPV6_CHECK
+  return base.superRefine((v: string, ctx): void => {
+    if (!check.safeParse(v).success) {
+      ctx.addIssue({ code: 'custom', params: { code: 'invalid', namespace: 'ipAddress', label } })
+    }
+  })
 }
 
 /**
  * Build Any Version Schema
- * Constructs a string schema with a refine that accepts either IPv4 or IPv6.
+ * Constructs a string schema with a superRefine that accepts either IPv4 or IPv6.
  * Avoids z.union to preserve correct error codes for undefined/empty values.
  *
  * @param allowCidr  - Whether to accept CIDR notation.
  * @param normalize  - Whether to apply trim normalization.
+ * @param label      - Explicit label for error messages.
  * @returns A Zod schema for any IP address version.
  */
-function buildAnyVersionSchema(allowCidr: boolean, normalize: boolean): z.ZodType {
-  const v4 = buildV4Schema(allowCidr, normalize)
-  const v6 = buildV6Schema(allowCidr, normalize)
+function buildAnyVersionSchema(allowCidr: boolean, normalize: boolean, label?: string): z.ZodType {
+  const v4Check = allowCidr ? CIDRV4_CHECK : IPV4_CHECK
+  const v6Check = allowCidr ? CIDRV6_CHECK : IPV6_CHECK
   const base = normalize ? z.string().trim() : z.string()
 
-  return base.refine(
-    (v: unknown): boolean => v4.safeParse(v).success || v6.safeParse(v).success,
-    { params: { code: 'invalid', namespace: 'ipAddress' } },
-  )
+  return base.superRefine((v: string, ctx): void => {
+    if (!v4Check.safeParse(v).success && !v6Check.safeParse(v).success) {
+      ctx.addIssue({ code: 'custom', params: { code: 'invalid', namespace: 'ipAddress', label } })
+    }
+  })
 }
 
 /**
@@ -144,11 +163,13 @@ function buildAnyVersionSchema(allowCidr: boolean, normalize: boolean): z.ZodTyp
  *
  * @param schema  - The base Zod schema to refine.
  * @param version - The IP version constraint.
+ * @param label   - Explicit label for error messages.
  * @returns The schema with the private-range refinement applied.
  */
 function applyPrivateRefinement(
   schema: z.ZodType,
   version: 'v4' | 'v6' | 'any',
+  label?: string,
 ): z.ZodType {
   return schema.refine(
     (v: unknown): boolean => {
@@ -162,7 +183,7 @@ function applyPrivateRefinement(
         ? !isPrivateIpv6(bare)
         : !isPrivateIpv4(bare)
     },
-    { params: { code: 'privateNotAllowed', namespace: 'ipAddress' } },
+    { params: { code: 'privateNotAllowed', namespace: 'ipAddress', label } },
   )
 }
 
@@ -191,18 +212,18 @@ export const IpAddress = /* @__PURE__ */ createRule<IpAddressOptions>({
 
     switch (version) {
       case 'v4':
-        schema = buildV4Schema(allowCidr, normalize)
+        schema = buildV4Schema(allowCidr, normalize, opts.label)
         break
       case 'v6':
-        schema = buildV6Schema(allowCidr, normalize)
+        schema = buildV6Schema(allowCidr, normalize, opts.label)
         break
       case 'any':
-        schema = buildAnyVersionSchema(allowCidr, normalize)
+        schema = buildAnyVersionSchema(allowCidr, normalize, opts.label)
         break
     }
 
     if (opts.allowPrivate === false) {
-      schema = applyPrivateRefinement(schema, version)
+      schema = applyPrivateRefinement(schema, version, opts.label)
     }
 
     return schema

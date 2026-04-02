@@ -75,14 +75,22 @@ export const Slug = /* @__PURE__ */ createRule<SlugOptions>({
       ? z.string().transform((v: string): string => v.trim().toLowerCase())
       : z.string()
 
+    const lbl = opts.label
+
     return base.pipe(
-      z.string()
-        .min(min)
-        .max(max)
-        .refine(
-          (v: string): boolean => pattern.test(v),
-          { params: { code: 'invalid', namespace: 'slug' } },
-        ),
+      z.string().superRefine((v: string, ctx): void => {
+        if (v.length < min) {
+          ctx.addIssue({ code: 'custom', params: { code: 'min', namespace: 'base', label: lbl, minimum: min } })
+          return
+        }
+        if (v.length > max) {
+          ctx.addIssue({ code: 'custom', params: { code: 'max', namespace: 'base', label: lbl, maximum: max } })
+          return
+        }
+        if (!pattern.test(v)) {
+          ctx.addIssue({ code: 'custom', params: { code: 'invalid', namespace: 'slug', label: lbl } })
+        }
+      }),
     )
   },
 })

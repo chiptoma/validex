@@ -6,12 +6,12 @@
 import type { Boundary, FormatRuleOptions, Range } from '../types'
 import { z } from 'zod'
 import { checkAsciiBoundary } from '../checks/boundary'
-import { maxConsecutive } from '../checks/limits'
 import { createRule } from '../core/createRule'
 import { escapeRegexChars } from '../internal/escapeRegex'
 import { resolveBoundary } from '../internal/resolveBoundary'
 import { resolveRange } from '../internal/resolveRange'
 import { getReservedUsernames, loadReservedUsernames } from '../loaders/reservedUsernames'
+import '../augmentation'
 
 // ----------------------------------------------------------
 // TYPES
@@ -93,36 +93,41 @@ function buildUsernamePattern(
  * @param schema         - The current Zod schema to refine.
  * @param ignoreCase     - Whether to normalize casing before comparison.
  * @param customReserved - Additional reserved words from the caller.
+ * @param label          - Explicit label for error messages.
  * @returns The schema with the reserved-word refine applied.
  */
 function applyReservedRefine(
   schema: z.ZodType,
   ignoreCase: boolean,
   customReserved: readonly string[],
+  label?: string,
 ): z.ZodType {
-  return schema.refine(
-    async (v: unknown): Promise<boolean> => {
-      /* c8 ignore start -- defensive type guard; schema is z.string() so v is always string */
-      if (typeof v !== 'string')
-        return true
-      /* c8 ignore stop */
-      const normalized = ignoreCase ? v.toLowerCase() : v
-      if (customReserved.length > 0) {
-        const customSet = customReserved.map(w => ignoreCase ? w.toLowerCase() : w)
-        if (customSet.includes(normalized))
-          return false
+  return schema.superRefine(async (v: unknown, ctx): Promise<void> => {
+    /* c8 ignore start -- defensive type guard; schema is z.string() so v is always string */
+    if (typeof v !== 'string')
+      return
+    /* c8 ignore stop */
+    const normalized = ignoreCase ? v.toLowerCase() : v
+    if (customReserved.length > 0) {
+      const customSet = customReserved.map(w => ignoreCase ? w.toLowerCase() : w)
+      if (customSet.includes(normalized)) {
+        ctx.addIssue({ code: 'custom', params: { code: 'reservedBlocked', namespace: 'username', value: normalized, label } })
+        return
       }
-      try {
-        const reserved = getReservedUsernames()
-        return !reserved.has(normalized)
-      }
-      catch {
-        const reserved = await loadReservedUsernames()
-        return !reserved.has(normalized)
-      }
-    },
-    { params: { code: 'reservedBlocked', namespace: 'username' } },
-  )
+    }
+    let isReserved = false
+    try {
+      const reserved = getReservedUsernames()
+      isReserved = reserved.has(normalized)
+    }
+    catch {
+      const reserved = await loadReservedUsernames()
+      isReserved = reserved.has(normalized)
+    }
+    if (isReserved) {
+      ctx.addIssue({ code: 'custom', params: { code: 'reservedBlocked', namespace: 'username', value: normalized, label } })
+    }
+  })
 }
 
 // ----------------------------------------------------------
@@ -160,37 +165,46 @@ export const Username = /* @__PURE__ */ createRule<UsernameOptions>({
       ? z.string().transform((v: string): string => v.trim().toLowerCase())
       : z.string()
 
-    let inner = z.string().min(min).max(max)
+    const lbl = opts.label
 
-    inner = inner.refine(
-      (v: string): boolean => pattern.test(v),
-      { params: { code: 'invalid', namespace: 'username' } },
-    )
+    // Stage 1: length + pattern + boundary (with early returns)
+    const stage1: z.ZodType = z.string().superRefine((v: string, ctx): void => {
+      if (v.length < min) {
+        ctx.addIssue({ code: 'custom', params: { code: 'min', namespace: 'base', label: lbl, minimum: min } })
+        return
+      }
+      if (v.length > max) {
+        ctx.addIssue({ code: 'custom', params: { code: 'max', namespace: 'base', label: lbl, maximum: max } })
+        return
+      }
+      if (!pattern.test(v)) {
+        ctx.addIssue({ code: 'custom', params: { code: 'invalid', namespace: 'username', label: lbl } })
+        return
+      }
+      if (boundary !== undefined && !checkAsciiBoundary(v, boundary)) {
+        ctx.addIssue({ code: 'custom', params: { code: 'boundary', namespace: 'username', label: lbl } })
+      }
+    })
 
-    if (boundary !== undefined) {
-      inner = inner.refine(
-        (v: string): boolean => checkAsciiBoundary(v, boundary),
-        { params: { code: 'boundary', namespace: 'username' } },
-      )
-    }
-
+    // Stage 2: chainable checks (only runs if stage 1 passes)
+    let stage2: z.ZodType = z.string()
     if (consecutiveRange?.max !== undefined) {
-      const limit = consecutiveRange.max
-      inner = inner.refine(
-        (v: string): boolean => maxConsecutive(v, limit),
-        { params: { code: 'maxConsecutive', namespace: 'username', maximum: limit } },
-      )
+      stage2 = stage2.maxConsecutive({ max: consecutiveRange.max, namespace: 'username', label: lbl })
     }
+
+    // SAFETY: stage2 is z.string() chain; output is string-compatible
+    let inner: z.ZodType = stage1.pipe(stage2 as z.ZodType<string, string>)
 
     if (opts.blockReserved === true) {
-      const refined = applyReservedRefine(
+      inner = applyReservedRefine(
         inner,
         opts.ignoreCase !== false,
         opts.reservedWords ?? [],
-      ) as typeof inner // SAFETY: applyReservedRefine preserves the ZodType shape; cast keeps pipe() type-compatible
-      return base.pipe(refined)
+        opts.label,
+      )
     }
 
-    return base.pipe(inner)
+    // SAFETY: inner is a z.string() chain; output is string-compatible
+    return base.pipe(inner as z.ZodType<string, string>)
   },
 })

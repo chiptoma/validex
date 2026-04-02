@@ -77,7 +77,7 @@ export const MacAddress = /* @__PURE__ */ createRule<MacAddressOptions>({
 
     return base.refine(
       (v: string): boolean => pattern.test(v),
-      { params: { code: 'invalid', namespace: 'macAddress' } },
+      { params: { code: 'invalid', namespace: 'macAddress', label: opts.label } },
     )
   },
 })

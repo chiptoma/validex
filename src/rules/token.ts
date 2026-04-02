@@ -71,23 +71,28 @@ export const Token = /* @__PURE__ */ createRule<TokenOptions>({
     const spec = TOKEN_SPECS[opts.type]
     const range = resolveRange(opts.length)
 
-    let schema = opts.normalize !== false
+    const schema = opts.normalize !== false
       ? z.string().trim()
       : z.string()
 
     const min = range?.min ?? spec.defaultLength ?? undefined
     const max = range?.max ?? spec.defaultLength ?? undefined
-
-    if (min !== undefined)
-      schema = schema.min(min)
-    if (max !== undefined)
-      schema = schema.max(max)
-
     const pattern = opts.regex ?? spec.pattern
+    const lbl = opts.label
+    const tokenType = opts.type
 
-    return schema.refine(
-      (v: string): boolean => pattern.test(v),
-      { params: { code: 'invalid', namespace: 'token', type: opts.type } },
-    )
+    return schema.superRefine((v: string, ctx): void => {
+      if (min !== undefined && v.length < min) {
+        ctx.addIssue({ code: 'custom', params: { code: 'min', namespace: 'base', label: lbl, minimum: min } })
+        return
+      }
+      if (max !== undefined && v.length > max) {
+        ctx.addIssue({ code: 'custom', params: { code: 'max', namespace: 'base', label: lbl, maximum: max } })
+        return
+      }
+      if (!pattern.test(v)) {
+        ctx.addIssue({ code: 'custom', params: { code: 'invalid', namespace: 'token', type: tokenType, label: lbl } })
+      }
+    })
   },
 })

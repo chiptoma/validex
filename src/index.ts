@@ -3,17 +3,37 @@
 // Re-exports all public APIs.
 // ==============================================================================
 
+// Zod type augmentation — must execute before any schema creation
+import './augmentation'
+
+// Checks — Character Composition
+export { hasDigits, hasLowercase, hasSpecial, hasUppercase } from './checks'
+
+// Checks — Content Detection
+export { containsEmail, containsHtml, containsPhoneNumber, containsUrl } from './checks'
+
+// Checks — Character Restriction
+export {
+  onlyAlpha,
+  onlyAlphanumeric,
+  onlyAlphanumericSpaceHyphen,
+  onlyAlphaSpaceHyphen,
+  onlyNumeric,
+} from './checks'
+
+// Checks — Limits
+export { maxConsecutive, maxWords, minWords, noSpaces } from './checks'
+
+// Checks — Transforms
+export { collapseWhitespace, emptyToUndefined, stripHtml, toSlug, toTitleCase } from './checks'
+
 // Configuration
-export { getConfig, preloadData, setup } from './config'
+export { configure, getConfig, preloadData, resetConfig, setup } from './config'
 
 // Core utilities
 export {
   createRule,
-  getErrorMessage,
   getParams,
-  MESSAGE_MAP,
-  registerCustomError,
-  registerMessages,
   validate,
 } from './core'
 
@@ -87,7 +107,7 @@ export type {
 export type {
   BaseRuleOptions,
   Boundary,
-  CreateRuleConfig,
+  CreateRuleOptions,
   ErrorParams,
   FormatRuleOptions,
   GlobalConfig,
@@ -100,7 +120,11 @@ export type {
   PathTransform,
   PreloadOptions,
   Range,
+  RuleDefaults,
   RuleFactory,
   TranslationFunction,
   ValidationResult,
 } from './types'
+
+// Schema utilities
+export { requiredWhen, sameAs } from './utilities'

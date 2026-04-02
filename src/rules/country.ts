@@ -105,25 +105,27 @@ export const Country = /* @__PURE__ */ createRule<CountryOptions>({
           const codes = await resolveCountryCodes()
           return isValidCountryCode(v, format, codes)
         },
-        { params: { code: 'invalid', namespace: 'country' } },
+        { params: { code: 'invalid', namespace: 'country', label: opts.label } },
       ),
     )
 
     if (allow.length > 0) {
       schema = schema.pipe(
-        z.string().refine(
-          (v: string): boolean => allow.includes(v),
-          { params: { code: 'notAllowed', namespace: 'country' } },
-        ),
+        z.string().superRefine((v: string, ctx): void => {
+          if (!allow.includes(v)) {
+            ctx.addIssue({ code: 'custom', params: { code: 'notAllowed', namespace: 'country', country: v, label: opts.label } })
+          }
+        }),
       )
     }
 
     if (block.length > 0) {
       schema = schema.pipe(
-        z.string().refine(
-          (v: string): boolean => !block.includes(v),
-          { params: { code: 'blocked', namespace: 'country' } },
-        ),
+        z.string().superRefine((v: string, ctx): void => {
+          if (block.includes(v)) {
+            ctx.addIssue({ code: 'custom', params: { code: 'blocked', namespace: 'country', country: v, label: opts.label } })
+          }
+        }),
       )
     }
 

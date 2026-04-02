@@ -34,7 +34,7 @@ export { MacAddress } from './macAddress'
 export type { MacAddressOptions } from './macAddress'
 
 // ----------------------------------------------------------
-// OPTION INTERFACES
+// RULE FACTORIES (P-W)
 // ----------------------------------------------------------
 
 export { Password } from './password'
@@ -62,10 +62,6 @@ export { Uuid } from './uuid'
 export type { UUIDOptions } from './uuid'
 export { VatNumber } from './vatNumber'
 export type { VatNumberOptions } from './vatNumber'
-
-// ----------------------------------------------------------
-// SUPPLEMENTARY TYPES
-// ----------------------------------------------------------
 
 export { Website } from './website'
 export type { WebsiteOptions } from './website'

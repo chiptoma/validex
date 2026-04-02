@@ -3,9 +3,11 @@
 // Validates arbitrary URLs with protocol, TLD, domain, and auth constraints.
 // ==============================================================================
 
+import type { z as zType } from 'zod'
 import type { BaseRuleOptions, Range } from '../types'
 import { z } from 'zod'
 import { createRule } from '../core/createRule'
+import { matchesDomainList } from '../internal/domainMatch'
 import { resolveRange } from '../internal/resolveRange'
 
 // ----------------------------------------------------------
@@ -56,98 +58,56 @@ function parseUrlSafely(value: string): URL | undefined {
 }
 
 /**
- * Check Protocol Allowed
- * Validates that the URL protocol is in the allowed list.
+ * Check Url Constraints
+ * Validates parsed URL against protocol, TLD, auth, domain, and query constraints.
  *
- * @param value     - The URL string.
- * @param protocols - Allowed protocol names (without colon).
- * @returns True if protocol is allowed.
+ * @param parsed       - The parsed URL object.
+ * @param opts         - The resolved URL options.
+ * @param ctx          - Zod refinement context for adding issues.
+ * @param ns           - Error namespace.
+ * @param lbl          - Label for error messages.
+ * @param protocols    - Allowed protocols list.
+ * @param blockDomains - Blocked domain list.
+ * @param allowDomains - Allowed domain list.
  */
-function checkProtocolAllowed(value: string, protocols: readonly string[]): boolean {
-  if (protocols.length === 0)
-    return true
-  const parsed = parseUrlSafely(value)
-  /* c8 ignore start -- defensive guard; URL already passed z.url() validation */
-  if (parsed === undefined)
-    return false
-  /* c8 ignore stop */
-  return protocols.includes(parsed.protocol.replace(TRAILING_COLON_RE, ''))
+function checkUrlConstraints(
+  parsed: URL,
+  opts: URLOptions,
+  ctx: zType.RefinementCtx,
+  ns: string,
+  lbl: string | undefined,
+  protocols: readonly string[],
+  blockDomains: readonly string[],
+  allowDomains: readonly string[],
+): void {
+  const protocol = parsed.protocol.replace(TRAILING_COLON_RE, '')
+  const { hostname } = parsed
+
+  if (protocols.length > 0 && !protocols.includes(protocol)) {
+    ctx.addIssue({ code: 'custom', params: { code: 'protocolNotAllowed', namespace: ns, protocol, label: lbl } })
+  }
+  if (opts.requireTLD === true && !hostname.includes('.')) {
+    ctx.addIssue({ code: 'custom', params: { code: 'tldRequired', namespace: ns, label: lbl } })
+  }
+  if (opts.allowAuth !== true && (parsed.username !== '' || parsed.password !== '')) {
+    ctx.addIssue({ code: 'custom', params: { code: 'authNotAllowed', namespace: ns, label: lbl } })
+  }
+  if (blockDomains.length > 0 && matchesDomainList(hostname, blockDomains)) {
+    ctx.addIssue({ code: 'custom', params: { code: 'domainBlocked', namespace: ns, domain: hostname, label: lbl } })
+  }
+  if (allowDomains.length > 0 && !matchesDomainList(hostname, allowDomains)) {
+    ctx.addIssue({ code: 'custom', params: { code: 'domainNotAllowed', namespace: ns, domain: hostname, label: lbl } })
+  }
+  if (opts.allowQuery === false && parsed.search !== '') {
+    ctx.addIssue({ code: 'custom', params: { code: 'queryNotAllowed', namespace: ns, label: lbl } })
+  }
 }
 
-/**
- * Check Has TLD
- * Validates that the hostname contains at least one dot (has a TLD).
- *
- * @param value - The URL string.
- * @returns True if hostname includes a dot.
- */
-function checkHasTLD(value: string): boolean {
-  const parsed = parseUrlSafely(value)
-  /* c8 ignore start -- defensive guard; URL already passed z.url() validation */
-  if (parsed === undefined)
-    return false
-  /* c8 ignore stop */
-  return parsed.hostname.includes('.')
-}
+// ----------------------------------------------------------
+// CACHED CHECK SCHEMAS
+// ----------------------------------------------------------
 
-/**
- * Check No Auth
- * Validates that the URL contains no userinfo (username/password).
- *
- * @param value - The URL string.
- * @returns True if no auth credentials are present.
- */
-function checkNoAuth(value: string): boolean {
-  const parsed = parseUrlSafely(value)
-  /* c8 ignore start -- defensive guard; URL already passed z.url() validation */
-  if (parsed === undefined)
-    return false
-  /* c8 ignore stop */
-  return parsed.username === '' && parsed.password === ''
-}
-
-/**
- * Check Domain List
- * Validates hostname against allow/block domain lists.
- *
- * @param value   - The URL string.
- * @param domains - The domain list to check against.
- * @param mode    - 'block' rejects matches, 'allow' requires matches.
- * @returns True if the domain passes the check.
- */
-function checkDomainList(
-  value: string,
-  domains: readonly string[],
-  mode: 'allow' | 'block',
-): boolean {
-  if (domains.length === 0)
-    return true
-  const parsed = parseUrlSafely(value)
-  /* c8 ignore start -- defensive guard; URL already passed z.url() validation */
-  if (parsed === undefined)
-    return false
-  /* c8 ignore stop */
-  const matches = domains.some((d: string) =>
-    parsed.hostname === d || parsed.hostname.endsWith(`.${d}`),
-  )
-  return mode === 'block' ? !matches : matches
-}
-
-/**
- * Check No Query
- * Validates that the URL has no query string.
- *
- * @param value - The URL string.
- * @returns True if no query string is present.
- */
-function checkNoQuery(value: string): boolean {
-  const parsed = parseUrlSafely(value)
-  /* c8 ignore start -- defensive guard; URL already passed z.url() validation */
-  if (parsed === undefined)
-    return false
-  /* c8 ignore stop */
-  return parsed.search === ''
-}
+const URL_FORMAT_CHECK = z.string().url()
 
 // ----------------------------------------------------------
 // RULE FACTORY
@@ -171,50 +131,35 @@ export const Url = /* @__PURE__ */ createRule<URLOptions>({
     const max = range?.max ?? 2048
     const protocols = opts.protocols ?? ['http', 'https']
     /* c8 ignore stop */
+    const min = range?.min
 
     const base = opts.normalize !== false
       ? z.string().trim()
       : z.string()
 
-    let schema = base.pipe(z.string().max(max).url())
-      .refine(
-        (v: string): boolean => checkProtocolAllowed(v, protocols),
-        { params: { code: 'protocolNotAllowed', namespace: 'url' } },
-      )
+    const lbl = opts.label
+    const ns = 'url'
+    const blockDomains = opts.blockDomains ?? []
+    const allowDomains = opts.allowDomains ?? []
 
-    if (opts.requireTLD === true) {
-      schema = schema.refine(
-        (v: string): boolean => checkHasTLD(v),
-        { params: { code: 'invalid', namespace: 'url' } },
-      )
-    }
+    return base.pipe(z.string().superRefine((v: string, ctx): void => {
+      if (min !== undefined && v.length < min) {
+        ctx.addIssue({ code: 'custom', params: { code: 'min', namespace: 'base', label: lbl, minimum: min } })
+      }
+      if (v.length > max) {
+        ctx.addIssue({ code: 'custom', params: { code: 'max', namespace: 'base', label: lbl, maximum: max } })
+      }
+      if (!URL_FORMAT_CHECK.safeParse(v).success) {
+        ctx.addIssue({ code: 'custom', params: { code: 'invalid', namespace: ns, label: lbl } })
+        return
+      }
 
-    if (opts.allowAuth !== true) {
-      schema = schema.refine(
-        (v: string): boolean => checkNoAuth(v),
-        { params: { code: 'invalid', namespace: 'url' } },
-      )
-    }
+      const parsed = parseUrlSafely(v)
+      /* c8 ignore next -- defensive guard; URL already passed z.url() validation */
+      if (parsed === undefined)
+        return
 
-    schema = schema
-      .refine(
-        /* c8 ignore next -- defensive fallback; defaults always provide blockDomains */
-        (v: string): boolean => checkDomainList(v, opts.blockDomains ?? [], 'block'),
-        { params: { code: 'domainBlocked', namespace: 'url' } },
-      )
-      .refine(
-        /* c8 ignore next -- defensive fallback; defaults always provide allowDomains */
-        (v: string): boolean => checkDomainList(v, opts.allowDomains ?? [], 'allow'),
-        { params: { code: 'domainNotAllowed', namespace: 'url' } },
-      )
-
-    if (opts.allowQuery === false) {
-      schema = schema.refine(
-        (v: string): boolean => checkNoQuery(v),
-        { params: { code: 'invalid', namespace: 'url' } },
-      )
-    }
-
-    return schema
+      checkUrlConstraints(parsed, opts, ctx, ns, lbl, protocols, blockDomains, allowDomains)
+    }))
   },
 })

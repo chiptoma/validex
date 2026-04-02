@@ -6,12 +6,12 @@
 import type { Boundary, FormatRuleOptions, Range } from '../types'
 import { z } from 'zod'
 import { checkUnicodeBoundary } from '../checks/boundary'
-import { maxConsecutive } from '../checks/limits'
 import { toTitleCase } from '../checks/transforms'
 import { createRule } from '../core/createRule'
 import { escapeRegexChars } from '../internal/escapeRegex'
 import { resolveBoundary } from '../internal/resolveBoundary'
 import { resolveRange } from '../internal/resolveRange'
+import '../augmentation'
 
 // ----------------------------------------------------------
 // TYPES
@@ -90,43 +90,46 @@ export const BusinessName = /* @__PURE__ */ createRule<BusinessNameOptions>({
     const consecutiveRange = resolveRange(opts.consecutive)
     const boundary = resolveBoundary(opts.boundary)
 
-    let base = opts.normalize !== false
+    const base = opts.normalize !== false
       ? z.string().trim()
       : z.string()
 
-    if (range?.min !== undefined)
-      base = base.min(range.min)
-    if (range?.max !== undefined)
-      base = base.max(range.max)
+    const minLen = range?.min
+    const maxLen = range?.max
+    const lbl = opts.label
 
     const pattern = opts.regex ?? buildBusinessCharsetRegex(
       opts.extraChars,
       opts.disallowChars,
     )
 
-    const validated = base.superRefine((v: string, ctx: z.RefinementCtx): void => {
-      if (!pattern.test(v)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          params: { code: 'invalid', namespace: 'businessName' },
-        })
+    // Stage 1: length + pattern + boundary (with early returns)
+    const stage1 = base.superRefine((v: string, ctx: z.RefinementCtx): void => {
+      if (minLen !== undefined && v.length < minLen) {
+        ctx.addIssue({ code: 'custom', params: { code: 'min', namespace: 'base', label: lbl, minimum: minLen } })
         return
       }
-
-      if (boundary !== undefined && !checkUnicodeBoundary(v, boundary)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          params: { code: 'boundary', namespace: 'businessName' },
-        })
+      if (maxLen !== undefined && v.length > maxLen) {
+        ctx.addIssue({ code: 'custom', params: { code: 'max', namespace: 'base', label: lbl, maximum: maxLen } })
+        return
       }
-
-      if (consecutiveRange?.max !== undefined && !maxConsecutive(v, consecutiveRange.max)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          params: { code: 'maxConsecutive', namespace: 'businessName', maximum: consecutiveRange.max },
-        })
+      if (!pattern.test(v)) {
+        ctx.addIssue({ code: 'custom', params: { code: 'invalid', namespace: 'businessName', label: opts.label } })
+        return
+      }
+      if (boundary !== undefined && !checkUnicodeBoundary(v, boundary)) {
+        ctx.addIssue({ code: 'custom', params: { code: 'boundary', namespace: 'businessName', label: opts.label } })
       }
     })
+
+    // Stage 2: chainable checks (only runs if stage 1 passes)
+    let stage2: z.ZodType = z.string()
+    if (consecutiveRange?.max !== undefined) {
+      stage2 = stage2.maxConsecutive({ max: consecutiveRange.max, namespace: 'businessName', label: opts.label })
+    }
+
+    // SAFETY: stage2 is z.string() chain; output is string-compatible
+    const validated = stage1.pipe(stage2 as z.ZodType<string, string>)
 
     if (opts.titleCase === true) {
       return validated.transform(toTitleCase)

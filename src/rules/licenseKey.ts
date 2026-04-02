@@ -72,6 +72,12 @@ function buildLicenseKeyPattern(
 }
 
 // ----------------------------------------------------------
+// CACHED CHECK SCHEMAS
+// ----------------------------------------------------------
+
+const UUID_FORMAT_CHECK = z.string().uuid()
+
+// ----------------------------------------------------------
 // RULE FACTORY
 // ----------------------------------------------------------
 
@@ -89,9 +95,14 @@ export const LicenseKey = /* @__PURE__ */ createRule<LicenseKeyOptions>({
   messages: {},
   build: (opts: LicenseKeyOptions): unknown => {
     if (opts.type === 'uuid') {
-      return opts.normalize !== false
-        ? z.string().trim().toUpperCase().uuid()
-        : z.string().uuid()
+      const uuidBase = opts.normalize !== false
+        ? z.string().trim().toUpperCase()
+        : z.string()
+      return uuidBase.pipe(z.string().superRefine((v: string, ctx): void => {
+        if (!UUID_FORMAT_CHECK.safeParse(v.toLowerCase()).success) {
+          ctx.addIssue({ code: 'custom', params: { code: 'invalid', namespace: 'licenseKey', label: opts.label } })
+        }
+      }))
     }
 
     const base = opts.normalize !== false
@@ -109,7 +120,7 @@ export const LicenseKey = /* @__PURE__ */ createRule<LicenseKeyOptions>({
 
     return base.refine(
       (v: string): boolean => pattern.test(v),
-      { params: { code: 'invalid', namespace: 'licenseKey' } },
+      { params: { code: 'invalid', namespace: 'licenseKey', label: opts.label } },
     )
   },
 })

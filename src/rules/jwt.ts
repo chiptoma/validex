@@ -136,11 +136,13 @@ function isNotYetValid(
  * @param header     - The decoded JWT header.
  * @param algorithms - The allowed algorithm list.
  * @param ctx        - The Zod refinement context.
+ * @param label      - Explicit label for error messages.
  */
 function validateAlgorithm(
   header: Record<string, unknown>,
   algorithms: readonly string[],
   ctx: z.RefinementCtx,
+  label?: string,
 ): void {
   const alg = header['alg']
   if (typeof alg !== 'string' || !algorithms.includes(alg)) {
@@ -150,6 +152,7 @@ function validateAlgorithm(
         code: 'algorithmNotAllowed',
         namespace: 'jwt',
         algorithm: String(alg ?? 'unknown'),
+        label,
       },
     })
   }
@@ -162,17 +165,19 @@ function validateAlgorithm(
  * @param payload - The decoded JWT payload.
  * @param claims  - The required claim names.
  * @param ctx     - The Zod refinement context.
+ * @param label   - Explicit label for error messages.
  */
 function validateClaims(
   payload: Record<string, unknown>,
   claims: readonly string[],
   ctx: z.RefinementCtx,
+  label?: string,
 ): void {
   for (const claim of claims) {
     if (payload[claim] === undefined) {
       ctx.addIssue({
         code: 'custom',
-        params: { code: 'missingClaim', namespace: 'jwt', claim },
+        params: { code: 'missingClaim', namespace: 'jwt', claim, label },
       })
     }
   }
@@ -188,7 +193,7 @@ function validateClaims(
  */
 function validateTemporal(
   payload: Record<string, unknown>,
-  opts: Pick<JWTOptions, 'requireExpiry' | 'checkExpiry' | 'checkNotBefore' | 'clockTolerance'>,
+  opts: Pick<JWTOptions, 'requireExpiry' | 'checkExpiry' | 'checkNotBefore' | 'clockTolerance' | 'label'>,
   ctx: z.RefinementCtx,
 ): void {
   const tolerance = opts.clockTolerance ?? 0
@@ -196,21 +201,21 @@ function validateTemporal(
   if (opts.requireExpiry === true && payload['exp'] === undefined) {
     ctx.addIssue({
       code: 'custom',
-      params: { code: 'invalid', namespace: 'jwt' },
+      params: { code: 'expiryRequired', namespace: 'jwt', label: opts.label },
     })
   }
 
   if (opts.checkExpiry === true && isExpired(payload, tolerance)) {
     ctx.addIssue({
       code: 'custom',
-      params: { code: 'expired', namespace: 'jwt' },
+      params: { code: 'expired', namespace: 'jwt', label: opts.label },
     })
   }
 
   if (opts.checkNotBefore === true && isNotYetValid(payload, tolerance)) {
     ctx.addIssue({
       code: 'custom',
-      params: { code: 'notYetValid', namespace: 'jwt' },
+      params: { code: 'notYetValid', namespace: 'jwt', label: opts.label },
     })
   }
 }
@@ -239,7 +244,7 @@ export const Jwt = /* @__PURE__ */ createRule<JWTOptions>({
       if (!parts) {
         ctx.addIssue({
           code: 'custom',
-          params: { code: 'invalid', namespace: 'jwt' },
+          params: { code: 'invalid', namespace: 'jwt', label: opts.label },
         })
         return
       }
@@ -247,13 +252,13 @@ export const Jwt = /* @__PURE__ */ createRule<JWTOptions>({
       const { header, payload } = parts
 
       if (opts.allowAlgorithms && opts.allowAlgorithms.length > 0) {
-        validateAlgorithm(header, opts.allowAlgorithms, ctx)
+        validateAlgorithm(header, opts.allowAlgorithms, ctx, opts.label)
       }
 
       validateTemporal(payload, opts, ctx)
 
       if (opts.requireClaims && opts.requireClaims.length > 0) {
-        validateClaims(payload, opts.requireClaims, ctx)
+        validateClaims(payload, opts.requireClaims, ctx, opts.label)
       }
     })
   },

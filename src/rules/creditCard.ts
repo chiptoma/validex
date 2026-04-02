@@ -174,37 +174,41 @@ export const CreditCard = /* @__PURE__ */ createRule<CreditCardOptions>({
             return false
           return luhnCheck(v)
         },
-        { params: { code: 'invalid', namespace: 'creditCard' } },
+        { params: { code: 'invalid', namespace: 'creditCard', label: opts.label } },
       ),
     )
 
     // Issuer allow list
     if (allow.length > 0) {
       schema = schema.pipe(
-        z.string().refine(
-          async (v: string): Promise<boolean> => {
-            const prefixes = await resolvePrefixes()
-            const issuer = detectIssuer(v, prefixes)
-            // SAFETY: detectIssuer returns keys from the prefixes map which are IssuerType values
-            return issuer !== undefined && allow.includes(issuer as IssuerType)
-          },
-          { params: { code: 'issuerNotAllowed', namespace: 'creditCard' } },
-        ),
+        z.string().superRefine(async (v: string, ctx): Promise<void> => {
+          const prefixes = await resolvePrefixes()
+          const issuer = detectIssuer(v, prefixes)
+          // SAFETY: detectIssuer returns keys from the prefixes map which are IssuerType values
+          if (issuer === undefined || !allow.includes(issuer as IssuerType)) {
+            ctx.addIssue({
+              code: 'custom',
+              params: { code: 'issuerNotAllowed', namespace: 'creditCard', issuer: issuer ?? 'unknown', label: opts.label },
+            })
+          }
+        }),
       )
     }
 
     // Issuer block list
     if (block.length > 0) {
       schema = schema.pipe(
-        z.string().refine(
-          async (v: string): Promise<boolean> => {
-            const prefixes = await resolvePrefixes()
-            const issuer = detectIssuer(v, prefixes)
-            // SAFETY: detectIssuer returns keys from the prefixes map which are IssuerType values
-            return issuer === undefined || !block.includes(issuer as IssuerType)
-          },
-          { params: { code: 'issuerBlocked', namespace: 'creditCard' } },
-        ),
+        z.string().superRefine(async (v: string, ctx): Promise<void> => {
+          const prefixes = await resolvePrefixes()
+          const issuer = detectIssuer(v, prefixes)
+          // SAFETY: detectIssuer returns keys from the prefixes map which are IssuerType values
+          if (issuer !== undefined && block.includes(issuer as IssuerType)) {
+            ctx.addIssue({
+              code: 'custom',
+              params: { code: 'issuerBlocked', namespace: 'creditCard', issuer, label: opts.label },
+            })
+          }
+        }),
       )
     }
 

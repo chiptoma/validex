@@ -4,9 +4,11 @@
 // automatic protocol prepending for bare domains.
 // ==============================================================================
 
+import type { z as zType } from 'zod'
 import type { BaseRuleOptions, Range } from '../types'
 import { z } from 'zod'
 import { createRule } from '../core/createRule'
+import { matchesDomainList } from '../internal/domainMatch'
 import { resolveRange } from '../internal/resolveRange'
 
 // ----------------------------------------------------------
@@ -57,22 +59,6 @@ function normalizeWebsiteInput(value: string): string {
 }
 
 /**
- * Extract Hostname
- * Safely extracts the hostname from a URL string.
- *
- * @param value - A valid URL string.
- * @returns The hostname, or an empty string on parse failure.
- */
-function extractHostname(value: string): string {
-  try {
-    return new URL(value).hostname
-  }
-  catch {
-    return ''
-  }
-}
-
-/**
  * Is Base Domain
  * Checks whether a hostname has no subdomains (ignoring 'www.' prefix).
  *
@@ -87,75 +73,61 @@ function isBaseDomain(hostname: string): boolean {
 }
 
 /**
- * Check Protocol
- * Validates that the URL uses http/https and respects requireHttps.
+ * Check Website Constraints
+ * Validates parsed URL against protocol, domain, subdomain, path, and query constraints.
  *
- * @param value       - The URL string.
- * @param requireHttps - Whether to enforce https-only.
- * @returns True if protocol is valid.
+ * @param parsed       - The parsed URL object.
+ * @param opts         - The resolved website options.
+ * @param ctx          - Zod refinement context for adding issues.
+ * @param ns           - Error namespace.
+ * @param lbl          - Label for error messages.
+ * @param blockDomains - Blocked domain list.
+ * @param allowDomains - Allowed domain list.
  */
-function checkProtocol(value: string, requireHttps: boolean): boolean {
-  try {
-    const { protocol } = new URL(value)
-    if (protocol !== 'http:' && protocol !== 'https:')
-      return false
-    if (requireHttps && protocol !== 'https:')
-      return false
-    return true
+function checkWebsiteConstraints(
+  parsed: URL,
+  opts: WebsiteOptions,
+  ctx: zType.RefinementCtx,
+  ns: string,
+  lbl: string | undefined,
+  blockDomains: readonly string[],
+  allowDomains: readonly string[],
+): void {
+  const { protocol, hostname, pathname, search } = parsed
+
+  const isHttp = protocol === 'http:' || protocol === 'https:'
+  if (!isHttp) {
+    ctx.addIssue({ code: 'custom', params: { code: 'invalid', namespace: ns, label: lbl } })
+    return
   }
-  catch { return false }
+  if (opts.requireHttps === true && protocol !== 'https:') {
+    ctx.addIssue({ code: 'custom', params: { code: 'httpsRequired', namespace: ns, label: lbl } })
+  }
+  if (opts.requireWww === true && !hostname.startsWith('www.')) {
+    ctx.addIssue({ code: 'custom', params: { code: 'wwwRequired', namespace: ns, label: lbl } })
+  }
+  if (blockDomains.length > 0 && matchesDomainList(hostname, blockDomains)) {
+    ctx.addIssue({ code: 'custom', params: { code: 'domainBlocked', namespace: ns, domain: hostname, label: lbl } })
+  }
+  if (allowDomains.length > 0 && !matchesDomainList(hostname, allowDomains)) {
+    ctx.addIssue({ code: 'custom', params: { code: 'domainNotAllowed', namespace: ns, domain: hostname, label: lbl } })
+  }
+  if (opts.allowSubdomains === false && !isBaseDomain(hostname)) {
+    ctx.addIssue({ code: 'custom', params: { code: 'subdomainNotAllowed', namespace: ns, label: lbl } })
+  }
+  if (opts.allowPath === false && pathname !== '/' && pathname !== '') {
+    ctx.addIssue({ code: 'custom', params: { code: 'pathNotAllowed', namespace: ns, label: lbl } })
+  }
+  if (opts.allowQuery !== true && search !== '') {
+    ctx.addIssue({ code: 'custom', params: { code: 'queryNotAllowed', namespace: ns, label: lbl } })
+  }
 }
 
-/**
- * Check Domain Lists
- * Validates hostname against allow/block domain lists.
- *
- * @param hostname - The extracted hostname.
- * @param domains  - The domain list to check against.
- * @param mode     - 'block' rejects matches, 'allow' requires matches.
- * @returns True if the domain passes the check.
- */
-function checkDomainList(
-  hostname: string,
-  domains: readonly string[],
-  mode: 'allow' | 'block',
-): boolean {
-  if (domains.length === 0)
-    return true
-  const matches = domains.some((d: string) =>
-    hostname === d || hostname.endsWith(`.${d}`),
-  )
-  return mode === 'block' ? !matches : matches
-}
+// ----------------------------------------------------------
+// CACHED CHECK SCHEMAS
+// ----------------------------------------------------------
 
-/**
- * Check Path Restriction
- * Validates that URL has no path when paths are disallowed.
- *
- * @param value - The URL string.
- * @returns True if path is '/' or empty.
- */
-function hasNoPath(value: string): boolean {
-  try {
-    const { pathname } = new URL(value)
-    return pathname === '/' || pathname === ''
-  }
-  catch { return false }
-}
-
-/**
- * Check Query Restriction
- * Validates that URL has no query string when queries are disallowed.
- *
- * @param value - The URL string.
- * @returns True if no query string is present.
- */
-function hasNoQuery(value: string): boolean {
-  try {
-    return new URL(value).search === ''
-  }
-  catch { return false }
-}
+const URL_FORMAT_CHECK = z.string().url()
 
 // ----------------------------------------------------------
 // RULE FACTORY
@@ -176,53 +148,34 @@ export const Website = /* @__PURE__ */ createRule<WebsiteOptions>({
   build: (opts: WebsiteOptions): unknown => {
     const range = resolveRange(opts.length)
     const max = range?.max ?? 255
+    const min = range?.min
 
-    let schema = z.string()
-      .transform(normalizeWebsiteInput)
-      .pipe(z.string().max(max).url())
-      .refine(
-        (v: string): boolean => checkProtocol(v, opts.requireHttps === true),
-        { params: { code: 'invalid', namespace: 'website' } },
-      )
+    const lbl = opts.label
+    const ns = 'website'
+    const blockDomains = opts.blockDomains ?? []
+    const allowDomains = opts.allowDomains ?? []
 
-    if (opts.requireWww === true) {
-      schema = schema.refine(
-        (v: string): boolean => extractHostname(v).startsWith('www.'),
-        { params: { code: 'invalid', namespace: 'website' } },
-      )
-    }
+    const base = opts.normalize !== false
+      ? z.string().transform(normalizeWebsiteInput)
+      : z.string()
 
-    schema = schema
-      .refine(
-        (v: string): boolean => checkDomainList(extractHostname(v), opts.blockDomains ?? [], 'block'),
-        { params: { code: 'domainBlocked', namespace: 'website' } },
-      )
-      .refine(
-        (v: string): boolean => checkDomainList(extractHostname(v), opts.allowDomains ?? [], 'allow'),
-        { params: { code: 'domainNotAllowed', namespace: 'website' } },
-      )
+    return base.pipe(z.string().superRefine((v: string, ctx): void => {
+      if (min !== undefined && v.length < min) {
+        ctx.addIssue({ code: 'custom', params: { code: 'min', namespace: 'base', label: lbl, minimum: min } })
+      }
+      if (v.length > max) {
+        ctx.addIssue({ code: 'custom', params: { code: 'max', namespace: 'base', label: lbl, maximum: max } })
+      }
+      if (!URL_FORMAT_CHECK.safeParse(v).success) {
+        ctx.addIssue({ code: 'custom', params: { code: 'invalid', namespace: ns, label: lbl } })
+        return
+      }
 
-    if (opts.allowSubdomains === false) {
-      schema = schema.refine(
-        (v: string): boolean => isBaseDomain(extractHostname(v)),
-        { params: { code: 'subdomainNotAllowed', namespace: 'website' } },
-      )
-    }
-
-    if (opts.allowPath === false) {
-      schema = schema.refine(
-        (v: string): boolean => hasNoPath(v),
-        { params: { code: 'invalid', namespace: 'website' } },
-      )
-    }
-
-    if (opts.allowQuery !== true) {
-      schema = schema.refine(
-        (v: string): boolean => hasNoQuery(v),
-        { params: { code: 'invalid', namespace: 'website' } },
-      )
-    }
-
-    return schema
+      try {
+        checkWebsiteConstraints(new URL(v), opts, ctx, ns, lbl, blockDomains, allowDomains)
+      }
+      /* c8 ignore next -- defensive guard; URL already passed z.url() validation */
+      catch { /* empty */ }
+    }) as z.ZodType<string, string>)
   },
 })

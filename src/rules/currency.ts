@@ -76,25 +76,27 @@ export const Currency = /* @__PURE__ */ createRule<CurrencyOptions>({
           const codes = await resolveCurrencyCodes()
           return codes.has(v)
         },
-        { params: { code: 'invalid', namespace: 'currency' } },
+        { params: { code: 'invalid', namespace: 'currency', label: opts.label } },
       ),
     )
 
     if (allow.length > 0) {
       schema = schema.pipe(
-        z.string().refine(
-          (v: string): boolean => allow.includes(v),
-          { params: { code: 'notAllowed', namespace: 'currency' } },
-        ),
+        z.string().superRefine((v: string, ctx): void => {
+          if (!allow.includes(v)) {
+            ctx.addIssue({ code: 'custom', params: { code: 'notAllowed', namespace: 'currency', currency: v, label: opts.label } })
+          }
+        }),
       )
     }
 
     if (block.length > 0) {
       schema = schema.pipe(
-        z.string().refine(
-          (v: string): boolean => !block.includes(v),
-          { params: { code: 'blocked', namespace: 'currency' } },
-        ),
+        z.string().superRefine((v: string, ctx): void => {
+          if (block.includes(v)) {
+            ctx.addIssue({ code: 'custom', params: { code: 'blocked', namespace: 'currency', currency: v, label: opts.label } })
+          }
+        }),
       )
     }
 

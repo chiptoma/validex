@@ -142,27 +142,29 @@ export const Iban = /* @__PURE__ */ createRule<IbanOptions>({
 
           return validateMod97(v)
         },
-        { params: { code: 'invalid', namespace: 'iban' } },
+        { params: { code: 'invalid', namespace: 'iban', label: opts.label } },
       ),
     )
 
     // Country allow list
     if (allow.length > 0) {
       schema = schema.pipe(
-        z.string().refine(
-          (v: string): boolean => allow.includes(v.slice(0, 2)),
-          { params: { code: 'countryNotAllowed', namespace: 'iban' } },
-        ),
+        z.string().superRefine((v: string, ctx): void => {
+          if (!allow.includes(v.slice(0, 2))) {
+            ctx.addIssue({ code: 'custom', params: { code: 'countryNotAllowed', namespace: 'iban', country: v.slice(0, 2), label: opts.label } })
+          }
+        }),
       )
     }
 
     // Country block list
     if (block.length > 0) {
       schema = schema.pipe(
-        z.string().refine(
-          (v: string): boolean => !block.includes(v.slice(0, 2)),
-          { params: { code: 'countryBlocked', namespace: 'iban' } },
-        ),
+        z.string().superRefine((v: string, ctx): void => {
+          if (block.includes(v.slice(0, 2))) {
+            ctx.addIssue({ code: 'custom', params: { code: 'countryBlocked', namespace: 'iban', country: v.slice(0, 2), label: opts.label } })
+          }
+        }),
       )
     }
 

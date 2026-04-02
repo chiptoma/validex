@@ -8,6 +8,7 @@ import type { BaseRuleOptions, Range } from '../types'
 import { z } from 'zod'
 import { createRule } from '../core/createRule'
 import { resolveRange } from '../internal/resolveRange'
+import { getDisposableDomains } from '../loaders/disposableDomains'
 
 // ----------------------------------------------------------
 // TYPES
@@ -61,6 +62,13 @@ function extractLocalPart(email: string): string {
 }
 
 // ----------------------------------------------------------
+// CACHED CHECK SCHEMAS
+// ----------------------------------------------------------
+
+/** Cached email format check — allocated once, reused on every parse. */
+const EMAIL_FORMAT_CHECK = z.string().email()
+
+// ----------------------------------------------------------
 // RULE FACTORY
 // ----------------------------------------------------------
 
@@ -80,12 +88,26 @@ export const Email = /* @__PURE__ */ createRule<EmailOptions>({
     const range = resolveRange(opts.length)
     /* c8 ignore next -- defensive fallback; defaults always provide length */
     const maxLen = range?.max ?? 254
+    const minLen = range?.min
+    const ns = 'email'
+    const lbl = opts.label
 
     const base = opts.normalize !== false
       ? z.string().trim().toLowerCase()
       : z.string()
 
-    let schema: z.ZodType = base.pipe(z.string().email().max(maxLen))
+    let schema: z.ZodType = base.pipe(z.string().superRefine((v: string, ctx): void => {
+      if (!EMAIL_FORMAT_CHECK.safeParse(v).success) {
+        ctx.addIssue({ code: 'custom', params: { code: 'invalid', namespace: ns, label: lbl } })
+        return
+      }
+      if (minLen !== undefined && v.length < minLen) {
+        ctx.addIssue({ code: 'custom', params: { code: 'min', namespace: 'base', label: lbl, minimum: minLen } })
+      }
+      if (v.length > maxLen) {
+        ctx.addIssue({ code: 'custom', params: { code: 'max', namespace: 'base', label: lbl, maximum: maxLen } })
+      }
+    }))
 
     schema = applyBusinessRules(schema, opts)
 
@@ -115,7 +137,7 @@ function applyBusinessRules(
   if (opts.blockPlusAlias === true) {
     result = result.pipe(z.string().refine(
       (v: string): boolean => !extractLocalPart(v).includes('+'),
-      { params: { code: 'plusAliasBlocked', namespace: 'email' } },
+      { params: { code: 'plusAliasBlocked', namespace: 'email', label: opts.label } },
     ))
   }
 
@@ -124,12 +146,12 @@ function applyBusinessRules(
   if (opts.allowSubdomains === false) {
     result = result.pipe(z.string().refine(
       (v: string): boolean => extractDomain(v).split('.').length <= 2,
-      { params: { code: 'subdomainNotAllowed', namespace: 'email' } },
+      { params: { code: 'subdomainNotAllowed', namespace: 'email', label: opts.label } },
     ))
   }
 
   if (opts.blockDisposable === true) {
-    result = applyDisposableCheck(result)
+    result = applyDisposableCheck(result, opts.label)
   }
 
   return result
@@ -151,17 +173,19 @@ function applyDomainFilters(schema: z.ZodType, opts: EmailOptions): z.ZodType {
   /* c8 ignore stop */
 
   if (allow.length > 0) {
-    result = result.pipe(z.string().refine(
-      (v: string): boolean => allow.includes(extractDomain(v)),
-      { params: { code: 'domainNotAllowed', namespace: 'email' } },
-    ))
+    result = result.pipe(z.string().superRefine((v: string, ctx): void => {
+      if (!allow.includes(extractDomain(v))) {
+        ctx.addIssue({ code: 'custom', params: { code: 'domainNotAllowed', namespace: 'email', domain: extractDomain(v), label: opts.label } })
+      }
+    }))
   }
 
   if (block.length > 0) {
-    result = result.pipe(z.string().refine(
-      (v: string): boolean => !block.includes(extractDomain(v)),
-      { params: { code: 'domainBlocked', namespace: 'email' } },
-    ))
+    result = result.pipe(z.string().superRefine((v: string, ctx): void => {
+      if (block.includes(extractDomain(v))) {
+        ctx.addIssue({ code: 'custom', params: { code: 'domainBlocked', namespace: 'email', domain: extractDomain(v), label: opts.label } })
+      }
+    }))
   }
 
   return result
@@ -172,13 +196,18 @@ function applyDomainFilters(schema: z.ZodType, opts: EmailOptions): z.ZodType {
  * Adds an async refine that checks against known disposable email domains.
  *
  * @param schema - The Zod schema to extend.
+ * @param label  - Explicit label for error messages.
  * @returns The schema with the disposable domain refine applied.
  */
-function applyDisposableCheck(schema: z.ZodType): z.ZodType {
+function applyDisposableCheck(schema: z.ZodType, label?: string): z.ZodType {
   return schema.pipe(z.string().refine(
     async (value: string): Promise<boolean> => {
       const domain = extractDomain(value)
-      /* c8 ignore start -- dynamic import and defensive catch; disposable-email-domains may fail on module resolution */
+      const preloaded = getDisposableDomains()
+      if (preloaded !== undefined) {
+        return !preloaded.has(domain)
+      }
+      /* c8 ignore start -- fallback dynamic import when not preloaded */
       try {
         const disposable = (
           await import('disposable-email-domains')
@@ -191,6 +220,6 @@ function applyDisposableCheck(schema: z.ZodType): z.ZodType {
       }
       /* c8 ignore stop */
     },
-    { params: { code: 'disposableBlocked', namespace: 'email' } },
+    { params: { code: 'disposableBlocked', namespace: 'email', label } },
   ))
 }

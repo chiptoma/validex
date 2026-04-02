@@ -5,10 +5,9 @@
 
 import type { FormatRuleOptions, Range } from '../types'
 import { z } from 'zod'
-import { containsEmail, containsHtml, containsPhoneNumber, containsUrl } from '../checks/detection'
-import { maxConsecutive, maxWords } from '../checks/limits'
 import { createRule } from '../core/createRule'
 import { resolveRange } from '../internal/resolveRange'
+import '../augmentation'
 
 // ----------------------------------------------------------
 // TYPES
@@ -60,19 +59,40 @@ export const Text = /* @__PURE__ */ createRule<TextOptions>({
       ? z.string().trim()
       : z.string()
 
-    const lengthSchema = buildLengthSchema(range)
-    let schema: z.ZodType = base.pipe(lengthSchema)
+    const lengthSchema = buildLengthSchema(range, opts.label)
+    // SAFETY: lengthSchema is z.string().superRefine(); output is string-compatible
+    let schema: z.ZodType = base.pipe(lengthSchema as z.ZodType<string, string>)
 
     if (opts.regex !== undefined) {
       const pattern = opts.regex
       schema = schema.pipe(z.string().refine(
         (v: string): boolean => pattern.test(v),
-        { params: { code: 'invalid', namespace: 'text' } },
+        { params: { code: 'invalid', namespace: 'text', label: opts.label } },
       ))
     }
 
-    schema = applyContentDetection(schema, opts)
-    schema = applyLimits(schema, wordsRange, consecutiveRange)
+    if (opts.noEmails === true) {
+      schema = schema.noEmails({ namespace: 'text', label: opts.label })
+    }
+    if (opts.noUrls === true) {
+      schema = schema.noUrls({ namespace: 'text', label: opts.label })
+    }
+    if (opts.noHtml === true) {
+      schema = schema.noHtml({ namespace: 'text', label: opts.label })
+    }
+    if (opts.noPhoneNumbers === true) {
+      schema = schema.noPhoneNumbers({ namespace: 'text', label: opts.label })
+    }
+
+    if (wordsRange?.min !== undefined) {
+      schema = schema.minWords({ min: wordsRange.min, namespace: 'text', label: opts.label })
+    }
+    if (wordsRange?.max !== undefined) {
+      schema = schema.maxWords({ max: wordsRange.max, namespace: 'text', label: opts.label })
+    }
+    if (consecutiveRange?.max !== undefined) {
+      schema = schema.maxConsecutive({ max: consecutiveRange.max, namespace: 'text', label: opts.label })
+    }
 
     return schema
   },
@@ -87,96 +107,22 @@ export const Text = /* @__PURE__ */ createRule<TextOptions>({
  * Creates a base z.string() with optional min/max constraints.
  *
  * @param range - Resolved range with optional min and max.
+ * @param label
  * @returns A Zod string schema with length constraints applied.
  */
 function buildLengthSchema(
   range: { readonly min?: number, readonly max?: number } | undefined,
-): z.ZodString {
-  let schema = z.string()
-
-  if (range?.min !== undefined) {
-    schema = schema.min(range.min)
-  }
-  if (range?.max !== undefined) {
-    schema = schema.max(range.max)
-  }
-
-  return schema
-}
-
-/**
- * Apply Content Detection
- * Conditionally adds refine checks for email, URL, HTML, and phone detection.
- *
- * @param schema - The Zod schema to extend.
- * @param opts   - The resolved text options.
- * @returns The schema with content detection refines applied.
- */
-function applyContentDetection(schema: z.ZodType, opts: TextOptions): z.ZodType {
-  let result = schema
-
-  if (opts.noEmails === true) {
-    result = result.pipe(z.string().refine(
-      (v: string): boolean => !containsEmail(v),
-      { params: { code: 'noEmails', namespace: 'text' } },
-    ))
-  }
-
-  if (opts.noUrls === true) {
-    result = result.pipe(z.string().refine(
-      (v: string): boolean => !containsUrl(v),
-      { params: { code: 'noUrls', namespace: 'text' } },
-    ))
-  }
-
-  if (opts.noHtml === true) {
-    result = result.pipe(z.string().refine(
-      (v: string): boolean => !containsHtml(v),
-      { params: { code: 'noHtml', namespace: 'text' } },
-    ))
-  }
-
-  if (opts.noPhoneNumbers === true) {
-    result = result.pipe(z.string().refine(
-      (v: string): boolean => !containsPhoneNumber(v),
-      { params: { code: 'noPhoneNumbers', namespace: 'text' } },
-    ))
-  }
-
-  return result
-}
-
-/**
- * Apply Limits
- * Adds word count and consecutive character refines when configured.
- *
- * @param schema          - The Zod schema to extend.
- * @param wordsRange      - Resolved word count range.
- * @param consecutiveRange - Resolved consecutive character range.
- * @returns The schema with limit refines applied.
- */
-function applyLimits(
-  schema: z.ZodType,
-  wordsRange: { readonly max?: number } | undefined,
-  consecutiveRange: { readonly max?: number } | undefined,
+  label?: string,
 ): z.ZodType {
-  let result = schema
+  const min = range?.min
+  const max = range?.max
 
-  if (wordsRange?.max !== undefined) {
-    const limit = wordsRange.max
-    result = result.pipe(z.string().refine(
-      (v: string): boolean => maxWords(v, limit),
-      { params: { code: 'maxWords', namespace: 'text', maximum: limit } },
-    ))
-  }
-
-  if (consecutiveRange?.max !== undefined) {
-    const limit = consecutiveRange.max
-    result = result.pipe(z.string().refine(
-      (v: string): boolean => maxConsecutive(v, limit),
-      { params: { code: 'maxConsecutive', namespace: 'text', maximum: limit } },
-    ))
-  }
-
-  return result
+  return z.string().superRefine((v: string, ctx): void => {
+    if (min !== undefined && v.length < min) {
+      ctx.addIssue({ code: 'custom', params: { code: 'min', namespace: 'base', label, minimum: min } })
+    }
+    if (max !== undefined && v.length > max) {
+      ctx.addIssue({ code: 'custom', params: { code: 'max', namespace: 'base', label, maximum: max } })
+    }
+  })
 }
