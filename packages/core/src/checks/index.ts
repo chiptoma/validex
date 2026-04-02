@@ -3,7 +3,6 @@
 // Re-exports all pure check functions.
 // ==============================================================================
 
-export { checkAsciiBoundary, checkUnicodeBoundary } from './boundary'
 export { hasDigits, hasLowercase, hasSpecial, hasUppercase } from './composition'
 export { containsEmail, containsHtml, containsUrl } from './detection'
 export { maxConsecutive, maxWords, minWords, noSpaces } from './limits'

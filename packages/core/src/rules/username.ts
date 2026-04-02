@@ -5,8 +5,8 @@
 
 import type { Boundary, FormatRuleOptions, Range } from '../types'
 import { z } from 'zod'
-import { checkAsciiBoundary } from '../checks/boundary'
 import { createRule } from '../core/createRule'
+import { checkAsciiBoundary } from '../internal/boundary'
 import { escapeRegexChars } from '../internal/escapeRegex'
 import { resolveBoundary } from '../internal/resolveBoundary'
 import { resolveRange } from '../internal/resolveRange'

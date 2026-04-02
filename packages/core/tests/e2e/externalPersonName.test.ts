@@ -7,7 +7,7 @@
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
 import { PersonName } from '../../src/rules/personName'
-import names from '../fixtures/personNamesExtended.json'
+import names from '../_support/fixtures/personNamesExtended.json'
 
 // ----------------------------------------------------------
 // SETUP
