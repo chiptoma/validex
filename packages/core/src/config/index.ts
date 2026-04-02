@@ -4,7 +4,7 @@
 // ==============================================================================
 
 import type { GlobalConfig, PreloadOptions } from '../types'
-import { ensureCustomError } from '../core/customError'
+import { initAugmentation } from '../augmentation'
 import { deepMergeTwo } from './merge'
 import { getConfig as getStoreConfig, isInitialized, setConfig } from './store'
 
@@ -41,7 +41,7 @@ export function setup(config?: Partial<GlobalConfig>): void {
   else if (!isInitialized()) {
     setConfig(getStoreConfig())
   }
-  ensureCustomError()
+  initAugmentation()
 }
 
 /**

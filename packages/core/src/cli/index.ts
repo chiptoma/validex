@@ -76,11 +76,12 @@ function parseArgs(argv: string[]): CliArgs {
       result.empty = true
     }
     else if (arg === '--output' || arg === '-o') {
-      const next = args[i + 1]
+      const next: string | undefined = args[i + 1]
       if (next === undefined || next === '' || next.startsWith('-')) {
         console.error('Error: --output requires a directory path')
         process.exit(1)
       }
+      // SAFETY: next is narrowed to non-empty string by guard above
       result.output = next
       i++
     }

@@ -1,7 +1,8 @@
 // ==============================================================================
 // ZOD TYPE AUGMENTATION — BARREL
-// Imports type declarations and prototype methods as side effects.
+// Exports initAugmentation for callers and re-exports type declarations.
 // ==============================================================================
 
 import './types'
-import './methods'
+
+export { initAugmentation } from './methods'
