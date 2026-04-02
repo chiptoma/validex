@@ -1,174 +1,30 @@
 {
-  "name": "validex",
+  "name": "validex-monorepo",
   "type": "module",
   "version": "1.0.0-alpha.0",
+  "private": true,
   "packageManager": "pnpm@9.15.0",
-  "description": "Type-safe validation rules built on Zod",
+  "description": "Type-safe validation rules built on Zod — monorepo workspace",
   "license": "MIT",
-  "homepage": "https://github.com/chiptoma/validex#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/chiptoma/validex.git"
-  },
-  "bugs": {
-    "url": "https://github.com/chiptoma/validex/issues"
-  },
-  "keywords": [
-    "zod",
-    "validation",
-    "zod4",
-    "email",
-    "phone",
-    "typescript",
-    "i18n",
-    "nuxt",
-    "fastify",
-    "tree-shakeable"
-  ],
-  "sideEffects": [
-    "./src/augmentation/index.ts",
-    "./src/augmentation/types.ts",
-    "./src/augmentation/methods.ts",
-    "./dist/index.js",
-    "./dist/index.mjs",
-    "./dist/index.cjs"
-  ],
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      },
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
-      }
-    },
-    "./rules": {
-      "import": {
-        "types": "./dist/rules/index.d.ts",
-        "default": "./dist/rules/index.js"
-      },
-      "require": {
-        "types": "./dist/rules/index.d.cts",
-        "default": "./dist/rules/index.cjs"
-      }
-    },
-    "./checks": {
-      "import": {
-        "types": "./dist/checks/index.d.ts",
-        "default": "./dist/checks/index.js"
-      },
-      "require": {
-        "types": "./dist/checks/index.d.cts",
-        "default": "./dist/checks/index.cjs"
-      }
-    },
-    "./utilities": {
-      "import": {
-        "types": "./dist/utilities/index.d.ts",
-        "default": "./dist/utilities/index.js"
-      },
-      "require": {
-        "types": "./dist/utilities/index.d.cts",
-        "default": "./dist/utilities/index.cjs"
-      }
-    },
-    "./nuxt": {
-      "import": {
-        "types": "./dist/adapters/nuxt/index.d.ts",
-        "default": "./dist/adapters/nuxt/index.js"
-      },
-      "require": {
-        "types": "./dist/adapters/nuxt/index.d.cts",
-        "default": "./dist/adapters/nuxt/index.cjs"
-      }
-    },
-    "./fastify": {
-      "import": {
-        "types": "./dist/adapters/fastify/index.d.ts",
-        "default": "./dist/adapters/fastify/index.js"
-      },
-      "require": {
-        "types": "./dist/adapters/fastify/index.d.cts",
-        "default": "./dist/adapters/fastify/index.cjs"
-      }
-    },
-    "./locales/en": {
-      "import": {
-        "types": "./dist/locales/en.d.ts",
-        "default": "./dist/locales/en.js"
-      },
-      "require": {
-        "types": "./dist/locales/en.d.cts",
-        "default": "./dist/locales/en.cjs"
-      }
-    }
-  },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "bin": {
-    "validex": "./dist/cli/index.js"
-  },
-  "files": [
-    "CHANGELOG.md",
-    "LICENSE",
-    "README.md",
-    "dist"
-  ],
   "engines": {
     "node": ">=22"
   },
   "scripts": {
-    "dev": "tsup --watch & vitest",
-    "build": "tsup",
+    "build": "pnpm -r build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "pnpm -r typecheck",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "test:checks": "vitest run tests/checks",
-    "test:rules": "vitest run tests/rules",
-    "test:integration": "vitest run tests/integration",
-    "test:properties": "vitest run tests/properties",
-    "test:adapters": "vitest run tests/adapters",
-    "test:fuzz": "vitest run tests/fuzz",
-    "test:loaders": "vitest run tests/loaders",
+    "test": "pnpm -r test",
+    "test:coverage": "pnpm -r test:coverage",
+    "test:smoke": "bash scripts/smokeTest.sh",
     "check": "pnpm lint && pnpm typecheck && pnpm test",
-    "check:full": "pnpm check && pnpm test:coverage && pnpm build && publint && attw --pack --ignore-rules no-resolution unexpected-module-syntax && pnpm knip && pnpm size",
+    "check:full": "pnpm check && pnpm -r build && pnpm -r exec publint && pnpm knip && pnpm size",
     "knip": "knip",
     "size": "size-limit",
-    "size:detail": "node --experimental-strip-types scripts/measureBundle.ts",
+    "size:detail": "node --experimental-strip-types packages/core/scripts/measureBundle.ts",
     "changelog": "conventional-changelog -p conventionalcommits -i CHANGELOG.md -s",
-    "release": "bumpp && pnpm changelog && git add CHANGELOG.md && git commit -m 'chore: changelog' && git push --follow-tags && pnpm publish",
-    "prepublishOnly": "pnpm check:full",
+    "release": "bumpp && pnpm changelog && git add CHANGELOG.md && git commit -m 'chore: changelog' && git push --follow-tags && pnpm -r publish --no-git-checks",
     "prepare": "simple-git-hooks"
-  },
-  "peerDependencies": {
-    "@nuxt/kit": "^4.4.2",
-    "fastify-plugin": "^5.1.0",
-    "zod": "^3.25.0 || ^4.0.0"
-  },
-  "peerDependenciesMeta": {
-    "@nuxt/kit": {
-      "optional": true
-    },
-    "fastify": {
-      "optional": true
-    },
-    "fastify-plugin": {
-      "optional": true
-    },
-    "nuxt": {
-      "optional": true
-    }
-  },
-  "dependencies": {
-    "disposable-email-domains": "^1.0.62",
-    "libphonenumber-js": "^1.12.41",
-    "postcode-validator": "^3.10.15"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^7.7.3",

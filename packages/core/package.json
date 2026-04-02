@@ -102,7 +102,19 @@
     "build": "tsup",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:rules": "vitest run tests/rules",
+    "test:checks": "vitest run tests/checks",
+    "test:core": "vitest run tests/core",
+    "test:config": "vitest run tests/config",
+    "test:internal": "vitest run tests/internal",
+    "test:utilities": "vitest run tests/utilities",
+    "test:loaders": "vitest run tests/loaders",
+    "test:integration": "vitest run tests/integration",
+    "test:e2e": "vitest run tests/e2e",
+    "test:properties": "vitest run tests/properties",
+    "test:fuzz": "vitest run tests/fuzz"
   },
   "peerDependencies": {
     "zod": "^3.25.0 || ^4.0.0"
