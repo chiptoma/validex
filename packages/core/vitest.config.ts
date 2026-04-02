@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     globals: true,
     passWithNoTests: true,
+    setupFiles: ['./tests/_support/setup.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov', 'html'],
