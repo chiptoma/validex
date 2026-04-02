@@ -23,7 +23,7 @@ const EXTERNALS = [
   '--external:zod',
   '--external:libphonenumber-js',
   '--external:libphonenumber-js/*',
-  '--external:postal-codes-js',
+  '--external:postcode-validator',
   '--external:disposable-email-domains',
   '--external:fastify',
   '--external:fastify-plugin',

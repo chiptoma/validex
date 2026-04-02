@@ -8,21 +8,15 @@ importers:
 
   .:
     dependencies:
-      '@nuxt/kit':
-        specifier: ^4.4.2
-        version: 4.4.2(magicast@0.5.2)
       disposable-email-domains:
         specifier: ^1.0.62
         version: 1.0.62
-      fastify-plugin:
-        specifier: ^5.1.0
-        version: 5.1.0
       libphonenumber-js:
         specifier: ^1.12.41
         version: 1.12.41
-      postal-codes-js:
-        specifier: ^2.5.2
-        version: 2.5.2
+      postcode-validator:
+        specifier: ^3.10.15
+        version: 3.10.15
     devDependencies:
       '@antfu/eslint-config':
         specifier: ^7.7.3
@@ -39,6 +33,9 @@ importers:
       '@faker-js/faker':
         specifier: ^10.4.0
         version: 10.4.0
+      '@nuxt/kit':
+        specifier: ^4.4.2
+        version: 4.4.2(magicast@0.5.2)
       '@nuxt/test-utils':
         specifier: ^4.0.0
         version: 4.0.0(magicast@0.5.2)(typescript@5.9.3)(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(yaml@2.8.3))(vitest@4.1.2(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.1)(yaml@2.8.3))
@@ -78,6 +75,9 @@ importers:
       fastify:
         specifier: ^5.8.4
         version: 5.8.4
+      fastify-plugin:
+        specifier: ^5.1.0
+        version: 5.1.0
       knip:
         specifier: ^6.1.0
         version: 6.1.0(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)
@@ -2837,9 +2837,6 @@ packages:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
 
-  detect-node@2.1.0:
-    resolution: {integrity: sha512-T0NIuQpnTvFDATNuHN5roPwSBG83rFsuO+MXXH9/3N1eFbn4wcPjttvjMLEPWJ0RGUYgQE7cGgS3tNxbqCGM7g==}
-
   devalue@5.6.4:
     resolution: {integrity: sha512-Gp6rDldRsFh/7XuouDbxMH3Mx8GMCcgzIb1pDTvNyn8pZGQ22u+Wa+lGV9dQCltFQ7uVw0MhRyb8XDskNFOReA==}
 
@@ -3539,9 +3536,6 @@ packages:
   index-to-position@1.2.0:
     resolution: {integrity: sha512-Yg7+ztRkqslMAS2iFaU+Oa4KTSidr63OsFGlOrJoW981kIYO3CGCS3wA95P1mUi/IVSJkn0D479KTJpVpvFNuw==}
     engines: {node: '>=18'}
-
-  inherits@2.0.3:
-    resolution: {integrity: sha512-x00IRNXNy63jwGkJmzPigoySHbaqpNuzKbBOmzK+g2OdZpQ9w+sxCN+VSB3ja7IAge2OP2qpfxTjeNcyjmW1uw==}
 
   inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
@@ -4391,9 +4385,6 @@ packages:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
     engines: {node: '>=8'}
 
-  path@0.12.7:
-    resolution: {integrity: sha512-aXXC6s+1w7otVF9UletFkFcDsJeO7lSZBPUQhtb5O0xJe8LtYhj/GxldoL09bBj9+ZmE2hNoHqQSFMN5fikh4Q==}
-
   pathe@1.1.2:
     resolution: {integrity: sha512-whLdWMYL2TwI08hn8/ZqAbrVemu0LNaNNJZX73O6qaIdCTfXutsLhMkjdENX0qhsQ9uIimo4/aQOmXkoon2nDQ==}
 
@@ -4441,8 +4432,9 @@ packages:
   pnpm-workspace-yaml@1.6.0:
     resolution: {integrity: sha512-uUy4dK3E11sp7nK+hnT7uAWfkBMe00KaUw8OG3NuNlYQoTk4sc9pcdIy1+XIP85v9Tvr02mK3JPaNNrP0QyRaw==}
 
-  postal-codes-js@2.5.2:
-    resolution: {integrity: sha512-BvhQ/JImkkFpYE0XMH39ag9L+0DnIwywxPyMQKBm+mxSQa5006SVCqD+5998keCbqDicEHdj2Of+wC2THA0h6w==}
+  postcode-validator@3.10.15:
+    resolution: {integrity: sha512-TTWlgG5YD9OQvPxcfBcwgjOgCI7rTxHX3LpxAZ1dKE+DjfNpRwrYrlhKWesofaKrO1MUTszQPmop4aptC1R6aw==}
+    engines: {node: '>=20.8.1'}
 
   postcss-calc@10.1.1:
     resolution: {integrity: sha512-NYEsLHh8DgG/PRH2+G9BTuUdtf9ViS+vdoQ0YA5OQdGsfN4ztiwtDWNtBl9EKeqNMFnIu8IKZ0cLxEQ5r5KVMw==}
@@ -5464,9 +5456,6 @@ packages:
 
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
-
-  util@0.10.4:
-    resolution: {integrity: sha512-0Pm9hTQ3se5ll1XihRic3FDIku70C+iHUdT/W926rSgHV5QgXsYbKZN8MSC3tJtSkhuROzvsQjAaFENRXr+19A==}
 
   validate-npm-package-license@3.0.4:
     resolution: {integrity: sha512-DpKm2Ui/xN7/HQKCtpZxoRWBhZ9Z0kqtygG8XCgNQ8ZlDnxuQmWhj566j8fN4Cu3/JmbhsDo7fcAJq4s9h27Ew==}
@@ -8455,8 +8444,6 @@ snapshots:
 
   detect-libc@2.1.2: {}
 
-  detect-node@2.1.0: {}
-
   devalue@5.6.4: {}
 
   devlop@1.1.0:
@@ -9251,8 +9238,6 @@ snapshots:
   indent-string@5.0.0: {}
 
   index-to-position@1.2.0: {}
-
-  inherits@2.0.3: {}
 
   inherits@2.0.4: {}
 
@@ -10566,11 +10551,6 @@ snapshots:
 
   path-type@4.0.0: {}
 
-  path@0.12.7:
-    dependencies:
-      process: 0.11.10
-      util: 0.10.4
-
   pathe@1.1.2: {}
 
   pathe@2.0.3: {}
@@ -10623,10 +10603,7 @@ snapshots:
     dependencies:
       yaml: 2.8.3
 
-  postal-codes-js@2.5.2:
-    dependencies:
-      detect-node: 2.1.0
-      path: 0.12.7
+  postcode-validator@3.10.15: {}
 
   postcss-calc@10.1.1(postcss@8.5.8):
     dependencies:
@@ -11622,10 +11599,6 @@ snapshots:
       punycode: 2.3.1
 
   util-deprecate@1.0.2: {}
-
-  util@0.10.4:
-    dependencies:
-      inherits: 2.0.3
 
   validate-npm-package-license@3.0.4:
     dependencies:

@@ -25,7 +25,7 @@
     "fastify",
     "tree-shakeable"
   ],
-  "sideEffects": false,
+  "sideEffects": ["./src/augmentation.ts", "./dist/index.js", "./dist/index.mjs", "./dist/index.cjs"],
   "exports": {
     ".": {
       "import": {
@@ -35,6 +35,16 @@
       "require": {
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
+      }
+    },
+    "./rules": {
+      "import": {
+        "types": "./dist/rules/index.d.ts",
+        "default": "./dist/rules/index.js"
+      },
+      "require": {
+        "types": "./dist/rules/index.d.cts",
+        "default": "./dist/rules/index.cjs"
       }
     },
     "./checks": {
@@ -130,10 +140,18 @@
     "prepare": "simple-git-hooks"
   },
   "peerDependencies": {
+    "@nuxt/kit": "^4.4.2",
+    "fastify-plugin": "^5.1.0",
     "zod": "^3.25.0 || ^4.0.0"
   },
   "peerDependenciesMeta": {
+    "@nuxt/kit": {
+      "optional": true
+    },
     "fastify": {
+      "optional": true
+    },
+    "fastify-plugin": {
       "optional": true
     },
     "nuxt": {
@@ -141,11 +159,9 @@
     }
   },
   "dependencies": {
-    "@nuxt/kit": "^4.4.2",
     "disposable-email-domains": "^1.0.62",
-    "fastify-plugin": "^5.1.0",
     "libphonenumber-js": "^1.12.41",
-    "postal-codes-js": "^2.5.2"
+    "postcode-validator": "^3.10.15"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^7.7.3",
@@ -153,6 +169,7 @@
     "@emnapi/core": "^1.9.1",
     "@emnapi/runtime": "^1.9.1",
     "@faker-js/faker": "^10.4.0",
+    "@nuxt/kit": "^4.4.2",
     "@nuxt/test-utils": "^4.0.0",
     "@size-limit/preset-small-lib": "^12.0.1",
     "@types/node": "^25.5.0",
@@ -166,6 +183,7 @@
     "eslint-plugin-vitest": "^0.5.4",
     "fast-check": "^4.6.0",
     "fastify": "^5.8.4",
+    "fastify-plugin": "^5.1.0",
     "knip": "^6.1.0",
     "lint-staged": "^16.4.0",
     "nuxt": "^4.4.2",
