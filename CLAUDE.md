@@ -56,6 +56,10 @@ export const Email = createRule<EmailOptions>({
 - No inline defaults or English strings in rule files.
 - en.json is the SINGLE source of truth for messages.
 
+**Approved exception:** `PasswordConfirmation` does not use `createRule` because
+`confirmation` is a reserved namespace. It wraps `Password()` directly and registers
+sameAs metadata manually. Do not refactor to createRule.
+
 ---
 
 ## Three-Tier Config Merge

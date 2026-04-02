@@ -19,8 +19,9 @@ interface BaseRuleOptions {
   // Async supported — triggers parseAsync requirement.
   // Error registered under {namespace}.custom
   sameAs?: string;                   // Cross-field equality check (field name)
-  requiredWhen?: string | ((fields: Record<string, unknown>) => boolean);
-  // Conditional required: field name (truthy check) or predicate function
+  requiredWhen?: string;
+  // Conditional required: field name (truthy check).
+  // Function predicate form planned for v1.1. Use the standalone requiredWhen() utility for complex conditions.
 }
 
 interface FormatRuleOptions extends BaseRuleOptions {

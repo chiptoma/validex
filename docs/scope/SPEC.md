@@ -206,7 +206,7 @@ validex is a TypeScript validation library built on Zod 4 that provides:
 |Custom error renderers                  |Consumer's responsibility             |
 |Database-aware validation (unique check)|Requires DB connection                |
 |Zod 3 compatibility                     |Clean break; Zod 4 is stable          |
-|`@zod/mini` compatibility               |validex uses `.refine()` / `.superRefine()` method chains extensively. Zod Mini uses a functional API incompatible with this pattern. The audiences don't overlap — Zod Mini targets extreme bundle minimalism, validex targets comprehensive validation.|
+|`zod/mini` compatibility               |validex uses `.refine()` / `.superRefine()` method chains extensively. Zod Mini uses a functional API incompatible with this pattern. The audiences don't overlap — Zod Mini targets extreme bundle minimalism, validex targets comprehensive validation.|
 |Prototype patching / Zod extensions     |Fragile, import-order-dependent, unnecessary with Zod 4|
 |Separate adapter packages               |Single package with subpath exports; no `validex-nuxt` etc.|
 |Schema auto-loading from file paths     |Project structure is consumer's concern; validex provides docs/guides|
@@ -341,7 +341,7 @@ Schemas → Rules → Checks → Config
 
 - ESM only — CommonJS not supported
 - Data-dependent features require async parsing (see 7.1 Rule Design Contract)
-- `@zod/mini` not supported in v1. Rules return full `zod/v4` schemas.
+- `zod/mini` not supported in v1. Rules return full `zod/v4` schemas.
 
 -----
 
@@ -511,30 +511,30 @@ type TranslationFunction = (key: string, params?: Record<string, unknown>) => st
 
 // Global rule defaults — set once, used everywhere
 interface RuleDefaults {
-  Email: Partial<EmailOptions>;
-  Password: Partial<PasswordOptions>;
-  Phone: Partial<PhoneOptions>;
-  PersonName: Partial<PersonNameOptions>;
-  BusinessName: Partial<BusinessNameOptions>;
-  Username: Partial<UsernameOptions>;
-  Website: Partial<WebsiteOptions>;
-  Url: Partial<URLOptions>;
-  Slug: Partial<SlugOptions>;
-  PostalCode: Partial<PostalCodeOptions>;
-  LicenseKey: Partial<LicenseKeyOptions>;
-  Uuid: Partial<UUIDOptions>;
-  Jwt: Partial<JWTOptions>;
-  DateTime: Partial<DateTimeOptions>;
-  Token: Partial<TokenOptions>;
-  Text: Partial<TextOptions>;
-  Country: Partial<CountryOptions>;
-  Currency: Partial<CurrencyOptions>;
-  Color: Partial<ColorOptions>;
-  CreditCard: Partial<CreditCardOptions>;
-  Iban: Partial<IbanOptions>;
-  VatNumber: Partial<VatNumberOptions>;
-  MacAddress: Partial<MacAddressOptions>;
-  IpAddress: Partial<IpAddressOptions>;
+  email: Partial<EmailOptions>;
+  password: Partial<PasswordOptions>;
+  phone: Partial<PhoneOptions>;
+  personName: Partial<PersonNameOptions>;
+  businessName: Partial<BusinessNameOptions>;
+  username: Partial<UsernameOptions>;
+  website: Partial<WebsiteOptions>;
+  url: Partial<URLOptions>;
+  slug: Partial<SlugOptions>;
+  postalCode: Partial<PostalCodeOptions>;
+  licenseKey: Partial<LicenseKeyOptions>;
+  uuid: Partial<UUIDOptions>;
+  jwt: Partial<JWTOptions>;
+  dateTime: Partial<DateTimeOptions>;
+  token: Partial<TokenOptions>;
+  text: Partial<TextOptions>;
+  country: Partial<CountryOptions>;
+  currency: Partial<CurrencyOptions>;
+  color: Partial<ColorOptions>;
+  creditCard: Partial<CreditCardOptions>;
+  iban: Partial<IbanOptions>;
+  vatNumber: Partial<VatNumberOptions>;
+  macAddress: Partial<MacAddressOptions>;
+  ipAddress: Partial<IpAddressOptions>;
 }
 
 type PathTransform = (path: (string | number)[]) => string;
@@ -667,8 +667,8 @@ validex intercepts all Zod 4 native issues via `z.config({ customError })` and r
 |base     |max               |`validation.messages.base.max`                   |`{{label}} must be at most {{maximum}} characters`     |
 |base     |type              |`validation.messages.base.type`                  |`{{label}} must be a {{expected}}`                     |
 |base     |format            |`validation.messages.base.format`                |`{{label}} is not valid`                               |
-|email    |disposableBlocked |`validation.messages.email.disposableBlocked`    |`Disposable email addresses are not allowed`           |
-|password |commonBlocked     |`validation.messages.password.commonBlocked`     |`This password is too common`                          |
+|email    |disposableBlocked |`validation.messages.email.disposableBlocked`    |`{{label}} must not use a disposable email provider`   |
+|password |commonBlocked     |`validation.messages.password.commonBlocked`     |`{{label}} is too common`                              |
 |string   |minUppercase      |`validation.messages.string.minUppercase`        |`{{label}} must have at least {{minimum}} uppercase characters`|
 
 **Path modes (affect message keys only, not label keys):**
@@ -760,10 +760,16 @@ function setup(config?: Partial<GlobalConfig>): void;
 async function preloadData(options: PreloadOptions): Promise<void>;
 
 interface PreloadOptions {
-  disposable?: boolean;   // Preload disposable domains
-  passwords?: boolean;    // Preload common passwords
-  reserved?: boolean;     // Preload reserved usernames
-  phone?: "min" | "mobile" | "max";  // Preload libphonenumber-js variant
+  disposable?: boolean;                          // Preload disposable domains
+  passwords?: boolean | 'basic' | 'moderate' | 'strict';  // Preload common passwords
+  reserved?: boolean;                            // Preload reserved usernames
+  phone?: 'min' | 'mobile' | 'max';             // Preload libphonenumber-js variant
+  countryCodes?: boolean;                        // Preload ISO 3166-1 country codes
+  currencyCodes?: boolean;                       // Preload ISO 4217 currency codes
+  ibanPatterns?: boolean;                        // Preload IBAN country patterns
+  vatPatterns?: boolean;                         // Preload VAT number patterns
+  creditCardPrefixes?: boolean;                  // Preload credit card issuer prefixes
+  postalCodes?: boolean;                         // Preload postal code patterns
 }
 
 // Utility for normalizing Zod issues
@@ -823,12 +829,12 @@ Email().safeParse(data);  // Auto-initializes with defaults on first parse
 
 // Option 2: Configure globally
 import { setup } from 'validex';
-setup({ rules: { Email: { blockDisposable: true } } });
+setup({ rules: { email: { blockDisposable: true } } });
 
 // Option 3: With preload for sync everywhere
 import { setup, preloadData } from 'validex';
 await preloadData({ disposable: true });
-setup({ rules: { Email: { blockDisposable: true } } });
+setup({ rules: { email: { blockDisposable: true } } });
 // Now Email().parse(data) works synchronously
 ```
 
@@ -860,9 +866,9 @@ Tier 3: Per-call overrides (passed to Email(), Password(), etc.)
 - **Arrays:** replaced entirely (not concatenated)
 
 ```typescript
-// Tier 1 (defaults): Password.uppercase = { min: 1 }
+// Tier 1 (defaults): password.uppercase = { min: 1 }
 // Tier 2 (globals):
-setup({ rules: { Password: { digits: { min: 2 } } } });
+setup({ rules: { password: { digits: { min: 2 } } } });
 // Merged: Password = { uppercase: { min: 1 }, digits: { min: 2 } }
 
 // Tier 3 (per-call):
@@ -879,11 +885,11 @@ Password({})
 **`configure()` calls also deep-merge with existing globals:**
 
 ```typescript
-configure({ rules: { Password: { uppercase: { min: 2 } } } });
-configure({ rules: { Password: { digits: { min: 1 } } } });
+configure({ rules: { password: { uppercase: { min: 2 } } } });
+configure({ rules: { password: { digits: { min: 1 } } } });
 
 // Globals result (deep merged):
-// Password: { uppercase: { min: 2 }, digits: { min: 1 } }
+// password: { uppercase: { min: 2 }, digits: { min: 1 } }
 ```
 
 #### 4.5 Auto-Initialization Contract
@@ -904,7 +910,7 @@ import { Email } from 'validex';
 const schema = Email();  // Schema created with no config baked in
 
 // Later...
-setup({ rules: { Email: { blockDisposable: true } } });
+setup({ rules: { email: { blockDisposable: true } } });
 
 // Schema reads config NOW, at parse-time:
 schema.safeParse("test@mailinator.com");
@@ -954,96 +960,114 @@ Example: `validation.messages.email.disposableBlocked`
 
 **Check codes (namespace: `string`):**
 
-|Code            |Full Key                                     |English Default                                                       |Params         |
-|----------------|---------------------------------------------|----------------------------------------------------------------------|---------------|
-|`minUppercase`  |`validation.messages.string.minUppercase`    |`{{label}} must have at least {{minimum}} uppercase characters`       |minimum, actual|
-|`minLowercase`  |`validation.messages.string.minLowercase`    |`{{label}} must have at least {{minimum}} lowercase characters`       |minimum, actual|
-|`minDigits`     |`validation.messages.string.minDigits`       |`{{label}} must have at least {{minimum}} digits`                     |minimum, actual|
-|`minSpecial`    |`validation.messages.string.minSpecial`      |`{{label}} must have at least {{minimum}} special characters`         |minimum, actual|
-|`maxUppercase`  |`validation.messages.string.maxUppercase`    |`{{label}} must have at most {{maximum}} uppercase characters`        |maximum, actual|
-|`maxConsecutive`|`validation.messages.string.maxConsecutive`  |`{{label}} must not have more than {{maximum}} consecutive characters`|maximum        |
-|`maxWords`      |`validation.messages.string.maxWords`        |`{{label}} must have at most {{maximum}} words`                       |maximum, actual|
-|`noSpaces`      |`validation.messages.string.noSpaces`        |`{{label}} must not contain spaces`                                   |—              |
+|Code            |Full Key                                     |English Default                                                                    |Params         |
+|----------------|---------------------------------------------|-----------------------------------------------------------------------------------|---------------|
+|`minUppercase`  |`validation.messages.string.minUppercase`    |`{{label}} must have at least {{minimum}} uppercase characters`                    |minimum, actual|
+|`maxUppercase`  |`validation.messages.string.maxUppercase`    |`{{label}} must have at most {{maximum}} uppercase characters`                     |maximum, actual|
+|`minLowercase`  |`validation.messages.string.minLowercase`    |`{{label}} must have at least {{minimum}} lowercase characters`                    |minimum, actual|
+|`maxLowercase`  |`validation.messages.string.maxLowercase`    |`{{label}} must have at most {{maximum}} lowercase characters`                     |maximum, actual|
+|`minDigits`     |`validation.messages.string.minDigits`       |`{{label}} must have at least {{minimum}} digits`                                  |minimum, actual|
+|`maxDigits`     |`validation.messages.string.maxDigits`       |`{{label}} must have at most {{maximum}} digits`                                   |maximum, actual|
+|`minSpecial`    |`validation.messages.string.minSpecial`      |`{{label}} must have at least {{minimum}} special characters`                      |minimum, actual|
+|`maxSpecial`    |`validation.messages.string.maxSpecial`      |`{{label}} must have at most {{maximum}} special characters`                       |maximum, actual|
+|`minWords`      |`validation.messages.string.minWords`        |`{{label}} must have at least {{minimum}} words`                                   |minimum, actual|
+|`maxWords`      |`validation.messages.string.maxWords`        |`{{label}} must have at most {{maximum}} words`                                    |maximum, actual|
+|`maxConsecutive`|`validation.messages.string.maxConsecutive`  |`{{label}} must not repeat the same character more than {{maximum}} times`         |maximum        |
+|`noSpaces`      |`validation.messages.string.noSpaces`        |`{{label}} must not contain spaces`                                                |—              |
 
 **Rule-specific codes (complete list — all 25 rules):**
 
-|Namespace      |Code                |Full Key                                                |English Default                                              |
-|---------------|--------------------|----------------------------------------------------|-------------------------------------------------------------|
-|`email`        |`invalid`           |`validation.messages.email.invalid`                 |`{{label}} is not a valid email address`                     |
-|`email`        |`disposableBlocked` |`validation.messages.email.disposableBlocked`       |`Disposable email addresses are not allowed`                 |
-|`email`        |`plusAliasBlocked`  |`validation.messages.email.plusAliasBlocked`        |`Plus aliases are not allowed`                               |
-|`email`        |`domainBlocked`     |`validation.messages.email.domainBlocked`           |`This email domain is not allowed`                           |
-|`email`        |`domainNotAllowed`  |`validation.messages.email.domainNotAllowed`        |`This email domain is not in the allowed list`               |
-|`email`        |`subdomainNotAllowed`|`validation.messages.email.subdomainNotAllowed`    |`Subdomain email addresses are not allowed`                  |
-|`personName`   |`invalid`           |`validation.messages.personName.invalid`            |`{{label}} is not a valid name`                              |
-|`personName`   |`maxWords`          |`validation.messages.personName.maxWords`           |`{{label}} must have at most {{maximum}} words`              |
-|`personName`   |`boundary`          |`validation.messages.personName.boundary`           |`{{label}} must start and end with a letter`                 |
-|`personName`   |`maxConsecutive`    |`validation.messages.personName.maxConsecutive`     |`{{label}} must not have more than {{maximum}} consecutive characters`|
-|`businessName` |`invalid`           |`validation.messages.businessName.invalid`          |`{{label}} is not a valid business name`                     |
-|`businessName` |`boundary`          |`validation.messages.businessName.boundary`         |`{{label}} must start and end with a letter or number`       |
-|`businessName` |`maxConsecutive`    |`validation.messages.businessName.maxConsecutive`   |`{{label}} must not have more than {{maximum}} consecutive characters`|
-|`password`     |`minUppercase`      |`validation.messages.password.minUppercase`         |`{{label}} must have at least {{minimum}} uppercase characters`|
-|`password`     |`minLowercase`      |`validation.messages.password.minLowercase`         |`{{label}} must have at least {{minimum}} lowercase characters`|
-|`password`     |`minDigits`         |`validation.messages.password.minDigits`            |`{{label}} must have at least {{minimum}} digits`            |
-|`password`     |`minSpecial`        |`validation.messages.password.minSpecial`           |`{{label}} must have at least {{minimum}} special characters`|
-|`password`     |`maxUppercase`      |`validation.messages.password.maxUppercase`         |`{{label}} must have at most {{maximum}} uppercase characters`|
-|`password`     |`maxConsecutive`    |`validation.messages.password.maxConsecutive`       |`{{label}} must not have more than {{maximum}} consecutive characters`|
-|`password`     |`commonBlocked`     |`validation.messages.password.commonBlocked`        |`This password is too common`                                |
-|`confirmation` |`mismatch`          |`validation.messages.confirmation.mismatch`         |`Passwords must match`                                       |
-|`phone`        |`invalid`           |`validation.messages.phone.invalid`                 |`{{label}} is not a valid phone number`                      |
-|`phone`        |`requireMobile`     |`validation.messages.phone.requireMobile`           |`A mobile phone number is required`                          |
-|`phone`        |`countryBlocked`    |`validation.messages.phone.countryBlocked`          |`Phone numbers from this country are not allowed`            |
-|`phone`        |`countryNotAllowed` |`validation.messages.phone.countryNotAllowed`       |`Phone numbers from this country are not in the allowed list`|
-|`website`      |`invalid`           |`validation.messages.website.invalid`               |`{{label}} is not a valid website URL`                       |
-|`website`      |`domainBlocked`     |`validation.messages.website.domainBlocked`         |`This website domain is not allowed`                         |
-|`website`      |`domainNotAllowed`  |`validation.messages.website.domainNotAllowed`      |`This website domain is not in the allowed list`             |
-|`website`      |`subdomainNotAllowed`|`validation.messages.website.subdomainNotAllowed`  |`Subdomain URLs are not allowed`                             |
-|`url`          |`invalid`           |`validation.messages.url.invalid`                   |`{{label}} is not a valid URL`                               |
-|`url`          |`protocolNotAllowed`|`validation.messages.url.protocolNotAllowed`        |`This URL protocol is not allowed`                           |
-|`url`          |`domainBlocked`     |`validation.messages.url.domainBlocked`             |`This URL domain is not allowed`                             |
-|`url`          |`domainNotAllowed`  |`validation.messages.url.domainNotAllowed`          |`This URL domain is not in the allowed list`                 |
-|`username`     |`invalid`           |`validation.messages.username.invalid`              |`{{label}} is not a valid username`                          |
-|`username`     |`reservedBlocked`   |`validation.messages.username.reservedBlocked`      |`This username is reserved`                                  |
-|`username`     |`boundary`          |`validation.messages.username.boundary`             |`{{label}} must start and end with a letter or number`       |
-|`username`     |`maxConsecutive`    |`validation.messages.username.maxConsecutive`        |`{{label}} must not have more than {{maximum}} consecutive characters`|
-|`slug`         |`invalid`           |`validation.messages.slug.invalid`                  |`{{label}} is not a valid slug`                              |
-|`postalCode`   |`invalid`           |`validation.messages.postalCode.invalid`             |`{{label}} is not a valid postal code`                       |
-|`licenseKey`   |`invalid`           |`validation.messages.licenseKey.invalid`             |`{{label}} is not a valid license key`                       |
-|`uuid`         |`invalid`           |`validation.messages.uuid.invalid`                  |`{{label}} is not a valid UUID`                              |
-|`jwt`          |`invalid`           |`validation.messages.jwt.invalid`                   |`{{label}} is not a valid JWT`                               |
-|`jwt`          |`expired`           |`validation.messages.jwt.expired`                   |`This token has expired`                                     |
-|`jwt`          |`notYetValid`       |`validation.messages.jwt.notYetValid`               |`This token is not yet valid`                                |
-|`jwt`          |`missingClaim`      |`validation.messages.jwt.missingClaim`              |`Required claim '{{claim}}' is missing`                      |
-|`jwt`          |`algorithmNotAllowed`|`validation.messages.jwt.algorithmNotAllowed`      |`Algorithm '{{algorithm}}' is not allowed`                   |
-|`dateTime`     |`invalid`           |`validation.messages.dateTime.invalid`              |`{{label}} is not a valid date/time`                         |
-|`dateTime`     |`tooEarly`          |`validation.messages.dateTime.tooEarly`             |`{{label}} must be after {{minimum}}`                        |
-|`dateTime`     |`tooLate`           |`validation.messages.dateTime.tooLate`              |`{{label}} must be before {{maximum}}`                       |
-|`dateTime`     |`noFuture`          |`validation.messages.dateTime.noFuture`             |`{{label}} must not be in the future`                        |
-|`dateTime`     |`noPast`            |`validation.messages.dateTime.noPast`               |`{{label}} must not be in the past`                          |
-|`token`        |`invalid`           |`validation.messages.token.invalid`                 |`{{label}} is not a valid {{type}} token`                    |
-|`text`         |`noEmails`          |`validation.messages.text.noEmails`                 |`{{label}} must not contain email addresses`                 |
-|`text`         |`noUrls`            |`validation.messages.text.noUrls`                   |`{{label}} must not contain URLs`                            |
-|`text`         |`noPhoneNumbers`    |`validation.messages.text.noPhoneNumbers`           |`{{label}} must not contain phone numbers`                   |
-|`text`         |`noHtml`            |`validation.messages.text.noHtml`                   |`{{label}} must not contain HTML`                            |
-|`text`         |`maxWords`          |`validation.messages.text.maxWords`                 |`{{label}} must have at most {{maximum}} words`              |
-|`text`         |`maxConsecutive`    |`validation.messages.text.maxConsecutive`            |`{{label}} must not have more than {{maximum}} consecutive characters`|
-|`country`      |`invalid`           |`validation.messages.country.invalid`               |`{{label}} is not a valid country code`                      |
-|`country`      |`blocked`           |`validation.messages.country.blocked`               |`This country is not allowed`                                |
-|`country`      |`notAllowed`        |`validation.messages.country.notAllowed`            |`This country is not in the allowed list`                    |
-|`currency`     |`invalid`           |`validation.messages.currency.invalid`              |`{{label}} is not a valid currency code`                     |
-|`currency`     |`blocked`           |`validation.messages.currency.blocked`              |`This currency is not allowed`                               |
-|`currency`     |`notAllowed`        |`validation.messages.currency.notAllowed`           |`This currency is not in the allowed list`                   |
-|`color`        |`invalid`           |`validation.messages.color.invalid`                 |`{{label}} is not a valid color`                             |
-|`creditCard`   |`invalid`           |`validation.messages.creditCard.invalid`            |`{{label}} is not a valid credit card number`                |
-|`creditCard`   |`issuerNotAllowed`  |`validation.messages.creditCard.issuerNotAllowed`   |`This card issuer is not accepted`                           |
-|`creditCard`   |`issuerBlocked`     |`validation.messages.creditCard.issuerBlocked`      |`This card issuer is not allowed`                            |
-|`iban`         |`invalid`           |`validation.messages.iban.invalid`                  |`{{label}} is not a valid IBAN`                              |
-|`iban`         |`countryBlocked`    |`validation.messages.iban.countryBlocked`           |`IBANs from this country are not allowed`                    |
-|`iban`         |`countryNotAllowed` |`validation.messages.iban.countryNotAllowed`        |`IBANs from this country are not in the allowed list`        |
-|`vatNumber`    |`invalid`           |`validation.messages.vatNumber.invalid`             |`{{label}} is not a valid VAT number`                        |
-|`macAddress`   |`invalid`           |`validation.messages.macAddress.invalid`            |`{{label}} is not a valid MAC address`                       |
-|`ipAddress`    |`invalid`           |`validation.messages.ipAddress.invalid`             |`{{label}} is not a valid IP address`                        |
-|`ipAddress`    |`privateNotAllowed` |`validation.messages.ipAddress.privateNotAllowed`   |`Private IP addresses are not allowed`                       |
+|Namespace      |Code                 |Full Key                                                |English Default                                                                    |
+|---------------|---------------------|----------------------------------------------------|-----------------------------------------------------------------------------------|
+|`email`        |`invalid`            |`validation.messages.email.invalid`                 |`{{label}} is not a valid email address`                                           |
+|`email`        |`disposableBlocked`  |`validation.messages.email.disposableBlocked`       |`{{label}} must not use a disposable email provider`                               |
+|`email`        |`plusAliasBlocked`   |`validation.messages.email.plusAliasBlocked`         |`{{label}} must not use plus aliases`                                              |
+|`email`        |`domainBlocked`      |`validation.messages.email.domainBlocked`           |`Email domain '{{domain}}' is not allowed`                                         |
+|`email`        |`domainNotAllowed`   |`validation.messages.email.domainNotAllowed`        |`Email domain '{{domain}}' is not in the allowed list`                             |
+|`email`        |`subdomainNotAllowed`|`validation.messages.email.subdomainNotAllowed`     |`Subdomain email addresses are not allowed`                                        |
+|`personName`   |`invalid`            |`validation.messages.personName.invalid`            |`{{label}} is not a valid name`                                                    |
+|`personName`   |`maxWords`           |`validation.messages.personName.maxWords`           |`{{label}} must have at most {{maximum}} words`                                    |
+|`personName`   |`boundary`           |`validation.messages.personName.boundary`           |`{{label}} must start and end with a letter`                                       |
+|`personName`   |`maxConsecutive`     |`validation.messages.personName.maxConsecutive`     |`{{label}} must not repeat the same character more than {{maximum}} times`         |
+|`businessName` |`invalid`            |`validation.messages.businessName.invalid`          |`{{label}} is not a valid business name`                                           |
+|`businessName` |`boundary`           |`validation.messages.businessName.boundary`         |`{{label}} must start and end with an alphanumeric character`                      |
+|`businessName` |`maxConsecutive`     |`validation.messages.businessName.maxConsecutive`   |`{{label}} must not repeat the same character more than {{maximum}} times`         |
+|`password`     |`minUppercase`       |`validation.messages.password.minUppercase`         |`{{label}} must have at least {{minimum}} uppercase characters`                    |
+|`password`     |`minLowercase`       |`validation.messages.password.minLowercase`         |`{{label}} must have at least {{minimum}} lowercase characters`                    |
+|`password`     |`minDigits`          |`validation.messages.password.minDigits`            |`{{label}} must have at least {{minimum}} digits`                                  |
+|`password`     |`minSpecial`         |`validation.messages.password.minSpecial`           |`{{label}} must have at least {{minimum}} special characters`                      |
+|`password`     |`maxUppercase`       |`validation.messages.password.maxUppercase`         |`{{label}} must have at most {{maximum}} uppercase characters`                     |
+|`password`     |`maxLowercase`       |`validation.messages.password.maxLowercase`         |`{{label}} must have at most {{maximum}} lowercase characters`                     |
+|`password`     |`maxDigits`          |`validation.messages.password.maxDigits`            |`{{label}} must have at most {{maximum}} digits`                                   |
+|`password`     |`maxSpecial`         |`validation.messages.password.maxSpecial`           |`{{label}} must have at most {{maximum}} special characters`                       |
+|`password`     |`maxConsecutive`     |`validation.messages.password.maxConsecutive`       |`{{label}} must not have more than {{maximum}} consecutive identical characters`   |
+|`password`     |`commonBlocked`      |`validation.messages.password.commonBlocked`        |`{{label}} is too common`                                                          |
+|`confirmation` |`mismatch`           |`validation.messages.confirmation.mismatch`         |`{{label}} must match {{targetLabel}}`                                             |
+|`phone`        |`invalid`            |`validation.messages.phone.invalid`                 |`{{label}} is not a valid phone number`                                            |
+|`phone`        |`requireMobile`      |`validation.messages.phone.requireMobile`           |`{{label}} must be a mobile phone number`                                          |
+|`phone`        |`countryCodeRequired`|`validation.messages.phone.countryCodeRequired`     |`{{label}} must include a country code prefix`                                     |
+|`phone`        |`countryBlocked`     |`validation.messages.phone.countryBlocked`          |`Phone numbers from '{{country}}' are not allowed`                                 |
+|`phone`        |`countryNotAllowed`  |`validation.messages.phone.countryNotAllowed`       |`Phone numbers from '{{country}}' are not in the allowed list`                     |
+|`website`      |`invalid`            |`validation.messages.website.invalid`               |`{{label}} is not a valid website URL`                                             |
+|`website`      |`httpsRequired`      |`validation.messages.website.httpsRequired`         |`{{label}} must use HTTPS`                                                         |
+|`website`      |`wwwRequired`        |`validation.messages.website.wwwRequired`           |`{{label}} must include www prefix`                                                |
+|`website`      |`pathNotAllowed`     |`validation.messages.website.pathNotAllowed`        |`{{label}} must not contain URL paths`                                             |
+|`website`      |`queryNotAllowed`    |`validation.messages.website.queryNotAllowed`       |`{{label}} must not contain query strings`                                         |
+|`website`      |`domainBlocked`      |`validation.messages.website.domainBlocked`         |`Domain '{{domain}}' is not allowed`                                               |
+|`website`      |`domainNotAllowed`   |`validation.messages.website.domainNotAllowed`      |`Domain '{{domain}}' is not in the allowed list`                                   |
+|`website`      |`subdomainNotAllowed`|`validation.messages.website.subdomainNotAllowed`   |`Subdomain URLs are not allowed`                                                   |
+|`url`          |`invalid`            |`validation.messages.url.invalid`                   |`{{label}} is not a valid URL`                                                     |
+|`url`          |`protocolNotAllowed` |`validation.messages.url.protocolNotAllowed`        |`Protocol '{{protocol}}' is not allowed`                                           |
+|`url`          |`tldRequired`        |`validation.messages.url.tldRequired`               |`{{label}} must include a top-level domain`                                        |
+|`url`          |`queryNotAllowed`    |`validation.messages.url.queryNotAllowed`           |`{{label}} must not contain query strings`                                         |
+|`url`          |`authNotAllowed`     |`validation.messages.url.authNotAllowed`            |`{{label}} must not contain credentials`                                           |
+|`url`          |`domainBlocked`      |`validation.messages.url.domainBlocked`             |`Domain '{{domain}}' is not allowed`                                               |
+|`url`          |`domainNotAllowed`   |`validation.messages.url.domainNotAllowed`          |`Domain '{{domain}}' is not in the allowed list`                                   |
+|`username`     |`invalid`            |`validation.messages.username.invalid`              |`{{label}} is not a valid username`                                                |
+|`username`     |`reservedBlocked`    |`validation.messages.username.reservedBlocked`      |`The username '{{value}}' is reserved`                                             |
+|`username`     |`boundary`           |`validation.messages.username.boundary`             |`{{label}} must start and end with an alphanumeric character`                      |
+|`username`     |`maxConsecutive`     |`validation.messages.username.maxConsecutive`        |`{{label}} must not repeat the same character more than {{maximum}} times`         |
+|`slug`         |`invalid`            |`validation.messages.slug.invalid`                  |`{{label}} is not a valid slug`                                                    |
+|`postalCode`   |`invalid`            |`validation.messages.postalCode.invalid`             |`{{label}} is not a valid postal code`                                             |
+|`licenseKey`   |`invalid`            |`validation.messages.licenseKey.invalid`             |`{{label}} is not a valid license key`                                             |
+|`uuid`         |`invalid`            |`validation.messages.uuid.invalid`                  |`{{label}} is not a valid UUID`                                                    |
+|`jwt`          |`invalid`            |`validation.messages.jwt.invalid`                   |`{{label}} is not a valid JWT`                                                     |
+|`jwt`          |`expiryRequired`     |`validation.messages.jwt.expiryRequired`            |`{{label}} must have an expiration claim`                                          |
+|`jwt`          |`expired`            |`validation.messages.jwt.expired`                   |`{{label}} has expired`                                                            |
+|`jwt`          |`notYetValid`        |`validation.messages.jwt.notYetValid`               |`{{label}} is not yet valid`                                                       |
+|`jwt`          |`missingClaim`       |`validation.messages.jwt.missingClaim`              |`Required claim '{{claim}}' is missing`                                            |
+|`jwt`          |`algorithmNotAllowed`|`validation.messages.jwt.algorithmNotAllowed`       |`Algorithm '{{algorithm}}' is not allowed`                                         |
+|`dateTime`     |`invalid`            |`validation.messages.dateTime.invalid`              |`{{label}} is not a valid date`                                                    |
+|`dateTime`     |`tooEarly`           |`validation.messages.dateTime.tooEarly`             |`{{label}} must be after {{minimum}}`                                              |
+|`dateTime`     |`tooLate`            |`validation.messages.dateTime.tooLate`              |`{{label}} must be before {{maximum}}`                                             |
+|`dateTime`     |`noFuture`           |`validation.messages.dateTime.noFuture`             |`{{label}} must not be in the future`                                              |
+|`dateTime`     |`noPast`             |`validation.messages.dateTime.noPast`               |`{{label}} must not be in the past`                                                |
+|`token`        |`invalid`            |`validation.messages.token.invalid`                 |`{{label}} is not a valid {{type}} token`                                          |
+|`text`         |`invalid`            |`validation.messages.text.invalid`                  |`{{label}} is not valid text`                                                      |
+|`text`         |`noEmails`           |`validation.messages.text.noEmails`                 |`{{label}} must not contain email addresses`                                       |
+|`text`         |`noUrls`             |`validation.messages.text.noUrls`                   |`{{label}} must not contain URLs`                                                  |
+|`text`         |`noPhoneNumbers`     |`validation.messages.text.noPhoneNumbers`           |`{{label}} must not contain phone numbers`                                         |
+|`text`         |`noHtml`             |`validation.messages.text.noHtml`                   |`{{label}} must not contain HTML`                                                  |
+|`text`         |`minWords`           |`validation.messages.text.minWords`                 |`{{label}} must have at least {{minimum}} words`                                   |
+|`text`         |`maxWords`           |`validation.messages.text.maxWords`                 |`{{label}} must have at most {{maximum}} words`                                    |
+|`text`         |`maxConsecutive`     |`validation.messages.text.maxConsecutive`            |`{{label}} must not repeat the same character more than {{maximum}} times`         |
+|`country`      |`invalid`            |`validation.messages.country.invalid`               |`{{label}} is not a valid country code`                                            |
+|`country`      |`blocked`            |`validation.messages.country.blocked`               |`Country '{{country}}' is not allowed`                                             |
+|`country`      |`notAllowed`         |`validation.messages.country.notAllowed`            |`Country '{{country}}' is not in the allowed list`                                 |
+|`currency`     |`invalid`            |`validation.messages.currency.invalid`              |`{{label}} is not a valid currency code`                                           |
+|`currency`     |`blocked`            |`validation.messages.currency.blocked`              |`Currency '{{currency}}' is not allowed`                                           |
+|`currency`     |`notAllowed`         |`validation.messages.currency.notAllowed`           |`Currency '{{currency}}' is not in the allowed list`                               |
+|`color`        |`invalid`            |`validation.messages.color.invalid`                 |`{{label}} is not a valid color`                                                   |
+|`creditCard`   |`invalid`            |`validation.messages.creditCard.invalid`            |`{{label}} is not a valid credit card number`                                      |
+|`creditCard`   |`issuerNotAllowed`   |`validation.messages.creditCard.issuerNotAllowed`   |`Card issuer '{{issuer}}' is not in the allowed list`                              |
+|`creditCard`   |`issuerBlocked`      |`validation.messages.creditCard.issuerBlocked`      |`Card issuer '{{issuer}}' is not allowed`                                          |
+|`iban`         |`invalid`            |`validation.messages.iban.invalid`                  |`{{label}} is not a valid IBAN`                                                    |
+|`iban`         |`countryBlocked`     |`validation.messages.iban.countryBlocked`           |`IBANs from '{{country}}' are not allowed`                                         |
+|`iban`         |`countryNotAllowed`  |`validation.messages.iban.countryNotAllowed`        |`IBANs from '{{country}}' are not in the allowed list`                             |
+|`vatNumber`    |`invalid`            |`validation.messages.vatNumber.invalid`             |`{{label}} is not a valid VAT number`                                              |
+|`macAddress`   |`invalid`            |`validation.messages.macAddress.invalid`            |`{{label}} is not a valid MAC address`                                             |
+|`ipAddress`    |`invalid`            |`validation.messages.ipAddress.invalid`             |`{{label}} is not a valid IP address`                                              |
+|`ipAddress`    |`privateNotAllowed`  |`validation.messages.ipAddress.privateNotAllowed`   |`{{label}} must not be a private IP address`                                       |
 
 **Note:** Each rule remaps format validation errors from Zod's generic `invalid_format` code to a rule-specific `invalid` code. The namespace provides context (e.g., `email.invalid` vs `phone.invalid`), allowing consumers to write specific translations per rule.
 
@@ -1208,11 +1232,11 @@ Return `true` if value contains only allowed characters.
 
 |#  |Check                        |Signature         |Error Code                    |
 |---|-----------------------------|------------------|------------------------------|
-|9  |`onlyAlpha`                  |`(value): boolean`|`alphaOnly`                   |
-|10 |`onlyNumeric`                |`(value): boolean`|`numericOnly`                 |
-|11 |`onlyAlphanumeric`           |`(value): boolean`|`alphanumericOnly`            |
-|12 |`onlyAlphanumericSpaceHyphen`|`(value): boolean`|`alphanumericSpaceHyphenOnly` |
-|13 |`onlyAlphaSpaceHyphen`       |`(value): boolean`|`alphaSpaceHyphenOnly`        |
+|9  |`onlyAlpha`                  |`(value): boolean`|`onlyAlpha`                   |
+|10 |`onlyNumeric`                |`(value): boolean`|`onlyNumeric`                 |
+|11 |`onlyAlphanumeric`           |`(value): boolean`|`onlyAlphanumeric`            |
+|12 |`onlyAlphanumericSpaceHyphen`|`(value): boolean`|`onlyAlphanumericSpaceHyphen` |
+|13 |`onlyAlphaSpaceHyphen`       |`(value): boolean`|`onlyAlphaSpaceHyphen`        |
 
 #### 6.5 Limit Checks
 
@@ -1220,9 +1244,10 @@ Return `true` if value is within limits.
 
 |#  |Check          |Signature              |Error Code       |
 |---|---------------|-----------------------|-----------------|
-|14 |`maxWords`     |`(value, max): boolean`|`maxWords`       |
-|15 |`maxConsecutive`|`(value, max): boolean`|`maxConsecutive` |
-|16 |`noSpaces`     |`(value): boolean`     |`noSpaces`       |
+|14 |`minWords`      |`(value, min): boolean`|`minWords`       |
+|15 |`maxWords`     |`(value, max): boolean`|`maxWords`       |
+|16 |`maxConsecutive`|`(value, max): boolean`|`maxConsecutive` |
+|17 |`noSpaces`     |`(value): boolean`     |`noSpaces`       |
 
 #### 6.6 Schema Utilities
 
@@ -1230,7 +1255,7 @@ These are **not Checks** — they produce Zod refinements and are Zod-coupled. T
 
 |#  |Utility       |Signature                |Import Path                              |Purpose                        |
 |---|--------------|-------------------------|-----------------------------------------|-------------------------------|
-|17 |`requiredWhen`|`(condition): Refinement`|`validex` or `validex/utilities`         |Required based on another field|
+|17 |`requiredWhen`|`(fieldName): Refinement`|`validex` or `validex/utilities`         |Required based on another field|
 |18 |`sameAs`      |`(path): Refinement`     |`validex` or `validex/utilities`         |Must match another field       |
 
 **Usage in custom schemas:**
@@ -1240,7 +1265,7 @@ import { sameAs, requiredWhen } from 'validex';
 
 const schema = z.object({
   changePassword: z.boolean(),
-  newPassword: Password().requiredWhen((data) => data.changePassword),
+  newPassword: Password().requiredWhen('changePassword'),
   confirmPassword: Password().sameAs('newPassword'),
 });
 ```
@@ -1401,10 +1426,10 @@ interface FormatRuleOptions extends BaseRuleOptions {
 // Set once at app startup
 setup({
   rules: {
-    Email: { blockDisposable: true },
-    Password: { length: { min: 10 }, digits: { min: 2 } },
-    Phone: { metadata: 'mobile' },
-    LicenseKey: { type: 'windows' },
+    email: { blockDisposable: true },
+    password: { length: { min: 10 }, digits: { min: 2 } },
+    phone: { metadata: 'mobile' },
+    licenseKey: { type: 'windows' },
   }
 });
 
@@ -1424,7 +1449,7 @@ Email({ blockDisposable: false })  // Override global
 Username().min(5).max(20)
 
 // Conditional (via schema utilities)
-Password().requiredWhen((data) => data.changePassword)
+Password().requiredWhen('changePassword')
 
 // Same as another field
 Password().sameAs('password')
@@ -2448,8 +2473,8 @@ import { setup } from 'validex';
 
 setup({
   rules: {
-    Email: { blockDisposable: true },
-    Password: { special: { min: 1 } },
+    email: { blockDisposable: true },
+    password: { special: { min: 1 } },
   },
 });
 
@@ -2464,7 +2489,7 @@ For async preloading, use Next.js `instrumentation.ts`:
 export async function register() {
   const { preloadData, setup } = await import('validex');
   await preloadData({ disposable: true });
-  setup({ rules: { Email: { blockDisposable: true } } });
+  setup({ rules: { email: { blockDisposable: true } } });
 }
 ```
 
@@ -2587,8 +2612,8 @@ const app = Fastify();
 
 await app.register(validexPlugin, {
   rules: {
-    Email: { blockDisposable: true },
-    Password: { digits: { min: 1 } },
+    email: { blockDisposable: true },
+    password: { digits: { min: 1 } },
   },
   preload: { disposable: true, passwords: true },
 });

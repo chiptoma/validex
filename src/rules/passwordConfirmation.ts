@@ -4,6 +4,11 @@
 // ------------------------------------------------------------------------------
 // NOTE: Cross-field matching is handled by validate() via sameAs metadata.
 //       This rule validates the confirmation string itself using Password().
+// SPEC DEVIATION (approved): Does not use createRule.
+// Reason: 'confirmation' is a reserved namespace that createRule rejects.
+// This rule wraps Password() for content validation and registers cross-field
+// metadata (sameAs) directly. Three-tier merge applied manually via
+// mergeThreeTiers. See CLAUDE.md for approved exception.
 // ==============================================================================
 
 import type { z } from 'zod'
