@@ -34,13 +34,16 @@ export async function loadDisposableDomains(): Promise<ReadonlySet<string>> {
 
 /**
  * Get Disposable Domains
- * Synchronously returns previously loaded disposable domains, or undefined
- * if not yet loaded. Returns undefined rather than throwing so the email
- * rule can fall back to its own async import.
+ * Synchronously returns previously loaded disposable domains.
+ * Throws if not yet loaded — call loadDisposableDomains() or
+ * preloadData({ disposable: true }) first.
  *
- * @returns The ReadonlySet of disposable domains, or undefined.
+ * @returns The ReadonlySet of disposable domains.
  */
-export function getDisposableDomains(): ReadonlySet<string> | undefined {
+export function getDisposableDomains(): ReadonlySet<string> {
+  if (cache === undefined) {
+    throw new Error('Disposable domains not loaded. Call loadDisposableDomains() or preloadData({ disposable: true }) first.')
+  }
   return cache
 }
 

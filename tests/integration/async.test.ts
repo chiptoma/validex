@@ -205,11 +205,11 @@ describe('preloadData — behavioral verification', () => {
   })
 
   it('disposable: domains are cached after preload', async () => {
-    expect(getDisposableDomains()).toBeUndefined()
+    expect(() => getDisposableDomains()).toThrow()
     await preloadData({ disposable: true })
     const domains = getDisposableDomains()
     expect(domains).toBeDefined()
-    expect(domains?.has('mailinator.com')).toBe(true)
+    expect(domains.has('mailinator.com')).toBe(true)
   })
 
   it('disposable: Email({ blockDisposable }) uses preloaded cache', async () => {
@@ -220,7 +220,7 @@ describe('preloadData — behavioral verification', () => {
   })
 
   it('phone: parser is cached after preload', async () => {
-    expect(getPhoneParser('mobile')).toBeUndefined()
+    expect(() => getPhoneParser('mobile')).toThrow()
     await preloadData({ phone: 'mobile' })
     const parser = getPhoneParser('mobile')
     expect(parser).toBeDefined()
@@ -231,8 +231,6 @@ describe('preloadData — behavioral verification', () => {
     await preloadData({ phone: 'min' })
     const parser = getPhoneParser('min')
     expect(parser).toBeDefined()
-    if (parser === undefined)
-      throw new Error('parser not loaded')
     const parsed = parser('+14155552671')
     expect(parsed.isValid()).toBe(true)
   })

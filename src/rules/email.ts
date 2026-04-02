@@ -7,6 +7,7 @@
 import type { BaseRuleOptions, Range } from '../types'
 import { z } from 'zod'
 import { createRule } from '../core/createRule'
+import { applyLengthCheck } from '../internal/lengthCheck'
 import { resolveRange } from '../internal/resolveRange'
 import { getDisposableDomains } from '../loaders/disposableDomains'
 
@@ -101,12 +102,7 @@ export const Email = /* @__PURE__ */ createRule<EmailOptions>({
         ctx.addIssue({ code: 'custom', params: { code: 'invalid', namespace: ns, label: lbl } })
         return
       }
-      if (minLen !== undefined && v.length < minLen) {
-        ctx.addIssue({ code: 'custom', params: { code: 'min', namespace: 'base', label: lbl, minimum: minLen } })
-      }
-      if (v.length > maxLen) {
-        ctx.addIssue({ code: 'custom', params: { code: 'max', namespace: 'base', label: lbl, maximum: maxLen } })
-      }
+      applyLengthCheck(v, minLen, maxLen, lbl, ctx)
     }))
 
     schema = applyBusinessRules(schema, opts)
@@ -203,22 +199,24 @@ function applyDisposableCheck(schema: z.ZodType, label?: string): z.ZodType {
   return schema.pipe(z.string().refine(
     async (value: string): Promise<boolean> => {
       const domain = extractDomain(value)
-      const preloaded = getDisposableDomains()
-      if (preloaded !== undefined) {
+      try {
+        const preloaded = getDisposableDomains()
         return !preloaded.has(domain)
       }
-      /* c8 ignore start -- fallback dynamic import when not preloaded */
-      try {
-        const disposable = (
-          await import('disposable-email-domains')
-        // SAFETY: disposable-email-domains default export is a string array by package contract
-        ).default as readonly string[]
-        return !disposable.includes(domain)
-      }
       catch {
-        return true
+        /* c8 ignore start -- fallback dynamic import when not preloaded */
+        try {
+          const disposable = (
+            await import('disposable-email-domains')
+          // SAFETY: disposable-email-domains default export is a string array by package contract
+          ).default as readonly string[]
+          return !disposable.includes(domain)
+        }
+        catch {
+          return true
+        }
+        /* c8 ignore stop */
       }
-      /* c8 ignore stop */
     },
     { params: { code: 'disposableBlocked', namespace: 'email', label } },
   ))

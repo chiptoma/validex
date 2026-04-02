@@ -84,13 +84,18 @@ export async function loadPhoneParser(
 
 /**
  * Get Phone Parser
- * Synchronously returns a previously loaded phone parser, or undefined.
+ * Synchronously returns a previously loaded phone parser.
+ * Throws if the requested variant is not yet loaded.
  *
  * @param metadata - The metadata variant to retrieve.
- * @returns The cached parser function, or undefined.
+ * @returns The cached parser function.
  */
-export function getPhoneParser(metadata: PhoneMetadata = 'min'): PhoneParser | undefined {
-  return cache.get(metadata)
+export function getPhoneParser(metadata: PhoneMetadata = 'min'): PhoneParser {
+  const parser = cache.get(metadata)
+  if (parser === undefined) {
+    throw new Error(`Phone parser (${metadata}) not loaded. Call loadPhoneParser() or preloadData({ phone: '${metadata}' }) first.`)
+  }
+  return parser
 }
 
 /**
