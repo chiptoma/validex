@@ -5,8 +5,9 @@
 
 export { checkAsciiBoundary, checkUnicodeBoundary } from './boundary'
 export { hasDigits, hasLowercase, hasSpecial, hasUppercase } from './composition'
-export { containsEmail, containsHtml, containsPhoneNumber, containsUrl } from './detection'
-export { maxConsecutive, maxWords, noSpaces } from './limits'
+export { containsEmail, containsHtml, containsUrl } from './detection'
+export { maxConsecutive, maxWords, minWords, noSpaces } from './limits'
+export { containsPhoneNumber } from './phoneDetection'
 export {
   onlyAlpha,
   onlyAlphanumeric,

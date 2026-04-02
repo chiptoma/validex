@@ -1,12 +1,7 @@
 // ==============================================================================
 // CONTENT DETECTION CHECKS
 // Pure predicate functions for detecting content types within strings.
-// ------------------------------------------------------------------------------
-// NOTE: containsPhoneNumber is the only function with an external dependency
-//       (libphonenumber-js). All others use regex-based detection.
 // ==============================================================================
-
-import { findPhoneNumbersInText } from 'libphonenumber-js'
 
 // ----------------------------------------------------------
 // EMAIL DETECTION
@@ -64,20 +59,4 @@ const HTML_TAG_RE = /<[a-z/][^>]*>/i
  */
 export function containsHtml(value: string): boolean {
   return HTML_TAG_RE.test(value)
-}
-
-// ----------------------------------------------------------
-// PHONE NUMBER DETECTION
-// ----------------------------------------------------------
-
-/**
- * Contains Phone Number
- * Returns true when the value contains a phone number, detected via
- * libphonenumber-js.
- *
- * @param value - The string to scan for phone numbers.
- * @returns True if at least one phone number is found.
- */
-export function containsPhoneNumber(value: string): boolean {
-  return findPhoneNumbersInText(value).length > 0
 }

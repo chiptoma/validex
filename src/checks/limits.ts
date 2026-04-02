@@ -22,6 +22,19 @@ export function maxWords(value: string, max: number): boolean {
   return words.length <= max
 }
 
+/**
+ * Min Words
+ * Returns true if value has at least `min` words.
+ *
+ * @param value - The string to inspect.
+ * @param min   - Minimum number of words required (inclusive).
+ * @returns True if the word count is at least `min`.
+ */
+export function minWords(value: string, min: number): boolean {
+  const words = value.trim().split(WHITESPACE_RE).filter(segment => segment.length > 0)
+  return words.length >= min
+}
+
 // ----------------------------------------------------------
 // CONSECUTIVE CHARACTER LIMIT
 // ----------------------------------------------------------

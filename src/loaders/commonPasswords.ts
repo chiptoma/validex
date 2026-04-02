@@ -2,6 +2,10 @@
 // COMMON PASSWORDS LOADER
 // Async loader for the top 10,000 most common passwords from breach data.
 // ------------------------------------------------------------------------------
+// Data source: SecLists xato-net-10-million-passwords (MIT license)
+// https://github.com/danielmiessler/SecLists
+// Derived from real breach datasets (RockYou, LinkedIn, Adobe, etc.)
+//
 // Passwords are organized into three cumulative tiers:
 //   basic    — top 100 (tier1 JSON import)
 //   moderate — top 1,000 (basic + tier2 JSON import)
