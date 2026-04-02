@@ -35,6 +35,14 @@ export interface DateTimeOptions extends BaseRuleOptions {
 }
 
 // ----------------------------------------------------------
+// CACHED FORMAT-CHECK SCHEMAS
+// ----------------------------------------------------------
+
+const DATETIME_FORMAT_CHECK = z.string().datetime()
+const DATE_FORMAT_CHECK = z.string().date()
+const TIME_FORMAT_CHECK = z.string().time()
+
+// ----------------------------------------------------------
 // HELPERS
 // ----------------------------------------------------------
 
@@ -57,19 +65,25 @@ function parseToDate(value: Date | string): Date {
  * @returns A Zod string schema with datetime validation.
  */
 function buildDateTimeSchema(opts: DateTimeOptions): z.ZodType {
-  const datetimeOpts: { offset?: boolean, local?: boolean, precision?: number } = {}
+  const hasCustomOpts = opts.allowOffset !== undefined
+    || opts.allowLocal !== undefined
+    || opts.precision !== undefined
 
-  if (opts.allowOffset !== undefined) {
-    datetimeOpts.offset = opts.allowOffset
+  let check: z.ZodType
+  if (hasCustomOpts) {
+    const datetimeOpts: { offset?: boolean, local?: boolean, precision?: number } = {}
+    if (opts.allowOffset !== undefined)
+      datetimeOpts.offset = opts.allowOffset
+    if (opts.allowLocal !== undefined)
+      datetimeOpts.local = opts.allowLocal
+    if (opts.precision !== undefined)
+      datetimeOpts.precision = opts.precision
+    check = z.string().datetime(datetimeOpts)
   }
-  if (opts.allowLocal !== undefined) {
-    datetimeOpts.local = opts.allowLocal
-  }
-  if (opts.precision !== undefined) {
-    datetimeOpts.precision = opts.precision
+  else {
+    check = DATETIME_FORMAT_CHECK
   }
 
-  const check = z.string().datetime(datetimeOpts)
   const base = opts.normalize !== false ? z.string().trim() : z.string()
 
   return base.pipe(z.string().superRefine((v: string, ctx): void => {
@@ -87,11 +101,10 @@ function buildDateTimeSchema(opts: DateTimeOptions): z.ZodType {
  * @returns A Zod schema with date validation.
  */
 function buildDateSchema(opts: DateTimeOptions): z.ZodType {
-  const check = z.string().date()
   const base = opts.normalize !== false ? z.string().trim() : z.string()
 
   return base.pipe(z.string().superRefine((v: string, ctx): void => {
-    if (!check.safeParse(v).success) {
+    if (!DATE_FORMAT_CHECK.safeParse(v).success) {
       ctx.addIssue({ code: 'custom', params: { code: 'invalid', namespace: 'dateTime', label: opts.label } })
     }
   }))
@@ -105,12 +118,10 @@ function buildDateSchema(opts: DateTimeOptions): z.ZodType {
  * @returns A Zod schema with time validation.
  */
 function buildTimeSchema(opts: DateTimeOptions): z.ZodType {
-  const timeOpts: { precision?: number } = {}
-  if (opts.precision !== undefined) {
-    timeOpts.precision = opts.precision
-  }
+  const check = opts.precision !== undefined
+    ? z.string().time({ precision: opts.precision })
+    : TIME_FORMAT_CHECK
 
-  const check = z.string().time(timeOpts)
   const base = opts.normalize !== false ? z.string().trim() : z.string()
 
   return base.pipe(z.string().superRefine((v: string, ctx): void => {
