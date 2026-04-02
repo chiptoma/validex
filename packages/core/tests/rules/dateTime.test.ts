@@ -277,4 +277,43 @@ describe('dateTime — edge cases', () => {
     expect(schema.safeParse('2024-01-15T10:30:00Z').success).toBe(true)
     expect(schema.safeParse('not-a-date').success).toBe(false)
   })
+
+  it('uses cached DATETIME_FORMAT_CHECK when all format opts are cleared', () => {
+    const schema = DateTime({
+      allowOffset: undefined,
+      allowLocal: undefined,
+      precision: undefined,
+    }) as z.ZodType
+    expect(schema.safeParse('2024-01-15T10:30:00Z').success).toBe(true)
+    expect(schema.safeParse('invalid-date').success).toBe(false)
+  })
+
+  it('applies precision without offset or local when those are cleared', () => {
+    // precision is set but allowOffset/allowLocal are cleared, triggering their false branches
+    const schema = DateTime({
+      precision: 3,
+      allowOffset: undefined,
+      allowLocal: undefined,
+    }) as z.ZodType
+    expect(schema.safeParse('2024-01-15T10:30:00.123Z').success).toBe(true)
+    expect(schema.safeParse('2024-01-15T10:30:00Z').success).toBe(false)
+  })
+
+  it('preserves whitespace for ISO datetime when normalize is false', () => {
+    const schema = DateTime({ normalize: false }) as z.ZodType
+    expect(schema.safeParse(' 2024-01-15T10:30:00Z ').success).toBe(false)
+    expect(schema.safeParse('2024-01-15T10:30:00Z').success).toBe(true)
+  })
+
+  it('preserves whitespace for date format when normalize is false', () => {
+    const schema = DateTime({ format: 'date', normalize: false }) as z.ZodType
+    expect(schema.safeParse(' 2024-01-15 ').success).toBe(false)
+    expect(schema.safeParse('2024-01-15').success).toBe(true)
+  })
+
+  it('preserves whitespace for time format when normalize is false', () => {
+    const schema = DateTime({ format: 'time', normalize: false }) as z.ZodType
+    expect(schema.safeParse(' 10:30:00 ').success).toBe(false)
+    expect(schema.safeParse('10:30:00').success).toBe(true)
+  })
 })

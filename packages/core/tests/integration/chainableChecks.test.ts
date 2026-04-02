@@ -423,4 +423,35 @@ describe('chainable methods — non-string value guards', () => {
     const schema = z.unknown().hasDigits({ min: 1 })
     expect(schema.safeParse(undefined).success).toBe(true)
   })
+
+  it('hasLowercase skips validation for non-string values', () => {
+    const schema = z.unknown().hasLowercase({ min: 1 })
+    expect(schema.safeParse(42).success).toBe(true)
+  })
+
+  it('onlyNumeric skips validation for non-string values', () => {
+    const schema = z.unknown().onlyNumeric()
+    expect(schema.safeParse(null).success).toBe(true)
+  })
+
+  it('onlyAlphanumeric skips validation for non-string values', () => {
+    const schema = z.unknown().onlyAlphanumeric()
+    expect(schema.safeParse(false).success).toBe(true)
+  })
+
+  it('onlyAlphaSpaceHyphen skips validation for non-string values', () => {
+    const schema = z.unknown().onlyAlphaSpaceHyphen()
+    expect(schema.safeParse(999).success).toBe(true)
+  })
+
+  it('noPhoneNumbers skips validation for non-string values', async () => {
+    const schema = z.unknown().noPhoneNumbers()
+    const result = await schema.safeParseAsync(12345)
+    expect(result.success).toBe(true)
+  })
+
+  it('hasSpecial skips validation for non-string values', () => {
+    const schema = z.unknown().hasSpecial({ min: 1 })
+    expect(schema.safeParse(42).success).toBe(true)
+  })
 })

@@ -54,6 +54,7 @@ function parseUrlSafely(value: string): URL | undefined {
   try {
     return new URL(value)
   }
+  /* c8 ignore next 3 -- defensive catch; URL constructor throws only for truly malformed input already rejected by Zod format check */
   catch {
     return undefined
   }

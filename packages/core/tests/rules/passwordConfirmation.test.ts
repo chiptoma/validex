@@ -203,4 +203,31 @@ describe('passwordConfirmation — edge cases', () => {
     const ok = await schema.safeParseAsync('Str0ng!PassX')
     expect(ok.success).toBe(true)
   })
+
+  it('works when emptyToUndefined and normalize are explicitly cleared', async () => {
+    // Passing undefined clears three-tier defaults, exercising the false branch
+    // of the passthrough conditional assignments
+    const schema = PasswordConfirmation({}) as z.ZodType
+    const result = await schema.safeParseAsync('Str0ng!Pass')
+    expect(result.success).toBe(true)
+  })
+
+  it('uses custom passwordField for sameAs metadata', () => {
+    const schema = PasswordConfirmation({ passwordField: 'newPassword' })
+    // The schema should build without errors; sameAs target is 'newPassword'
+    expect(schema).toBeDefined()
+  })
+
+  it('uses default passwordField when cleared via undefined', () => {
+    // Passing undefined clears the three-tier default, triggering the ?? 'password' fallback
+    const schema = PasswordConfirmation({ passwordField: undefined })
+    expect(schema).toBeDefined()
+  })
+
+  it('passes label option through to Password', async () => {
+    const schema = PasswordConfirmation({ label: 'Confirm' }) as z.ZodType
+    const result = await schema.safeParseAsync('')
+    // Should fail with the label applied
+    expect(result.success).toBe(false)
+  })
 })

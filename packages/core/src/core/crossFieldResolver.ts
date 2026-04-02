@@ -123,6 +123,7 @@ function resolveSameAs(
     return undefined
 
   const targetSchema = shape[sameAs]
+  /* c8 ignore next -- defensive; sameAs was validated in-shape at line 114, so targetSchema is always defined */
   const targetMeta = targetSchema !== undefined ? getCrossField(targetSchema) : undefined
   const label = deriveFieldLabel(fieldName, meta.label, prefix)
   const targetLabel = deriveFieldLabel(sameAs, targetMeta?.label, prefix)
@@ -213,6 +214,7 @@ function resolveFieldConstraint(
   prefix: ReadonlyArray<string>,
 ): IssueRecord[] {
   const fieldSchema = shape[fieldName]
+  /* c8 ignore next 2 -- defensive guard; fieldName comes from Object.keys(shape) so shape[fieldName] is always defined */
   if (fieldSchema === undefined)
     return []
   const meta = getCrossField(fieldSchema)

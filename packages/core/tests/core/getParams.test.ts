@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { resetConfig } from '../../src/config'
+import { resetConfig, setup } from '../../src/config'
 import { getParams } from '../../src/core/getParams'
 
 describe('getParams', () => {
@@ -166,5 +166,98 @@ describe('getParams — edge cases', () => {
     }
     const params = getParams(issue)
     expect(params.label).toBe('Item 0')
+  })
+
+  it('returns format code for unmapped native issue code', () => {
+    const issue = {
+      code: 'unrecognized_keys',
+      path: ['field'],
+    }
+    const params = getParams(issue)
+    // Unmapped codes fall through to 'format' default
+    expect(params.code).toBe('format')
+    expect(params.namespace).toBe('base')
+  })
+
+  it('derives generic label when label.fallback is generic', () => {
+    setup({ label: { fallback: 'generic' } })
+    const issue = {
+      code: 'custom',
+      path: ['someField'],
+      params: { code: 'test', namespace: 'ns' },
+    }
+    const params = getParams(issue)
+    expect(params.label).toBe('This field')
+  })
+
+  it('uses default i18n prefix, separator, and pathMode when not configured', () => {
+    const params = getParams({
+      code: 'custom',
+      path: ['email'],
+      params: { code: 'invalid', namespace: 'email' },
+    })
+    // Default prefix is 'validation', separator is '.', pathMode is 'semantic'
+    expect(params.key).toContain('validation')
+    expect(params.key).toContain('.')
+    expect(params.key).toContain('email')
+  })
+
+  it('derives empty label when label.fallback is none', () => {
+    setup({ label: { fallback: 'none' } })
+    const params = getParams({
+      code: 'custom',
+      path: ['field'],
+      params: { code: 'test', namespace: 'ns' },
+    })
+    expect(params.label).toBe('')
+  })
+
+  it('uses explicit i18n settings when configured', () => {
+    setup({
+      i18n: {
+        enabled: true,
+        prefix: 'errors',
+        separator: '/',
+        pathMode: 'key',
+      },
+    })
+    const params = getParams({
+      code: 'custom',
+      path: ['email'],
+      params: { code: 'invalid', namespace: 'email' },
+    })
+    expect(params.key).toContain('errors')
+    expect(params.key).toContain('/')
+  })
+
+  it('falls back to default i18n values when prefix/separator/pathMode are cleared', () => {
+    // Clearing i18n values triggers the ?? fallbacks
+    setup({
+      i18n: {
+        enabled: false,
+      },
+    })
+    const params = getParams({
+      code: 'custom',
+      path: ['email'],
+      params: { code: 'invalid', namespace: 'email' },
+    })
+    // Defaults: prefix='validation', separator='.', pathMode='semantic'
+    expect(params.key).toContain('validation')
+    expect(params.key).toContain('.')
+  })
+
+  it('uses derived fallback when label.fallback is cleared', () => {
+    // Clearing label.fallback triggers the ?? 'derived' fallback in deriveLabel
+    setup({
+      label: {},
+    })
+    const params = getParams({
+      code: 'custom',
+      path: ['firstName'],
+      params: { code: 'test', namespace: 'ns' },
+    })
+    // 'derived' mode converts 'firstName' to 'First Name'
+    expect(params.label).toBe('First Name')
   })
 })

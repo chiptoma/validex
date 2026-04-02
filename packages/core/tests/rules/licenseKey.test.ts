@@ -206,4 +206,11 @@ describe('licenseKey — edge cases', () => {
     if (result.success)
       expect(result.data).toBe('ABCDE-FGHIJ-KLMNO-PQRST-UVWXY')
   })
+
+  it('validates UUID license key without normalization', () => {
+    const schema = LicenseKey({ type: 'uuid', normalize: false }) as z.ZodType
+    // Uppercase UUID should still validate (format check lowercases internally)
+    expect(schema.safeParse('550E8400-E29B-41D4-A716-446655440000').success).toBe(true)
+    expect(schema.safeParse('not-a-uuid').success).toBe(false)
+  })
 })

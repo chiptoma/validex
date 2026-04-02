@@ -351,4 +351,19 @@ describe('personName — edge cases', () => {
     const result = await schema.safeParseAsync('John James Robert Smith')
     expect(result.success).toBe(false)
   })
+
+  it('skips consecutive check when consecutive max is cleared', async () => {
+    // Passing undefined clears three-tier defaults, bypassing consecutive check
+    const schema = PersonName({ consecutive: undefined }) as z.ZodType
+    // 'aaaa' in name would normally fail consecutive: { max: 3 } but with it cleared, it passes
+    const result = await schema.safeParseAsync('Baaaa Smith')
+    expect(result.success).toBe(true)
+  })
+
+  it('skips word max check when words max is cleared', async () => {
+    // Passing undefined clears three-tier defaults, bypassing word max check
+    const schema = PersonName({ words: undefined }) as z.ZodType
+    const result = await schema.safeParseAsync('John James Robert Smith Jones Williams')
+    expect(result.success).toBe(true)
+  })
 })

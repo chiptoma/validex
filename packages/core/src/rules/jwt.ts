@@ -79,6 +79,7 @@ function decodeJwtParts(value: string): JwtParts | null {
     return null
 
   try {
+    /* c8 ignore next 2 -- defensive fallback; segments.length === 3 guarantees indices 0 and 1 exist */
     const headerStr = segments[0] ?? ''
     const payloadStr = segments[1] ?? ''
     // SAFETY: JWT header and payload are JSON objects by spec; catch block handles parse failure

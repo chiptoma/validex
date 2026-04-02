@@ -120,7 +120,9 @@ export const Color = /* @__PURE__ */ createRule<ColorOptions>({
             case 'rgb': return getRgbPattern(alpha).test(v)
             case 'hsl': return getHslPattern(alpha).test(v)
             case 'any': return matchesAnyFormat(v, alpha)
+            /* c8 ignore start -- exhaustive default; format is constrained to hex|rgb|hsl|any by TypeScript */
             default: return false
+            /* c8 ignore stop */
           }
         },
         { params: { code: 'invalid', namespace: 'color', label: opts.label } },

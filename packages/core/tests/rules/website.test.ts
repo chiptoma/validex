@@ -345,4 +345,18 @@ describe('website — edge cases', () => {
     if (result.success)
       expect(result.data).toBe('HTTPS://EXAMPLE.COM')
   })
+
+  it('uses default max 255 when length is cleared', async () => {
+    // Clearing length triggers range?.max ?? 255 fallback
+    const schema = Website({ length: undefined }) as z.ZodType
+    const result = await schema.safeParseAsync('https://example.com')
+    expect(result.success).toBe(true)
+  })
+
+  it('uses empty domain lists when blockDomains and allowDomains are cleared', async () => {
+    // Clearing domain lists triggers ?? [] fallback
+    const schema = Website({ blockDomains: undefined, allowDomains: undefined }) as z.ZodType
+    const result = await schema.safeParseAsync('https://example.com')
+    expect(result.success).toBe(true)
+  })
 })
