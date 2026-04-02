@@ -25,7 +25,8 @@
     "tree-shakeable"
   ],
   "sideEffects": [
-    "./src/augmentation.ts",
+    "./src/augmentation/index.ts",
+    "./src/augmentation/methods.ts",
     "./dist/index.js",
     "./dist/index.mjs",
     "./dist/index.cjs"

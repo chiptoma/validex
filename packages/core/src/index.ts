@@ -6,6 +6,15 @@
 // Zod type augmentation — must execute before any schema creation
 import './augmentation'
 
+// Augmentation option types (for consumers typing chainable method options)
+export type {
+  CheckMethodOptions,
+  CompositionMethodOptions,
+  MaxConsecutiveOptions,
+  MaxWordsOptions,
+  MinWordsOptions,
+} from './augmentation/types'
+
 // Checks — Character Composition
 export { hasDigits, hasLowercase, hasSpecial, hasUppercase } from './checks'
 

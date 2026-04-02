@@ -7,6 +7,7 @@
 import type { BaseRuleOptions, Range } from '../types'
 import { z } from 'zod'
 import { createRule } from '../core/createRule'
+import { matchesDomainList } from '../internal/domainMatch'
 import { applyLengthCheck } from '../internal/lengthCheck'
 import { resolveRange } from '../internal/resolveRange'
 import { getDisposableDomains } from '../loaders/disposableDomains'
@@ -61,10 +62,6 @@ function extractLocalPart(email: string): string {
   /* c8 ignore next -- defensive fallback; split always returns at least one element */
   return email.split('@')[0] ?? ''
 }
-
-// ----------------------------------------------------------
-// CACHED CHECK SCHEMAS
-// ----------------------------------------------------------
 
 /** Cached email format check — allocated once, reused on every parse. */
 const EMAIL_FORMAT_CHECK = z.string().email()
@@ -170,7 +167,7 @@ function applyDomainFilters(schema: z.ZodType, opts: EmailOptions): z.ZodType {
 
   if (allow.length > 0) {
     result = result.pipe(z.string().superRefine((v: string, ctx): void => {
-      if (!allow.includes(extractDomain(v))) {
+      if (!matchesDomainList(extractDomain(v), allow)) {
         ctx.addIssue({ code: 'custom', params: { code: 'domainNotAllowed', namespace: 'email', domain: extractDomain(v), label: opts.label } })
       }
     }))
@@ -178,7 +175,7 @@ function applyDomainFilters(schema: z.ZodType, opts: EmailOptions): z.ZodType {
 
   if (block.length > 0) {
     result = result.pipe(z.string().superRefine((v: string, ctx): void => {
-      if (block.includes(extractDomain(v))) {
+      if (matchesDomainList(extractDomain(v), block)) {
         ctx.addIssue({ code: 'custom', params: { code: 'domainBlocked', namespace: 'email', domain: extractDomain(v), label: opts.label } })
       }
     }))

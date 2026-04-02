@@ -1,26 +1,33 @@
 // ==============================================================================
-// ZOD TYPE AUGMENTATION
-// Adds chainable validation and transform methods to all Zod types.
+// ZOD TYPE AUGMENTATION — PROTOTYPE METHODS
+// Runtime prototype patches for chainable validation and transform methods.
 // ------------------------------------------------------------------------------
 // Context: Layer 1 bridge between Layer 0 pure check functions and Layer 2 rules.
-// Scope:   Imported as a side effect from src/index.ts; patches ZodType.prototype.
 // NOTE:    This file MUST be imported before any consumer creates Zod schemas.
 // ==============================================================================
 
-import type { RefinementCtx, ZodPipe, ZodTransform } from 'zod'
+import type { RefinementCtx } from 'zod'
+import type {
+  CheckMethodOptions,
+  CompositionMethodOptions,
+  MaxConsecutiveOptions,
+  MaxWordsOptions,
+  MinWordsOptions,
+} from './types'
 import { ZodType } from 'zod'
-import { hasDigits, hasLowercase, hasSpecial, hasUppercase } from './checks/composition'
-import { containsEmail, containsHtml, containsUrl } from './checks/detection'
-import { maxConsecutive, maxWords, minWords, noSpaces } from './checks/limits'
+import { hasDigits, hasLowercase, hasSpecial, hasUppercase } from '../checks/composition'
+import { containsEmail, containsHtml, containsUrl } from '../checks/detection'
+import { maxConsecutive, maxWords, minWords, noSpaces } from '../checks/limits'
 import {
   onlyAlpha,
   onlyAlphanumeric,
   onlyAlphanumericSpaceHyphen,
   onlyAlphaSpaceHyphen,
   onlyNumeric,
-} from './checks/restriction'
-import { collapseWhitespace, stripHtml, toSlug, toTitleCase } from './checks/transforms'
-import { ensureCustomError } from './core/customError'
+} from '../checks/restriction'
+import { collapseWhitespace, stripHtml, toSlug, toTitleCase } from '../checks/transforms'
+
+import { ensureCustomError } from '../core/customError'
 
 // ----------------------------------------------------------
 // REGISTER ERROR HANDLER
@@ -29,85 +36,11 @@ import { ensureCustomError } from './core/customError'
 ensureCustomError()
 
 // ----------------------------------------------------------
-// OPTION INTERFACES
-// ----------------------------------------------------------
-
-/** Options for composition methods (hasUppercase, hasLowercase, hasDigits, hasSpecial). */
-interface CompositionMethodOptions {
-  readonly min?: number | undefined
-  readonly max?: number | undefined
-  readonly label?: string | undefined
-  readonly namespace?: string | undefined
-}
-
-/** Options for simple boolean check methods. */
-interface CheckMethodOptions {
-  readonly label?: string | undefined
-  readonly namespace?: string | undefined
-}
-
-/** Options for the maxWords chainable method. */
-interface MaxWordsOptions extends CheckMethodOptions {
-  readonly max: number
-}
-
-/** Options for the minWords chainable method. */
-interface MinWordsOptions extends CheckMethodOptions {
-  readonly min: number
-}
-
-/** Options for the maxConsecutive chainable method. */
-interface MaxConsecutiveOptions extends CheckMethodOptions {
-  readonly max: number
-}
-
-// ----------------------------------------------------------
-// TYPE AUGMENTATION
-// ----------------------------------------------------------
-
-declare module 'zod' {
-  /** Chainable validation and transform methods added by validex. */
-  interface ZodType {
-    // Composition
-    hasUppercase: (opts?: CompositionMethodOptions) => this
-    hasLowercase: (opts?: CompositionMethodOptions) => this
-    hasDigits: (opts?: CompositionMethodOptions) => this
-    hasSpecial: (opts?: CompositionMethodOptions) => this
-
-    // Blocking
-    noEmails: (opts?: CheckMethodOptions) => this
-    noUrls: (opts?: CheckMethodOptions) => this
-    noHtml: (opts?: CheckMethodOptions) => this
-    noPhoneNumbers: (opts?: CheckMethodOptions) => this
-    noSpaces: (opts?: CheckMethodOptions) => this
-
-    // Restriction
-    onlyAlpha: (opts?: CheckMethodOptions) => this
-    onlyNumeric: (opts?: CheckMethodOptions) => this
-    onlyAlphanumeric: (opts?: CheckMethodOptions) => this
-    onlyAlphaSpaceHyphen: (opts?: CheckMethodOptions) => this
-    onlyAlphanumericSpaceHyphen: (opts?: CheckMethodOptions) => this
-
-    // Limits
-    maxWords: (opts: MaxWordsOptions) => this
-    minWords: (opts: MinWordsOptions) => this
-    maxConsecutive: (opts: MaxConsecutiveOptions) => this
-
-    // Transforms
-    toTitleCase: () => ZodPipe<this, ZodTransform<string, string>>
-    toSlug: () => ZodPipe<this, ZodTransform<string, string>>
-    stripHtml: () => ZodPipe<this, ZodTransform<string, string>>
-    collapseWhitespace: () => ZodPipe<this, ZodTransform<string, string>>
-    emptyToUndefined: () => ZodPipe<this, ZodTransform<string | undefined, unknown>>
-  }
-}
-
-// ----------------------------------------------------------
 // PROTOTYPE PATCHING
 // ----------------------------------------------------------
 // Prototype patching requires assignment to ZodType.prototype which ESLint
 // sees as unsafe `any` access. This is the only way to augment Zod types
-// at runtime — the module augmentation above provides type safety for consumers.
+// at runtime — the module augmentation in types.ts provides type safety.
 /* eslint-disable ts/no-unsafe-member-access, ts/no-unsafe-return, ts/no-unsafe-call */
 
 // ----------------------------------------------------------
@@ -222,13 +155,20 @@ ZodType.prototype.noHtml = function (opts: CheckMethodOptions = {}): ZodType {
   })
 }
 
+/**
+ * NOTE: Uses dynamic import — forces async validation.
+ *       Use safeParseAsync() when this method is in the chain.
+ *
+ * @param opts - Check method options (namespace, label).
+ * @returns The schema with phone number detection refine applied.
+ */
 ZodType.prototype.noPhoneNumbers = function (opts: CheckMethodOptions = {}): ZodType {
   const ns = opts.namespace ?? 'string'
   const lbl = opts.label
   return this.superRefine(async (v: unknown, ctx: RefinementCtx): Promise<void> => {
     if (typeof v !== 'string')
       return
-    const { containsPhoneNumber } = await import('./checks/phoneDetection')
+    const { containsPhoneNumber } = await import('../checks/phoneDetection')
     if (await containsPhoneNumber(v)) {
       ctx.addIssue({ code: 'custom', params: { code: 'noPhoneNumbers', namespace: ns, label: lbl } })
     }
