@@ -272,3 +272,39 @@ describe('password (security)', () => {
     expect(parse(schema, value).success).toBe(false)
   })
 })
+
+describe('password — edge cases', () => {
+  it('preserves whitespace when normalize is false', async () => {
+    const schema = Password({ normalize: false }) as z.ZodType
+    const result = await schema.safeParseAsync('  Str0ng!Pass  ')
+    expect(result.success).toBe(true)
+    if (result.success)
+      expect(result.data).toBe('  Str0ng!Pass  ')
+  })
+
+  it('enforces uppercase max without min', async () => {
+    const schema = Password({ uppercase: { max: 2 } }) as z.ZodType
+    const ok = await schema.safeParseAsync('ABcdefgh1!')
+    expect(ok.success).toBe(true)
+    const fail = await schema.safeParseAsync('ABCdefgh1!')
+    expect(fail.success).toBe(false)
+  })
+
+  it('enforces lowercase max without min', async () => {
+    const schema = Password({ lowercase: { max: 3 } }) as z.ZodType
+    const fail = await schema.safeParseAsync('ABCDabcd1!')
+    expect(fail.success).toBe(false)
+  })
+
+  it('enforces digits max without min', async () => {
+    const schema = Password({ digits: { max: 2 } }) as z.ZodType
+    const fail = await schema.safeParseAsync('Abcdef123!')
+    expect(fail.success).toBe(false)
+  })
+
+  it('enforces special max without min', async () => {
+    const schema = Password({ special: { max: 1 } }) as z.ZodType
+    const fail = await schema.safeParseAsync('Abcdef1!@')
+    expect(fail.success).toBe(false)
+  })
+})

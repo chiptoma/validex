@@ -321,3 +321,13 @@ describe('text (security)', () => {
     expect(parse(schema, value).success).toBe(false)
   })
 })
+
+describe('text — edge cases', () => {
+  it('preserves whitespace when normalize is false', () => {
+    const schema = Text({ normalize: false }) as z.ZodType
+    const result = schema.safeParse('  hello world  ')
+    expect(result.success).toBe(true)
+    if (result.success)
+      expect(result.data).toBe('  hello world  ')
+  })
+})

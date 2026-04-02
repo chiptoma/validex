@@ -219,3 +219,30 @@ describe('ipAddress (security)', () => {
     expect(result.success).toBe(false)
   })
 })
+
+describe('ipAddress — edge cases', () => {
+  it('rejects 0.0.0.0 as private IPv4', () => {
+    const schema = IpAddress({ version: 'v4', allowPrivate: false }) as z.ZodType
+    expect(schema.safeParse('0.0.0.0').success).toBe(false)
+  })
+
+  it('rejects fc00::1 as private IPv6 (unique local address)', () => {
+    const schema = IpAddress({ version: 'v6', allowPrivate: false }) as z.ZodType
+    expect(schema.safeParse('fc00::1').success).toBe(false)
+  })
+
+  it('rejects :: as private IPv6 (unspecified address)', () => {
+    const schema = IpAddress({ version: 'v6', allowPrivate: false }) as z.ZodType
+    expect(schema.safeParse('::').success).toBe(false)
+  })
+
+  it('rejects private IPv4 with version any', () => {
+    const schema = IpAddress({ version: 'any', allowPrivate: false }) as z.ZodType
+    expect(schema.safeParse('10.0.0.1').success).toBe(false)
+  })
+
+  it('rejects private IPv6 with version any', () => {
+    const schema = IpAddress({ version: 'any', allowPrivate: false }) as z.ZodType
+    expect(schema.safeParse('::1').success).toBe(false)
+  })
+})

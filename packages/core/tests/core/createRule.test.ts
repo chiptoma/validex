@@ -174,3 +174,47 @@ describe('createRule', () => {
     expect(TestRule).toBeDefined()
   })
 })
+
+describe('createRule — edge cases', () => {
+  afterEach(() => {
+    resetConfig()
+  })
+
+  it('customFn error omits label when not provided', async () => {
+    const TestRule = createRule<BaseRuleOptions & { customFn?: (v: string) => true | string | Promise<true | string> }>({
+      name: 'testNoLabel',
+      defaults: { emptyToUndefined: false },
+      build: () => z.string().min(1),
+      messages: {},
+    })
+    const schema = TestRule({ customFn: () => 'custom error' })
+    const result = await (schema as z.ZodType).safeParseAsync('hello')
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      const issue = result.error.issues[0]
+      // SAFETY: validex issues always carry params
+      const params = (issue as unknown as Record<string, unknown>)['params'] as Record<string, unknown> | undefined
+      expect(params).toBeDefined()
+      expect(params?.['label']).toBeUndefined()
+      expect(params?.['namespace']).toBe('testNoLabel')
+    }
+  })
+
+  it('customFn error includes label when provided', async () => {
+    const TestRule = createRule<BaseRuleOptions & { customFn?: (v: string) => true | string | Promise<true | string> }>({
+      name: 'testWithLabel',
+      defaults: { emptyToUndefined: false },
+      build: () => z.string().min(1),
+      messages: {},
+    })
+    const schema = TestRule({ customFn: () => 'custom error', label: 'My Field' })
+    const result = await (schema as z.ZodType).safeParseAsync('hello')
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      const issue = result.error.issues[0]
+      // SAFETY: validex issues always carry params
+      const params = (issue as unknown as Record<string, unknown>)['params'] as Record<string, unknown> | undefined
+      expect(params?.['label']).toBe('My Field')
+    }
+  })
+})

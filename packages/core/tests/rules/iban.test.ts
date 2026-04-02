@@ -205,3 +205,13 @@ describe('iban (security)', () => {
     expect(result.success).toBe(false)
   })
 })
+
+describe('iban — edge cases', () => {
+  it('preserves case when normalize is false', async () => {
+    const schema = Iban({ normalize: false }) as z.ZodType
+    const result = await schema.safeParseAsync('DE89370400440532013000')
+    expect(result.success).toBe(true)
+    if (result.success)
+      expect(result.data).toBe('DE89370400440532013000')
+  })
+})

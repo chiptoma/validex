@@ -289,3 +289,32 @@ describe('businessName (disallowChars)', () => {
     expect(getErrorCodes(schema, 'Corp (UK)')).toContain('invalid')
   })
 })
+
+describe('businessName — edge cases', () => {
+  it('preserves inner text without trimming when normalize is false', async () => {
+    const schema = BusinessName({ normalize: false }) as z.ZodType
+    const result = await schema.safeParseAsync('Acme Corp')
+    expect(result.success).toBe(true)
+    if (result.success)
+      expect(result.data).toBe('Acme Corp')
+  })
+
+  it('rejects leading whitespace when normalize is false due to boundary check', async () => {
+    const schema = BusinessName({ normalize: false }) as z.ZodType
+    const result = await schema.safeParseAsync('  Acme Corp  ')
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects consecutive identical characters exceeding max (case-sensitive)', async () => {
+    const schema = BusinessName({ consecutive: { max: 2 } }) as z.ZodType
+    // 'aaa' has 3 consecutive identical lowercase 'a' chars
+    const result = await schema.safeParseAsync('Baaab Corp')
+    expect(result.success).toBe(false)
+  })
+
+  it('accepts consecutive characters within max', async () => {
+    const schema = BusinessName({ consecutive: { max: 3 } }) as z.ZodType
+    const result = await schema.safeParseAsync('Aardvark Inc')
+    expect(result.success).toBe(true)
+  })
+})
