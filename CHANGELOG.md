@@ -2,22 +2,23 @@
 
 All notable changes documented here. Format: [Keep a Changelog](https://keepachangelog.com/). Versioning: [SemVer](https://semver.org/).
 
-## [1.0.0-alpha.0] - 2026-03-30
+## [1.0.0] - 2026-04-02
 
 ### Added
 
-- 25 validation rules: Email, Password, PersonName, BusinessName, Phone, Website, URL, Username, Slug, PostalCode, LicenseKey, UUID, JWT, DateTime, Token, Text, Country, Currency, Color, CreditCard, IBAN, VatNumber, MacAddress, IpAddress, PasswordConfirmation
+- 25 validation rules with full option coverage
+- 22 chainable Zod methods via module augmentation
 - 23 pure check functions (composition, detection, restriction, limits, transforms)
-- Schema utilities: sameAs, requiredWhen
-- createRule() factory for custom rules
-- validate() utility returning structured ValidationResult
+- Cross-field validation: sameAs, requiredWhen via validate()
 - Global configuration via setup() with three-tier merge
-- i18n support (key mode, t() function, label/message transforms)
-- Nuxt adapter with useValidation composable and i18n auto-detection
-- Fastify adapter with plugin, decorators, and route-level validation
-- Full tree-shaking support: import 2 rules = 3.5 kB, all 25 = 13 kB (Brotli)
-- Code splitting: data files (passwords, country codes) loaded on demand
-- Pure annotations (@\_\_PURE\_\_) on all rule factories
-- 7 bundled data files: common passwords (3 tiers), reserved usernames, country codes, currency codes, IBAN patterns, VAT patterns, credit card prefixes
-- 3,700+ tests including property-based testing, external dataset hardening, ReDoS resistance
-- TypeScript strict mode with zero any
+- Full i18n support (key mode, t() function, label/message transforms)
+- 141 error codes across 27 namespaces with full error ownership
+- Monorepo: @validex/core, @validex/nuxt, @validex/fastify
+- Nuxt adapter: module, useValidation composable, auto-imports
+- Fastify adapter: plugin, decorators, route-level validation
+- createRule() factory for custom rules
+- CLI: npx validex init-locale <lang>
+- Tree-shaking: import 2 rules = ~3.5 kB Brotli
+- 7687 tests, 97.5% branch coverage, 100% statement coverage
+- Consumer smoke test (npm pack + install + 65 assertions)
+- Property-based tests (fast-check, 1000+ iterations)
