@@ -2,7 +2,7 @@
 // PASSWORD RULE
 // Validates password strings with composition, length, and consecutive checks.
 // ------------------------------------------------------------------------------
-// NOTE: normalize is FALSE by default — never change password case.
+// Context: normalize trims whitespace but never changes case.
 // ==============================================================================
 
 import type { ResolvedRange } from '../internal/resolveRange'
@@ -49,7 +49,7 @@ export interface PasswordOptions extends BaseRuleOptions {
  *
  * @param schema - The base Zod string schema.
  * @param range  - Resolved length range.
- * @param label
+ * @param label  - Explicit label for error messages.
  * @returns The schema with length constraints applied.
  */
 function applyLength(

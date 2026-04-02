@@ -166,7 +166,7 @@ export const Website = /* @__PURE__ */ createRule<WebsiteOptions>({
         checkWebsiteConstraints(new URL(v), opts, ctx, ns, lbl, blockDomains, allowDomains)
       }
       /* c8 ignore next -- defensive guard; URL already passed z.url() validation */
-      catch { /* empty */ }
+      catch { /* URL already validated by z.url() — parse failure unreachable */ }
     }) as z.ZodType<string, string>)
   },
 })

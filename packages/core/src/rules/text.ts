@@ -108,7 +108,7 @@ export const Text = /* @__PURE__ */ createRule<TextOptions>({
  * Creates a base z.string() with optional min/max constraints.
  *
  * @param range - Resolved range with optional min and max.
- * @param label
+ * @param label  - Explicit label for error messages.
  * @returns A Zod string schema with length constraints applied.
  */
 function buildLengthSchema(

@@ -20,7 +20,7 @@ These are the source of truth. Implementation must match them:
 ## Zod Rules
 
 - **Zod 4 Classic only.** Import from `zod` or `zod/v4`. Never `zod/v4/core` or `zod/mini`.
-- Use `.superRefine()` for ALL custom validation — every error must carry `params: { code, namespace, label }`.
+- Use `.superRefine()` for custom validation that may emit multiple issues. `.refine()` with `params` is acceptable for single-issue validation — every error must carry `params: { code, namespace, label }`.
 - Do NOT use Zod native validators (`.email()`, `.url()`, `.uuid()`, `.min()`, `.max()`, `.datetime()`) directly in the build pipeline. Wrap them inside `.superRefine()` so every error carries validex params.
 - Cache wrapped Zod check schemas outside the closure for performance.
 
