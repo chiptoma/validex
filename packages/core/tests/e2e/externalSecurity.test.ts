@@ -18,8 +18,8 @@ import { PersonName } from '../../src/rules/personName'
 import { Slug } from '../../src/rules/slug'
 import { Text } from '../../src/rules/text'
 import { Username } from '../../src/rules/username'
-import injectionPayloads from '../fixtures/security.injection.json'
-import xssPayloads from '../fixtures/security.xss.json'
+import injectionPayloads from '../_support/fixtures/security.injection.json'
+import xssPayloads from '../_support/fixtures/security.xss.json'
 
 // ----------------------------------------------------------
 // TYPES

@@ -2,8 +2,8 @@ import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
 import { BusinessName } from '../../src/rules/businessName'
 import { PostalCode } from '../../src/rules/postalCode'
-import businessInvalid from '../fixtures/businessNames.invalid.json'
-import postalInvalid from '../fixtures/postalCodes.invalid.json'
+import businessInvalid from '../_support/fixtures/businessNames.invalid.json'
+import postalInvalid from '../_support/fixtures/postalCodes.invalid.json'
 
 // ----------------------------------------------------------
 // POSTAL CODE INVALID FIXTURES

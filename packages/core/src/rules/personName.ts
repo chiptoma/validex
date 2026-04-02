@@ -5,9 +5,9 @@
 
 import type { Boundary, FormatRuleOptions, Range } from '../types'
 import { z } from 'zod'
-import { checkUnicodeBoundary } from '../checks/boundary'
 import { toTitleCase } from '../checks/transforms'
 import { createRule } from '../core/createRule'
+import { checkUnicodeBoundary } from '../internal/boundary'
 import { escapeRegexChars } from '../internal/escapeRegex'
 import { resolveBoundary } from '../internal/resolveBoundary'
 import { resolveRange } from '../internal/resolveRange'
