@@ -166,7 +166,7 @@ validex is a TypeScript validation library built on Zod 4 that provides:
 - **Rules** — Configurable business-logic validators (Email, Password, Phone, etc.) that compose Zod 4 native checks with custom checks
 - **Global i18n** — Full ownership of the error surface: configure once, get consistent English messages or structured i18n keys for every error, whether it originates from Zod or from validex
 - **Schema Recipes** — Documented common form patterns (Login, Register, PasswordReset) as composable examples
-- **Framework Adapters** — Subpath imports for Nuxt, Next.js, and Fastify (`@validex/nuxt`, `validex/next`, `@validex/fastify`)
+- **Framework Adapters** — Subpath imports for Nuxt and Fastify (`@validex/nuxt`, `@validex/fastify`)
 
 **Single purpose:** Eliminate validation rewriting across projects.
 
@@ -182,7 +182,7 @@ validex is a TypeScript validation library built on Zod 4 that provides:
 |Inconsistent validation|Same rules everywhere                     |
 |Inconsistent errors    |One error voice: Zod + business rules unified|
 |Untested edge cases    |Comprehensive test coverage (see Part VII)|
-|Framework boilerplate  |`@validex/nuxt`, `validex/next`, `@validex/fastify` adapters|
+|Framework boilerplate  |`@validex/nuxt`, `@validex/fastify` adapters|
 
 #### 1.3 Design Principles
 
@@ -303,7 +303,6 @@ validex ships as a **single npm package** with subpath exports. Framework adapte
 ```typescript
 import { Email, Password, setup } from '@validex/core';           // Core
 import { useValidation } from '@validex/nuxt';                // Nuxt composables
-import { useValidation } from 'validex/next';                // React hooks
 import { validexPlugin } from '@validex/fastify';             // Fastify plugin
 ```
 
@@ -317,8 +316,6 @@ import { validexPlugin } from '@validex/fastify';             // Fastify plugin
 **Optional (peer, framework adapters):**
 
 - `nuxt` ^3.0.0 — Required only when importing `@validex/nuxt`
-- `next` ^14.0.0 — Required only when importing `validex/next`
-- `react` ^18.0.0 — Required only when importing `validex/next`
 - `fastify` ^4.0.0 — Required only when importing `@validex/fastify`
 
 Framework peer deps are declared with `"optional": true` in `peerDependenciesMeta`. Consumers who don't import adapter subpaths never need these installed.
@@ -354,10 +351,8 @@ Schemas → Rules → Checks → Config
 |`validex`           |All rules, checks, schemas, utilities, config|
 |`validex/rules`     |Rules only                              |
 |`validex/checks`    |Check functions only (pure, no Zod)     |
-|`validex/schemas`   |Schemas only                            |
 |`validex/utilities` |Schema utilities (sameAs, requiredWhen) |
 |`@validex/nuxt`      |Nuxt module, composables                |
-|`validex/next`      |Next.js hooks, utilities                |
 |`@validex/fastify`   |Fastify plugin, decorators              |
 
 #### 3.2 Exports
@@ -2463,146 +2458,9 @@ The consumer provides translation keys in their locale files matching the `valid
 
 -----
 
-### 13. Next.js Adapter (`validex/next`)
+### 13. Fastify Adapter (`@validex/fastify`)
 
-#### 13.1 Configuration Utility
-
-```typescript
-// lib/validation.ts
-import { setup } from '@validex/core';
-
-setup({
-  rules: {
-    email: { blockDisposable: true },
-    password: { special: { min: 1 } },
-  },
-});
-
-// Re-export for convenience
-export { Email, Password, PersonName, Username } from '@validex/core';
-```
-
-For async preloading, use Next.js `instrumentation.ts`:
-
-```typescript
-// instrumentation.ts
-export async function register() {
-  const { preloadData, setup } = await import('validex');
-  await preloadData({ disposable: true });
-  setup({ rules: { email: { blockDisposable: true } } });
-}
-```
-
-#### 13.2 React Hooks
-
-```typescript
-import { useValidation } from 'validex/next';
-import { Email, Password } from '@validex/core';
-
-function LoginForm() {
-  // Compose any schema on demand
-  const schema = z.object({
-    email: Email(),
-    password: Password(),
-  });
-
-  const { validate, firstErrors, clearErrors } = useValidation(schema);
-
-  async function onSubmit(formData: FormData) {
-    const result = await validate(Object.fromEntries(formData));
-    if (result.success) {
-      // submit
-    }
-  }
-
-  return (
-    <form action={onSubmit}>
-      <input name="email" />
-      {firstErrors.email && <span>{firstErrors.email}</span>}
-    </form>
-  );
-}
-```
-
-**Note:** `useValidation` is a thin wrapper around `safeParse` + `getParams` that manages error state via `useState`. It does not replace react-hook-form or other form libraries — it provides a lightweight alternative for simple cases.
-
-**With react-hook-form (no adapter needed):**
-
-```typescript
-import { Email, Password } from '@validex/core';
-import { zodResolver } from '@hookform/resolvers/zod';
-
-const LoginSchema = z.object({ email: Email(), password: Password() });
-const form = useForm({ resolver: zodResolver(LoginSchema) });
-```
-
-#### 13.3 Server/Client Boundary
-
-validex core is framework-agnostic and works on both sides. The adapter helps with:
-
-- **Server Actions:** Schemas can be used directly in Server Actions for server-side validation
-- **Client Components:** Schemas work in `"use client"` components for client-side validation
-- **Shared schemas:** Import the same schema file on both sides
-
-```typescript
-// app/actions.ts (Server Action)
-"use server";
-import { LoginSchema } from '@/lib/validation';
-
-export async function login(formData: FormData) {
-  const result = LoginSchema.safeParse(Object.fromEntries(formData));
-  if (!result.success) {
-    return { errors: result.error.flatten().fieldErrors };
-  }
-  // ... authenticate
-}
-
-// app/login/page.tsx (Client Component)
-"use client";
-import { LoginSchema } from '@/lib/validation';
-// Same schema, client-side validation before Server Action call
-```
-
-#### 13.4 i18n Integration
-
-**With next-intl:**
-
-```typescript
-import { setup } from '@validex/core';
-import { getTranslations } from 'next-intl/server';
-
-const t = await getTranslations('validation');
-setup({
-  i18n: { enabled: true },
-  message: {
-    transform: (ctx) => t(ctx.key, ctx.params),
-  },
-});
-```
-
-**Without i18n:** No special setup needed. English messages work by default.
-
-#### 13.5 Server Actions Compatibility
-
-Server Actions receive `FormData`. The adapter provides a utility:
-
-```typescript
-import { parseFormData } from 'validex/next';
-import { RegisterSchema } from '@/lib/validation';
-
-export async function register(formData: FormData) {
-  const result = await parseFormData(RegisterSchema, formData);
-  // result: ValidationResult<RegisterData>
-}
-```
-
-`parseFormData` converts `FormData` to a plain object, applies `emptyToUndefined()` to empty string values, and runs `.safeParseAsync()`.
-
------
-
-### 14. Fastify Adapter (`@validex/fastify`)
-
-#### 14.1 Plugin Registration
+#### 13.1 Plugin Registration
 
 ```typescript
 import Fastify from 'fastify';
@@ -2626,7 +2484,7 @@ The plugin:
 3. Decorates the Fastify instance and request with validation methods
 4. Optionally integrates with Fastify's built-in schema validation
 
-#### 14.2 Instance Decorator
+#### 13.2 Instance Decorator
 
 ```typescript
 // Available anywhere you have access to the Fastify instance
@@ -2657,7 +2515,7 @@ app.post('/webhook', async (request, reply) => {
 });
 ```
 
-#### 14.3 Request Decorator
+#### 13.3 Request Decorator
 
 ```typescript
 // Validates request.body against the given schema
@@ -2691,7 +2549,7 @@ app.post('/contact', async (request, reply) => {
 });
 ```
 
-#### 14.4 Route-Level Schema Validation
+#### 13.4 Route-Level Schema Validation
 
 For declarative validation, schemas can be passed in the route options. The plugin integrates with Fastify's schema validation system:
 
@@ -2731,7 +2589,7 @@ app.put('/profile/:id', {
 }, handler);
 ```
 
-#### 14.5 Error Response Format
+#### 13.5 Error Response Format
 
 When route-level schema validation fails, the plugin formats the error response using validex's error surface:
 
