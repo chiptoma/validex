@@ -1,0 +1,114 @@
+{
+  "name": "@validex/core",
+  "type": "module",
+  "version": "1.0.0-alpha.0",
+  "description": "Type-safe validation rules built on Zod",
+  "author": "Ciprian Toma",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://github.com/chiptoma/validex#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chiptoma/validex.git",
+    "directory": "packages/core"
+  },
+  "keywords": [
+    "zod",
+    "validation",
+    "zod4",
+    "email",
+    "phone",
+    "typescript",
+    "i18n",
+    "tree-shakeable"
+  ],
+  "sideEffects": [
+    "./src/augmentation.ts",
+    "./dist/index.js",
+    "./dist/index.mjs",
+    "./dist/index.cjs"
+  ],
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./rules": {
+      "import": {
+        "types": "./dist/rules/index.d.ts",
+        "default": "./dist/rules/index.js"
+      },
+      "require": {
+        "types": "./dist/rules/index.d.cts",
+        "default": "./dist/rules/index.cjs"
+      }
+    },
+    "./checks": {
+      "import": {
+        "types": "./dist/checks/index.d.ts",
+        "default": "./dist/checks/index.js"
+      },
+      "require": {
+        "types": "./dist/checks/index.d.cts",
+        "default": "./dist/checks/index.cjs"
+      }
+    },
+    "./utilities": {
+      "import": {
+        "types": "./dist/utilities/index.d.ts",
+        "default": "./dist/utilities/index.js"
+      },
+      "require": {
+        "types": "./dist/utilities/index.d.cts",
+        "default": "./dist/utilities/index.cjs"
+      }
+    },
+    "./locales/en": {
+      "import": {
+        "types": "./dist/locales/en.d.ts",
+        "default": "./dist/locales/en.js"
+      },
+      "require": {
+        "types": "./dist/locales/en.d.cts",
+        "default": "./dist/locales/en.cjs"
+      }
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "validex": "./dist/cli/index.js"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md",
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "peerDependencies": {
+    "zod": "^3.25.0 || ^4.0.0"
+  },
+  "dependencies": {
+    "disposable-email-domains": "^1.0.62",
+    "libphonenumber-js": "^1.12.41",
+    "postcode-validator": "^3.10.15"
+  }
+}

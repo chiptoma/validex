@@ -1,0 +1,69 @@
+{
+  "name": "@validex/nuxt",
+  "type": "module",
+  "version": "1.0.0-alpha.0",
+  "description": "Nuxt module for validex — auto-imports all rules and composables",
+  "author": "Ciprian Toma",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://github.com/chiptoma/validex/tree/main/packages/nuxt#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chiptoma/validex.git",
+    "directory": "packages/nuxt"
+  },
+  "keywords": [
+    "validex",
+    "nuxt",
+    "zod",
+    "validation",
+    "composable"
+  ],
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "peerDependencies": {
+    "@nuxt/kit": "^4.4.2",
+    "@validex/core": "^1.0.0-alpha.0",
+    "zod": "^3.25.0 || ^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "nuxt": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@nuxt/kit": "^4.4.2",
+    "@validex/core": "workspace:^",
+    "nuxt": "^4.4.2",
+    "zod": "^4.3.6"
+  }
+}
