@@ -3,11 +3,13 @@
 // Factory function for building validex rules with three-tier merge.
 // ==============================================================================
 
-import type { BaseRuleOptions, CreateRuleConfig, RuleFactory } from '../types'
+import type { BaseRuleOptions, CreateRuleOptions, RuleFactory } from '../types'
 import { z } from 'zod'
 import { RULE_DEFAULTS } from '../config/defaults'
 import { getConfig } from '../config/index'
 import { mergeThreeTiers } from '../config/merge'
+import { registerCrossField } from './crossFieldRegistry'
+import { ensureCustomError } from './customError'
 import { registerMessages } from './errorMap'
 
 // ----------------------------------------------------------
@@ -37,15 +39,27 @@ function assertNotReserved(name: string): void {
 
 /**
  * Apply Empty To Undefined
- * Wraps a schema with z.preprocess to convert empty strings to undefined.
+ * Wraps a schema to reject empty strings with a validex-coded required error,
+ * then pass non-empty values through to the inner schema.
  *
  * @param schema - The Zod schema to wrap.
- * @returns A new schema with the preprocess transform applied.
+ * @param label  - Explicit label for the required error.
+ * @returns A new schema with the empty-to-required transform applied.
  */
-function applyEmptyToUndefined(schema: z.ZodType): z.ZodType {
+function applyEmptyToUndefined(schema: z.ZodType, label?: string): z.ZodType {
   return z.preprocess(
-    (val: unknown): unknown => (val === '' ? undefined : val),
-    schema,
+    (val: unknown): unknown => {
+      if (val === '')
+        return undefined
+      if (val === null)
+        return undefined
+      return val
+    },
+    z.unknown().superRefine((val: unknown, ctx) => {
+      if (val === undefined || val === null) {
+        ctx.addIssue({ code: 'custom', params: { code: 'required', namespace: 'base', label } })
+      }
+    }).pipe(schema),
   )
 }
 
@@ -56,12 +70,14 @@ function applyEmptyToUndefined(schema: z.ZodType): z.ZodType {
  * @param schema    - The Zod schema to refine.
  * @param customFn  - The custom validation function.
  * @param namespace - The rule namespace for error params.
+ * @param label     - Explicit label for error messages.
  * @returns A new schema with the custom refine applied.
  */
 function applyCustomFn(
   schema: z.ZodType,
   customFn: (value: string) => true | string | Promise<true | string>,
   namespace: string,
+  label?: string,
 ): z.ZodType {
   return schema.superRefine(async (value: unknown, ctx) => {
     if (typeof value !== 'string')
@@ -70,10 +86,13 @@ function applyCustomFn(
     if (result === true)
       return
     const errorMsg = typeof result === 'string' ? result : FALLBACK_MESSAGE
+    const params: Record<string, unknown> = { code: 'custom', namespace }
+    if (label !== undefined)
+      params['label'] = label
     ctx.addIssue({
       code: 'custom',
       message: errorMsg,
-      params: { code: 'custom', namespace },
+      params,
     })
   })
 }
@@ -91,12 +110,13 @@ function applyCustomFn(
  * @returns A RuleFactory function that accepts per-call options.
  */
 export function createRule<T extends BaseRuleOptions>(
-  config: CreateRuleConfig<T>,
+  config: CreateRuleOptions<T>,
 ): RuleFactory<T> {
   assertNotReserved(config.name)
   let messagesRegistered = false
 
   return (options?: Partial<T>): unknown => {
+    ensureCustomError()
     if (!messagesRegistered) {
       if (Object.keys(config.messages).length > 0) {
         registerMessages(config.name, config.messages)
@@ -106,7 +126,8 @@ export function createRule<T extends BaseRuleOptions>(
     const tier1Defaults = RULE_DEFAULTS[config.name] ?? {}
     // SAFETY: Options are plain objects flowing through three-tier merge
     const tier1 = { ...tier1Defaults, ...config.defaults } as Record<string, unknown>
-    const globals = getConfig().rules?.[config.name] ?? {}
+    // SAFETY: RuleDefaults values are plain option objects; cast bridges typed config to untyped merge
+    const globals = ((getConfig().rules as Record<string, Record<string, unknown>> | undefined)?.[config.name] ?? {})
     const mergedOpts = mergeThreeTiers(
       tier1,
       globals,
@@ -118,13 +139,21 @@ export function createRule<T extends BaseRuleOptions>(
     const baseSchema = config.build(mergedOpts) as z.ZodType
 
     let schema: z.ZodType = mergedOpts.emptyToUndefined !== false
-      ? applyEmptyToUndefined(baseSchema)
+      ? applyEmptyToUndefined(baseSchema, mergedOpts.label)
       : baseSchema
 
     if (mergedOpts.customFn !== undefined) {
       // Use .pipe() so customFn only runs after base schema passes
-      const customRefine = applyCustomFn(z.string(), mergedOpts.customFn, config.name)
+      const customRefine = applyCustomFn(z.string(), mergedOpts.customFn, config.name, mergedOpts.label)
       schema = schema.pipe(customRefine)
+    }
+
+    if (mergedOpts.sameAs !== undefined || mergedOpts.requiredWhen !== undefined || mergedOpts.label !== undefined) {
+      registerCrossField(schema, {
+        sameAs: mergedOpts.sameAs,
+        requiredWhen: mergedOpts.requiredWhen,
+        label: mergedOpts.label,
+      })
     }
 
     return schema

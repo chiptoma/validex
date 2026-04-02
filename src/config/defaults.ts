@@ -54,7 +54,7 @@ export const RULE_DEFAULTS: Readonly<Record<string, Record<string, unknown>>> = 
     consecutive: { max: 3 },
     blockCommon: false,
     emptyToUndefined: true,
-    normalize: false,
+    normalize: true,
   },
   passwordConfirmation: {
     passwordField: 'password',
@@ -67,6 +67,7 @@ export const RULE_DEFAULTS: Readonly<Record<string, Record<string, unknown>>> = 
     requireMobile: false,
     requireCountryCode: false,
     format: 'e164',
+    metadata: 'min',
     emptyToUndefined: true,
     normalize: true,
   },

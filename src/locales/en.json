@@ -26,7 +26,8 @@
       "iban": "IBAN",
       "vatNumber": "VAT Number",
       "macAddress": "MAC Address",
-      "ipAddress": "IP Address"
+      "ipAddress": "IP Address",
+      "string": "Value"
     },
     "messages": {
       "base": {
@@ -36,34 +37,27 @@
         "type": "{{label}} must be a {{expected}}",
         "format": "{{label}} is not valid"
       },
-      "string": {
-        "minUppercase": "{{label}} must have at least {{minimum}} uppercase characters",
-        "minLowercase": "{{label}} must have at least {{minimum}} lowercase characters",
-        "minDigits": "{{label}} must have at least {{minimum}} digits",
-        "minSpecial": "{{label}} must have at least {{minimum}} special characters",
-        "maxUppercase": "{{label}} must have at most {{maximum}} uppercase characters",
-        "maxConsecutive": "{{label}} must not have more than {{maximum}} consecutive identical characters",
-        "maxWords": "{{label}} must have at most {{maximum}} words",
-        "noSpaces": "{{label}} must not contain spaces"
-      },
       "email": {
         "invalid": "{{label}} is not a valid email address",
-        "disposableBlocked": "Disposable email addresses are not allowed",
-        "plusAliasBlocked": "Plus alias email addresses are not allowed",
+        "disposableBlocked": "{{label}} must not use a disposable email provider",
+        "plusAliasBlocked": "{{label}} must not use plus aliases",
         "domainBlocked": "Email domain '{{domain}}' is not allowed",
         "domainNotAllowed": "Email domain '{{domain}}' is not in the allowed list",
-        "subdomainNotAllowed": "Subdomain email addresses are not allowed"
+        "subdomainNotAllowed": "Subdomain email addresses are not allowed",
+        "custom": "{{label}} failed custom validation"
       },
       "personName": {
         "invalid": "{{label}} is not a valid name",
         "maxWords": "{{label}} must have at most {{maximum}} words",
         "boundary": "{{label}} must start and end with a letter",
-        "maxConsecutive": "{{label}} must not repeat the same character more than {{maximum}} times"
+        "maxConsecutive": "{{label}} must not repeat the same character more than {{maximum}} times",
+        "custom": "{{label}} failed custom validation"
       },
       "businessName": {
         "invalid": "{{label}} is not a valid business name",
         "boundary": "{{label}} must start and end with an alphanumeric character",
-        "maxConsecutive": "{{label}} must not repeat the same character more than {{maximum}} times"
+        "maxConsecutive": "{{label}} must not repeat the same character more than {{maximum}} times",
+        "custom": "{{label}} failed custom validation"
       },
       "password": {
         "minUppercase": "{{label}} must have at least {{minimum}} uppercase characters",
@@ -71,105 +65,165 @@
         "minDigits": "{{label}} must have at least {{minimum}} digits",
         "minSpecial": "{{label}} must have at least {{minimum}} special characters",
         "maxUppercase": "{{label}} must have at most {{maximum}} uppercase characters",
+        "maxLowercase": "{{label}} must have at most {{maximum}} lowercase characters",
+        "maxDigits": "{{label}} must have at most {{maximum}} digits",
+        "maxSpecial": "{{label}} must have at most {{maximum}} special characters",
         "maxConsecutive": "{{label}} must not have more than {{maximum}} consecutive identical characters",
-        "commonBlocked": "This password is too common"
+        "commonBlocked": "{{label}} is too common",
+        "custom": "{{label}} failed custom validation"
       },
       "confirmation": {
-        "mismatch": "Passwords must match"
+        "mismatch": "{{label}} must match {{targetLabel}}",
+        "custom": "{{label}} failed custom validation"
       },
       "phone": {
         "invalid": "{{label}} is not a valid phone number",
         "requireMobile": "{{label}} must be a mobile phone number",
+        "countryCodeRequired": "{{label}} must include a country code prefix",
         "countryBlocked": "Phone numbers from '{{country}}' are not allowed",
-        "countryNotAllowed": "Phone numbers from '{{country}}' are not in the allowed list"
+        "countryNotAllowed": "Phone numbers from '{{country}}' are not in the allowed list",
+        "custom": "{{label}} failed custom validation"
       },
       "website": {
         "invalid": "{{label}} is not a valid website URL",
+        "httpsRequired": "{{label}} must use HTTPS",
+        "wwwRequired": "{{label}} must include www prefix",
+        "pathNotAllowed": "{{label}} must not contain URL paths",
+        "queryNotAllowed": "{{label}} must not contain query strings",
         "domainBlocked": "Domain '{{domain}}' is not allowed",
         "domainNotAllowed": "Domain '{{domain}}' is not in the allowed list",
-        "subdomainNotAllowed": "Subdomain URLs are not allowed"
+        "subdomainNotAllowed": "Subdomain URLs are not allowed",
+        "custom": "{{label}} failed custom validation"
       },
       "url": {
         "invalid": "{{label}} is not a valid URL",
         "protocolNotAllowed": "Protocol '{{protocol}}' is not allowed",
+        "tldRequired": "{{label}} must include a top-level domain",
+        "queryNotAllowed": "{{label}} must not contain query strings",
+        "authNotAllowed": "{{label}} must not contain credentials",
         "domainBlocked": "Domain '{{domain}}' is not allowed",
-        "domainNotAllowed": "Domain '{{domain}}' is not in the allowed list"
+        "domainNotAllowed": "Domain '{{domain}}' is not in the allowed list",
+        "custom": "{{label}} failed custom validation"
       },
       "username": {
         "invalid": "{{label}} is not a valid username",
         "reservedBlocked": "The username '{{value}}' is reserved",
         "boundary": "{{label}} must start and end with an alphanumeric character",
-        "maxConsecutive": "{{label}} must not repeat the same character more than {{maximum}} times"
+        "maxConsecutive": "{{label}} must not repeat the same character more than {{maximum}} times",
+        "custom": "{{label}} failed custom validation"
       },
       "slug": {
-        "invalid": "{{label}} is not a valid slug"
+        "invalid": "{{label}} is not a valid slug",
+        "custom": "{{label}} failed custom validation"
       },
       "postalCode": {
-        "invalid": "{{label}} is not a valid postal code"
+        "invalid": "{{label}} is not a valid postal code",
+        "custom": "{{label}} failed custom validation"
       },
       "licenseKey": {
-        "invalid": "{{label}} is not a valid license key"
+        "invalid": "{{label}} is not a valid license key",
+        "custom": "{{label}} failed custom validation"
       },
       "uuid": {
-        "invalid": "{{label}} is not a valid UUID"
+        "invalid": "{{label}} is not a valid UUID",
+        "custom": "{{label}} failed custom validation"
       },
       "jwt": {
         "invalid": "{{label}} is not a valid JWT",
-        "expired": "This token has expired",
-        "notYetValid": "This token is not yet valid",
+        "expiryRequired": "{{label}} must have an expiration claim",
+        "expired": "{{label}} has expired",
+        "notYetValid": "{{label}} is not yet valid",
         "missingClaim": "Required claim '{{claim}}' is missing",
-        "algorithmNotAllowed": "Algorithm '{{algorithm}}' is not allowed"
+        "algorithmNotAllowed": "Algorithm '{{algorithm}}' is not allowed",
+        "custom": "{{label}} failed custom validation"
       },
       "dateTime": {
         "invalid": "{{label}} is not a valid date",
         "tooEarly": "{{label}} must be after {{minimum}}",
         "tooLate": "{{label}} must be before {{maximum}}",
         "noFuture": "{{label}} must not be in the future",
-        "noPast": "{{label}} must not be in the past"
+        "noPast": "{{label}} must not be in the past",
+        "custom": "{{label}} failed custom validation"
       },
       "token": {
-        "invalid": "{{label}} is not a valid {{type}} token"
+        "invalid": "{{label}} is not a valid {{type}} token",
+        "custom": "{{label}} failed custom validation"
       },
       "text": {
+        "invalid": "{{label}} is not valid text",
         "noEmails": "{{label}} must not contain email addresses",
         "noUrls": "{{label}} must not contain URLs",
         "noPhoneNumbers": "{{label}} must not contain phone numbers",
         "noHtml": "{{label}} must not contain HTML",
+        "minWords": "{{label}} must have at least {{minimum}} words",
         "maxWords": "{{label}} must have at most {{maximum}} words",
-        "maxConsecutive": "{{label}} must not repeat the same character more than {{maximum}} times"
+        "maxConsecutive": "{{label}} must not repeat the same character more than {{maximum}} times",
+        "custom": "{{label}} failed custom validation"
       },
       "country": {
         "invalid": "{{label}} is not a valid country code",
         "blocked": "Country '{{country}}' is not allowed",
-        "notAllowed": "Country '{{country}}' is not in the allowed list"
+        "notAllowed": "Country '{{country}}' is not in the allowed list",
+        "custom": "{{label}} failed custom validation"
       },
       "currency": {
         "invalid": "{{label}} is not a valid currency code",
         "blocked": "Currency '{{currency}}' is not allowed",
-        "notAllowed": "Currency '{{currency}}' is not in the allowed list"
+        "notAllowed": "Currency '{{currency}}' is not in the allowed list",
+        "custom": "{{label}} failed custom validation"
       },
       "color": {
-        "invalid": "{{label}} is not a valid color"
+        "invalid": "{{label}} is not a valid color",
+        "custom": "{{label}} failed custom validation"
       },
       "creditCard": {
         "invalid": "{{label}} is not a valid credit card number",
         "issuerNotAllowed": "Card issuer '{{issuer}}' is not in the allowed list",
-        "issuerBlocked": "Card issuer '{{issuer}}' is not allowed"
+        "issuerBlocked": "Card issuer '{{issuer}}' is not allowed",
+        "custom": "{{label}} failed custom validation"
       },
       "iban": {
         "invalid": "{{label}} is not a valid IBAN",
         "countryBlocked": "IBANs from '{{country}}' are not allowed",
-        "countryNotAllowed": "IBANs from '{{country}}' are not in the allowed list"
+        "countryNotAllowed": "IBANs from '{{country}}' are not in the allowed list",
+        "custom": "{{label}} failed custom validation"
       },
       "vatNumber": {
-        "invalid": "{{label}} is not a valid VAT number"
+        "invalid": "{{label}} is not a valid VAT number",
+        "custom": "{{label}} failed custom validation"
       },
       "macAddress": {
-        "invalid": "{{label}} is not a valid MAC address"
+        "invalid": "{{label}} is not a valid MAC address",
+        "custom": "{{label}} failed custom validation"
       },
       "ipAddress": {
         "invalid": "{{label}} is not a valid IP address",
-        "privateNotAllowed": "Private IP addresses are not allowed"
+        "privateNotAllowed": "{{label}} must not be a private IP address",
+        "custom": "{{label}} failed custom validation"
+      },
+      "string": {
+        "minUppercase": "{{label}} must have at least {{minimum}} uppercase characters",
+        "maxUppercase": "{{label}} must have at most {{maximum}} uppercase characters",
+        "minLowercase": "{{label}} must have at least {{minimum}} lowercase characters",
+        "maxLowercase": "{{label}} must have at most {{maximum}} lowercase characters",
+        "minDigits": "{{label}} must have at least {{minimum}} digits",
+        "maxDigits": "{{label}} must have at most {{maximum}} digits",
+        "minSpecial": "{{label}} must have at least {{minimum}} special characters",
+        "maxSpecial": "{{label}} must have at most {{maximum}} special characters",
+        "noEmails": "{{label}} must not contain email addresses",
+        "noUrls": "{{label}} must not contain URLs",
+        "noPhoneNumbers": "{{label}} must not contain phone numbers",
+        "noHtml": "{{label}} must not contain HTML",
+        "noSpaces": "{{label}} must not contain spaces",
+        "onlyAlpha": "{{label}} must contain only letters",
+        "onlyNumeric": "{{label}} must contain only digits",
+        "onlyAlphanumeric": "{{label}} must contain only letters and digits",
+        "onlyAlphaSpaceHyphen": "{{label}} must contain only letters, spaces, and hyphens",
+        "onlyAlphanumericSpaceHyphen": "{{label}} must contain only letters, digits, spaces, and hyphens",
+        "minWords": "{{label}} must have at least {{minimum}} words",
+        "maxWords": "{{label}} must have at most {{maximum}} words",
+        "maxConsecutive": "{{label}} must not repeat the same character more than {{maximum}} times",
+        "custom": "{{label}} failed custom validation"
       }
     }
   }

@@ -4,6 +4,7 @@
 // ==============================================================================
 
 import { z } from 'zod'
+import { getConfig } from '../config/store'
 import { getErrorMessage } from './errorMap'
 import { getParams } from './getParams'
 
@@ -90,6 +91,19 @@ function isValidexIssue(params: Readonly<Record<string, unknown>>): boolean {
 // PUBLIC API
 // ----------------------------------------------------------
 
+let _registered = false
+
+/**
+ * Ensure Custom Error
+ * Idempotent guard — registers the customError handler at most once.
+ * Safe to call from hot paths (validate, createRule, setup).
+ */
+export function ensureCustomError(): void {
+  if (_registered)
+    return
+  registerCustomError()
+}
+
 /**
  * Register Custom Error
  * Registers the validex customError handler with Zod 4.
@@ -115,13 +129,54 @@ export function registerCustomError(): void {
       /* c8 ignore stop */
 
       const errorParams = getParams(adapted)
-      const msg = getErrorMessage(
-        errorParams.namespace,
-        errorParams.code,
-        { ...errorParams },
-      )
+      const config = getConfig()
+      const i18n = config.i18n
+
+      // --- Resolve message ---
+      let msg: string
+
+      if (i18n.enabled && i18n.t !== undefined) {
+        // i18n with t(): translate message with all params (label already translated)
+        msg = i18n.t(errorParams.key, { ...errorParams })
+      }
+      else if (i18n.enabled) {
+        // i18n without t(): return the key itself (consumer translates externally)
+        msg = errorParams.key
+      }
+      else {
+        // No i18n: English interpolation (current behavior)
+        msg = getErrorMessage(
+          errorParams.namespace,
+          errorParams.code,
+          { ...errorParams },
+        )
+      }
+
+      // --- Apply message.transform if configured ---
+      if (config.message?.transform !== undefined) {
+        msg = config.message.transform({
+          key: errorParams.key,
+          code: errorParams.code,
+          namespace: errorParams.namespace,
+          path: errorParams.path,
+          label: errorParams.label,
+          message: msg,
+          params: { ...errorParams },
+        })
+      }
 
       return { message: msg }
     },
   })
+  _registered = true
+}
+
+/**
+ * Reset Custom Error Flag
+ * Resets the registration flag so registerCustomError can re-register.
+ *
+ * @internal
+ */
+export function _resetCustomErrorFlag(): void {
+  _registered = false
 }

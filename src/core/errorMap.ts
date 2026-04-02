@@ -5,7 +5,7 @@
 // NOTE: Messages are sourced from src/locales/en.json (single source of truth).
 // ==============================================================================
 
-import type { ErrorParams } from '../types'
+import type { ErrorParams, PathTransform } from '../types'
 import enLocale from '../locales/en.json'
 
 // ----------------------------------------------------------
@@ -57,12 +57,15 @@ export function getErrorMessage(
 
 /**
  * Build Message Key
- * Constructs the full i18n key for a given error.
+ * Constructs the full i18n key for a given error. The pathMode controls
+ * how the field path is encoded into the key.
  *
  * @param prefix    - Key prefix (e.g. 'validation').
  * @param separator - Separator between segments (e.g. '.').
  * @param namespace - Error namespace (e.g. 'email').
  * @param code      - Error code (e.g. 'disposableBlocked').
+ * @param pathMode  - How field paths are embedded in the key.
+ * @param path      - The field path segments.
  * @returns The full i18n key string.
  */
 export function buildMessageKey(
@@ -70,7 +73,21 @@ export function buildMessageKey(
   separator: string,
   namespace: string,
   code: string,
+  pathMode: 'semantic' | 'key' | 'full' | PathTransform = 'semantic',
+  path: ReadonlyArray<string | number> = [],
 ): string {
+  if (typeof pathMode === 'function') {
+    const transformed = pathMode(path)
+    return [prefix, 'messages', transformed, namespace, code].join(separator)
+  }
+  if (pathMode === 'key' && path.length > 0) {
+    const last = String(path.at(-1))
+    return [prefix, 'messages', last, namespace, code].join(separator)
+  }
+  if (pathMode === 'full' && path.length > 0) {
+    const pathSegments = path.map(String)
+    return [prefix, 'messages', ...pathSegments, namespace, code].join(separator)
+  }
   return [prefix, 'messages', namespace, code].join(separator)
 }
 

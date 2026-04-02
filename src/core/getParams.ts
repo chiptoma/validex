@@ -5,6 +5,7 @@
 
 import type { ErrorParams } from '../types'
 import { getConfig } from '../config/store'
+import { fieldNameToLabel } from '../internal/fieldLabel'
 import { buildMessageKey } from './errorMap'
 
 // ----------------------------------------------------------
@@ -39,24 +40,6 @@ interface NativeMapping {
 // ----------------------------------------------------------
 // HELPERS
 // ----------------------------------------------------------
-
-const CAMEL_SPLIT_RE = /([a-z])([A-Z])/g
-const SEPARATOR_RE = /[_-]/g
-const WORD_START_RE = /\b\w/g
-
-/**
- * To Title Case
- * Converts a camelCase or snake_case field name to Title Case.
- *
- * @param str - The field name string.
- * @returns The title-cased label string.
- */
-function toTitleCase(str: string): string {
-  return str
-    .replace(CAMEL_SPLIT_RE, '$1 $2')
-    .replace(SEPARATOR_RE, ' ')
-    .replace(WORD_START_RE, c => c.toUpperCase())
-}
 
 /**
  * Map Native Code
@@ -99,16 +82,59 @@ function deriveLabel(
 ): string {
   if (explicitLabel !== undefined)
     return explicitLabel
+
   const config = getConfig()
   const fallback = config.label?.fallback ?? 'derived'
-  if (fallback === 'none')
-    return ''
-  if (fallback === 'generic')
-    return 'This field'
-  const last = path.at(-1)
-  if (last === undefined)
-    return 'This field'
-  return typeof last === 'string' ? toTitleCase(last) : `Item ${String(last)}`
+
+  // Compute default label from path
+  let defaultLabel: string
+  if (fallback === 'none') {
+    defaultLabel = ''
+  }
+  else if (fallback === 'generic') {
+    defaultLabel = 'This field'
+  }
+  else {
+    const last = path.at(-1)
+    if (last === undefined) {
+      defaultLabel = 'This field'
+    }
+    else {
+      defaultLabel = typeof last === 'string' ? fieldNameToLabel(last) : `Item ${String(last)}`
+    }
+  }
+
+  // label.transform overrides path derivation
+  if (config.label?.transform !== undefined) {
+    const last = path.at(-1)
+    const fieldName = last !== undefined ? String(last) : ''
+    return config.label.transform({ path, fieldName, defaultLabel })
+  }
+
+  return defaultLabel
+}
+
+/**
+ * Resolve I18n Label
+ * Translates a label via i18n.t() when conditions are met.
+ *
+ * @param label         - The currently derived label.
+ * @param labelKey      - The i18n key for the label.
+ * @param explicitLabel - An explicitly provided label, if any.
+ * @param config        - The global configuration.
+ * @returns The resolved label (translated or original).
+ */
+function resolveI18nLabel(
+  label: string,
+  labelKey: string,
+  explicitLabel: string | undefined,
+  config: Readonly<ReturnType<typeof getConfig>>,
+): string {
+  if (explicitLabel !== undefined || config.label?.transform !== undefined || config.i18n.t === undefined) {
+    return label
+  }
+  const translated = config.i18n.t(labelKey)
+  return (translated !== labelKey && translated !== '') ? translated : label
 }
 
 // ----------------------------------------------------------
@@ -144,7 +170,8 @@ export function getParams(issue: ZodIssueInput): ErrorParams {
   const i18n = config.i18n
   const prefix = i18n.prefix ?? 'validation'
   const separator = i18n.separator ?? '.'
-  const key = buildMessageKey(prefix, separator, namespace, code)
+  const pathMode = i18n.pathMode ?? 'semantic'
+  const key = buildMessageKey(prefix, separator, namespace, code, pathMode, path)
 
   const extra: Record<string, unknown> = {}
   for (const [k, v] of Object.entries(params)) {
@@ -170,8 +197,9 @@ export function getParams(issue: ZodIssueInput): ErrorParams {
   }
 
   if (i18n.enabled) {
-    const labelKey = [prefix, 'fields', ...path.map(String)].join(separator)
-    return { ...base, labelKey }
+    const labelKey = [prefix, 'labels', ...path.map(String)].join(separator)
+    const resolvedLabel = resolveI18nLabel(label, labelKey, explicitLabel, config)
+    return { ...base, label: resolvedLabel, labelKey }
   }
 
   return base

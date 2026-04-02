@@ -4,7 +4,5 @@
 // ==============================================================================
 
 export { createRule } from './createRule'
-export { registerCustomError } from './customError'
-export { getErrorMessage, MESSAGE_MAP, registerMessages } from './errorMap'
 export { getParams } from './getParams'
 export { validate } from './validate'

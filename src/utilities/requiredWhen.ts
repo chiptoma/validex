@@ -9,12 +9,12 @@ import { z } from 'zod'
 // TYPES
 // ----------------------------------------------------------
 
-/**
- *
- */
+/** Options for the requiredWhen conditional refinement. */
 interface RequiredWhenOptions {
   /** Custom error message when the field is missing. */
-  readonly message?: string
+  readonly message?: string | undefined
+  /** Label for the field in error messages. */
+  readonly label?: string | undefined
 }
 
 // ----------------------------------------------------------
@@ -39,7 +39,8 @@ export function requiredWhen(
   condition: (data: Record<string, unknown>) => boolean,
   options?: RequiredWhenOptions,
 ): (data: Record<string, unknown>, ctx: z.RefinementCtx) => void {
-  const message = options?.message ?? `${field} is required`
+  const lbl = options?.label ?? field
+  const message = options?.message ?? `${lbl} is required`
 
   return (data: Record<string, unknown>, ctx: z.RefinementCtx): void => {
     if (!condition(data)) {
@@ -53,6 +54,7 @@ export function requiredWhen(
         code: z.ZodIssueCode.custom,
         message,
         path: [field],
+        params: { code: 'required', namespace: 'base', label: lbl },
       })
     }
   }

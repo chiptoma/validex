@@ -3,6 +3,32 @@
 // Core type definitions used across the validex library.
 // ==============================================================================
 
+import type { BusinessNameOptions } from './rules/businessName'
+import type { ColorOptions } from './rules/color'
+import type { CountryOptions } from './rules/country'
+import type { CreditCardOptions } from './rules/creditCard'
+import type { CurrencyOptions } from './rules/currency'
+import type { DateTimeOptions } from './rules/dateTime'
+import type { EmailOptions } from './rules/email'
+import type { IbanOptions } from './rules/iban'
+import type { IpAddressOptions } from './rules/ipAddress'
+import type { JWTOptions } from './rules/jwt'
+import type { LicenseKeyOptions } from './rules/licenseKey'
+import type { MacAddressOptions } from './rules/macAddress'
+import type { PasswordOptions } from './rules/password'
+import type { PasswordConfirmationOptions } from './rules/passwordConfirmation'
+import type { PersonNameOptions } from './rules/personName'
+import type { PhoneOptions } from './rules/phone'
+import type { PostalCodeOptions } from './rules/postalCode'
+import type { SlugOptions } from './rules/slug'
+import type { TextOptions } from './rules/text'
+import type { TokenOptions } from './rules/token'
+import type { URLOptions } from './rules/url'
+import type { UsernameOptions } from './rules/username'
+import type { UUIDOptions } from './rules/uuid'
+import type { VatNumberOptions } from './rules/vatNumber'
+import type { WebsiteOptions } from './rules/website'
+
 /**
  * Range
  * Defines a numeric range constraint. A number means exact value.
@@ -40,6 +66,10 @@ export interface BaseRuleOptions {
   readonly normalize?: boolean
   /** Custom validation function that runs after all built-in checks. */
   readonly customFn?: (value: string) => true | string | Promise<true | string>
+  /** Cross-field equality check. Field name that this field must match. */
+  readonly sameAs?: string
+  /** Conditional requirement. Field name — when that field has a value, this field becomes required. */
+  readonly requiredWhen?: string
 }
 
 /**
@@ -147,6 +177,41 @@ export interface MessageConfig {
 }
 
 /**
+ * RuleDefaults
+ * Typed per-rule defaults for all 25 built-in rules. Keys are namespace
+ * names (camelCase) matching each rule's `name` in createRule.
+ */
+export interface RuleDefaults {
+  readonly email?: Partial<EmailOptions>
+  readonly personName?: Partial<PersonNameOptions>
+  readonly businessName?: Partial<BusinessNameOptions>
+  readonly password?: Partial<PasswordOptions>
+  readonly passwordConfirmation?: Partial<PasswordConfirmationOptions>
+  readonly phone?: Partial<PhoneOptions>
+  readonly website?: Partial<WebsiteOptions>
+  readonly url?: Partial<URLOptions>
+  readonly username?: Partial<UsernameOptions>
+  readonly slug?: Partial<SlugOptions>
+  readonly postalCode?: Partial<PostalCodeOptions>
+  readonly licenseKey?: Partial<LicenseKeyOptions>
+  readonly uuid?: Partial<UUIDOptions>
+  readonly jwt?: Partial<JWTOptions>
+  readonly dateTime?: Partial<DateTimeOptions>
+  readonly token?: Partial<TokenOptions>
+  readonly text?: Partial<TextOptions>
+  readonly country?: Partial<CountryOptions>
+  readonly currency?: Partial<CurrencyOptions>
+  readonly color?: Partial<ColorOptions>
+  readonly creditCard?: Partial<CreditCardOptions>
+  readonly iban?: Partial<IbanOptions>
+  readonly vatNumber?: Partial<VatNumberOptions>
+  readonly macAddress?: Partial<MacAddressOptions>
+  readonly ipAddress?: Partial<IpAddressOptions>
+  /** Index signature for custom rules created with createRule. */
+  readonly [key: string]: Partial<Record<string, unknown>> | undefined
+}
+
+/**
  * GlobalConfig
  * Top-level configuration for the validex library.
  */
@@ -158,7 +223,7 @@ export interface GlobalConfig {
   /** Message formatting settings. */
   readonly message?: MessageConfig
   /** Global rule defaults (overrides built-in defaults). */
-  readonly rules?: Partial<Record<string, Record<string, unknown>>>
+  readonly rules?: Partial<RuleDefaults>
 }
 
 /**
@@ -184,6 +249,8 @@ export interface PreloadOptions {
   readonly vatPatterns?: boolean
   /** Preload credit card prefixes. */
   readonly creditCardPrefixes?: boolean
+  /** Preload postal code validation module. */
+  readonly postalCodes?: boolean
 }
 
 // ----------------------------------------------------------
@@ -222,10 +289,10 @@ export interface ValidationResult<T> {
 // ----------------------------------------------------------
 
 /**
- * CreateRuleConfig
+ * CreateRuleOptions
  * Configuration object passed to the createRule factory.
  */
-export interface CreateRuleConfig<T extends BaseRuleOptions> {
+export interface CreateRuleOptions<T extends BaseRuleOptions> {
   /** Namespace for error codes (e.g., 'email', 'password'). */
   readonly name: string
   /** Tier 1 defaults for this rule. */

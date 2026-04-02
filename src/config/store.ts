@@ -4,6 +4,7 @@
 // ==============================================================================
 
 import type { GlobalConfig } from '../types'
+import { _resetCustomErrorFlag } from '../core/customError'
 
 /**
  * Default i18n configuration.
@@ -64,4 +65,5 @@ export function isInitialized(): boolean {
 export function resetConfig(): void {
   config = { ...DEFAULT_CONFIG, i18n: { ...DEFAULT_I18N } }
   initialized = false
+  _resetCustomErrorFlag()
 }
