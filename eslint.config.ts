@@ -9,7 +9,13 @@ export default antfu(
       tsconfigPath: 'tsconfig.json',
       parserOptions: {
         projectService: {
-          allowDefaultProject: ['*.config.ts', 'scripts/*.ts'],
+          allowDefaultProject: [
+            '*.config.ts',
+            'scripts/*.ts',
+            'packages/*/tsup.config.ts',
+            'packages/*/vitest.config.ts',
+            'packages/*/scripts/*.ts',
+          ],
         },
       },
     },
@@ -21,7 +27,7 @@ export default antfu(
     jsonc: true,
     yaml: false,
     markdown: false,
-    ignores: ['**/fixtures', '**/dist'],
+    ignores: ['**/fixtures', '**/dist', '**/smoke'],
   },
 
   // Strict TypeScript — scoped to .ts files for type-aware rules
@@ -62,7 +68,7 @@ export default antfu(
 
   // JSDoc on public exports — only for src/ files
   {
-    files: ['src/**/*.ts'],
+    files: ['packages/*/src/**/*.ts'],
     rules: {
       'jsdoc/require-jsdoc': ['error', {
         require: {
@@ -107,7 +113,7 @@ export default antfu(
 
   // Scripts — relaxed rules
   {
-    files: ['scripts/**/*.ts'],
+    files: ['packages/*/scripts/**/*.ts'],
     rules: {
       'no-console': 'off',
       'ts/explicit-function-return-type': 'off',
@@ -119,7 +125,7 @@ export default antfu(
 
   // Test quality — relaxed rules
   {
-    files: ['tests/**/*.ts'],
+    files: ['packages/*/tests/**/*.ts'],
     rules: {
       'test/no-only-tests': 'error',
       'test/no-identical-title': 'error',
@@ -129,6 +135,25 @@ export default antfu(
       'max-lines': ['error', { max: 500, skipBlankLines: true, skipComments: true }],
       'jsdoc/require-jsdoc': 'off',
       'sonarjs/no-duplicate-string': 'off',
+    },
+  },
+
+  // Config/script files — not in tsconfig scope, disable type-aware rules
+  {
+    files: ['**/*.config.ts', 'packages/*/scripts/**/*.ts'],
+    rules: {
+      'ts/strict-boolean-expressions': 'off',
+      'ts/no-unsafe-argument': 'off',
+      'ts/no-unsafe-call': 'off',
+      'ts/no-unsafe-member-access': 'off',
+    },
+  },
+
+  // pnpm workspace settings — pnpm 9.x keeps settings in package.json
+  {
+    files: ['package.json'],
+    rules: {
+      'pnpm/json-prefer-workspace-settings': 'off',
     },
   },
 )

@@ -25,7 +25,14 @@
     "fastify",
     "tree-shakeable"
   ],
-  "sideEffects": ["./src/augmentation/index.ts", "./src/augmentation/types.ts", "./src/augmentation/methods.ts", "./dist/index.js", "./dist/index.mjs", "./dist/index.cjs"],
+  "sideEffects": [
+    "./src/augmentation/index.ts",
+    "./src/augmentation/types.ts",
+    "./src/augmentation/methods.ts",
+    "./dist/index.js",
+    "./dist/index.mjs",
+    "./dist/index.cjs"
+  ],
   "exports": {
     ".": {
       "import": {
@@ -118,7 +125,7 @@
     "build": "tsup",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "pnpm -r typecheck",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",

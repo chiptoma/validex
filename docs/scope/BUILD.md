@@ -1209,7 +1209,7 @@ Already built in Phase 1. Verify it matches §11.1-11.2 exactly.
 - [ ] Import `Email` only → build → bundle does NOT contain Phone, PostalCode, or any other rule code
 - [ ] Import `Email` only → build → bundle does NOT contain `libphonenumber-js`, `postcode-validator`
 - [ ] Import `Phone` only → build → bundle contains `libphonenumber-js/core` but NOT `postcode-validator`
-- [ ] Import nothing from `validex/nuxt` → build → no adapter code in bundle
+- [ ] Import nothing from `@validex/nuxt` → build → no adapter code in bundle
 - [ ] `sideEffects: false` verified by bundler analysis (Vite/Rollup)
 
 ### 6.3 Bundle Size Verification
@@ -1388,7 +1388,7 @@ jobs:
 - [ ] All lint passes (`pnpm lint`)
 - [ ] Build produces correct output (`pnpm build`)
 - [ ] Package installs cleanly in a fresh project (`pnpm add ./validex-1.0.0.tgz`)
-- [ ] Subpath imports work: `import { Email } from 'validex'`, `import { useValidation } from 'validex/nuxt'`
+- [ ] Subpath imports work: `import { Email } from '@validex/core'`, `import { useValidation } from '@validex/nuxt'`
 - [ ] TypeScript types resolve correctly for consumers
 - [ ] Tree-shaking works in consumer's bundler
 
@@ -1575,7 +1575,7 @@ Mathematical invariants that must hold across ALL possible inputs. Catches thing
 ```typescript
 // tests/properties/email.property.test.ts
 import * as fc from 'fast-check';
-import { Email } from 'validex';
+import { Email } from '@validex/core';
 
 describe('Email — property-based', () => {
   it('accepted emails always contain exactly one @', () => {
@@ -1612,7 +1612,7 @@ describe('Email — property-based', () => {
 ```typescript
 // tests/properties/personName.property.test.ts
 import * as fc from 'fast-check';
-import { PersonName } from 'validex';
+import { PersonName } from '@validex/core';
 
 describe('PersonName — property-based', () => {
   it('never accepts strings containing < or >', () => {
@@ -1681,7 +1681,7 @@ Every rule is tested through a shared harness that enforces the universal contra
 
 ```typescript
 // tests/helpers/testRule.ts
-import { getParams } from 'validex';
+import { getParams } from '@validex/core';
 
 export function testRuleContract(
   ruleName: string,
@@ -1763,7 +1763,7 @@ export function testRuleContract(
 ```typescript
 // tests/rules/email.test.ts
 import { testRuleContract } from '../helpers/testRule';
-import { Email } from 'validex';
+import { Email } from '@validex/core';
 
 testRuleContract('Email', Email, 'email');
 

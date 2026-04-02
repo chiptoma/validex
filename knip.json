@@ -1,13 +1,19 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "ignore": [
-    "tests/fixtures/nuxt-app/**"
-  ],
-  "ignoreDependencies": [
-    "@emnapi/core",
-    "@emnapi/runtime",
-    "nuxt",
-    "conventional-changelog-conventionalcommits",
-    "eslint-plugin-vitest"
-  ]
+  "workspaces": {
+    ".": {
+      "ignoreDependencies": [
+        "@emnapi/core",
+        "@emnapi/runtime",
+        "conventional-changelog-conventionalcommits",
+        "eslint-plugin-vitest"
+      ]
+    },
+    "packages/core": {},
+    "packages/nuxt": {
+      "ignore": ["tests/fixtures/nuxt-app/**"]
+    },
+    "packages/fastify": {}
+  },
+  "ignoreDependencies": ["nuxt"]
 }

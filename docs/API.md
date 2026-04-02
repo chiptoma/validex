@@ -45,8 +45,8 @@ Complete reference for the validex public API. Every option, default value, and 
   - [`sameAs`](#sameas)
   - [`requiredWhen`](#requiredwhen)
 - [Adapters](#adapters)
-  - [Nuxt (`validex/nuxt`)](#nuxt-validexnuxt)
-  - [Fastify (`validex/fastify`)](#fastify-validexfastify)
+  - [Nuxt (`@validex/nuxt`)](#nuxt-validexnuxt)
+  - [Fastify (`@validex/fastify`)](#fastify-validexfastify)
 - [Bundle Sizes](#bundle-sizes)
 - [Types](#types)
 
@@ -149,7 +149,7 @@ interface MessageConfig {
 **Example:**
 
 ```ts
-import { setup } from 'validex'
+import { setup } from '@validex/core'
 
 setup({
   rules: {
@@ -217,7 +217,7 @@ interface ValidationResult<T> {
 
 ```ts
 import { z } from 'zod'
-import { Email, Password, validate } from 'validex'
+import { Email, Password, validate } from '@validex/core'
 
 const schema = z.object({
   email: Email(),
@@ -284,7 +284,7 @@ interface PreloadOptions {
 **Example:**
 
 ```ts
-import { preloadData } from 'validex'
+import { preloadData } from '@validex/core'
 
 await preloadData({
   disposable: true,
@@ -304,7 +304,7 @@ Returns the current global configuration as a readonly object.
 **Example:**
 
 ```ts
-import { getConfig } from 'validex'
+import { getConfig } from '@validex/core'
 
 const config = getConfig()
 console.log(config.i18n.enabled)
@@ -341,7 +341,7 @@ interface ErrorParams {
 **Example:**
 
 ```ts
-import { getParams } from 'validex'
+import { getParams } from '@validex/core'
 
 const params = getParams(zodIssue)
 // { code: 'invalid', namespace: 'email', label: 'Email', key: 'validation.messages.email.invalid', path: ['email'] }
@@ -385,7 +385,7 @@ interface CreateRuleOptions<T extends BaseRuleOptions> {
 **Example:**
 
 ```ts
-import { createRule } from 'validex'
+import { createRule } from '@validex/core'
 import { z } from 'zod'
 
 interface HexColorOptions {
@@ -476,7 +476,7 @@ All 25 rules are listed alphabetically. Every rule extends either `BaseRuleOptio
 **Example:**
 
 ```ts
-import { BusinessName } from 'validex'
+import { BusinessName } from '@validex/core'
 
 const schema = BusinessName({ length: { min: 3, max: 50 } })
 schema.parse('Acme Corp') // OK
@@ -508,7 +508,7 @@ schema.parse('Acme Corp') // OK
 **Example:**
 
 ```ts
-import { Color } from 'validex'
+import { Color } from '@validex/core'
 
 const schema = Color({ format: 'hex', alpha: false })
 schema.parse('#ff00aa') // OK
@@ -543,7 +543,7 @@ schema.parse('#ff00aa') // OK
 **Example:**
 
 ```ts
-import { Country } from 'validex'
+import { Country } from '@validex/core'
 
 const schema = Country({ format: 'alpha2', allowCountries: ['US', 'CA', 'GB'] })
 schema.parse('US') // OK
@@ -581,7 +581,7 @@ schema.parse('US') // OK
 **Example:**
 
 ```ts
-import { CreditCard } from 'validex'
+import { CreditCard } from '@validex/core'
 
 const schema = CreditCard({ allowIssuers: ['visa', 'mastercard'] })
 schema.parse('4111111111111111') // OK (Visa)
@@ -615,7 +615,7 @@ schema.parse('4111111111111111') // OK (Visa)
 **Example:**
 
 ```ts
-import { Currency } from 'validex'
+import { Currency } from '@validex/core'
 
 const schema = Currency({ allowCurrencies: ['USD', 'EUR', 'GBP'] })
 schema.parse('USD') // OK
@@ -657,7 +657,7 @@ schema.parse('USD') // OK
 **Example:**
 
 ```ts
-import { DateTime } from 'validex'
+import { DateTime } from '@validex/core'
 
 const schema = DateTime({ format: 'iso', allowFuture: false })
 schema.parse('2024-01-15T10:30:00Z') // OK if not in the future
@@ -700,7 +700,7 @@ schema.parse('2024-01-15T10:30:00Z') // OK if not in the future
 **Example:**
 
 ```ts
-import { Email } from 'validex'
+import { Email } from '@validex/core'
 
 const schema = Email({
   blockDisposable: true,
@@ -738,7 +738,7 @@ schema.parse('user@company.com') // OK
 **Example:**
 
 ```ts
-import { Iban } from 'validex'
+import { Iban } from '@validex/core'
 
 const schema = Iban({ allowCountries: ['DE', 'FR', 'GB'] })
 schema.parse('DE89370400440532013000') // OK
@@ -772,7 +772,7 @@ schema.parse('DE89370400440532013000') // OK
 **Example:**
 
 ```ts
-import { IpAddress } from 'validex'
+import { IpAddress } from '@validex/core'
 
 const schema = IpAddress({ version: 'v4', allowPrivate: false })
 schema.parse('8.8.8.8') // OK
@@ -814,7 +814,7 @@ schema.parse('8.8.8.8') // OK
 **Example:**
 
 ```ts
-import { Jwt } from 'validex'
+import { Jwt } from '@validex/core'
 
 const schema = Jwt({ checkExpiry: true, requireClaims: ['sub', 'iat'] })
 schema.parse('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...') // OK if valid and not expired
@@ -849,7 +849,7 @@ schema.parse('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...') // OK if valid and not e
 **Example:**
 
 ```ts
-import { LicenseKey } from 'validex'
+import { LicenseKey } from '@validex/core'
 
 const schema = LicenseKey({ type: 'custom', segments: 4, segmentLength: 4, charset: 'hex' })
 schema.parse('A1B2-C3D4-E5F6-7890') // OK
@@ -880,7 +880,7 @@ schema.parse('A1B2-C3D4-E5F6-7890') // OK
 **Example:**
 
 ```ts
-import { MacAddress } from 'validex'
+import { MacAddress } from '@validex/core'
 
 const schema = MacAddress({ delimiter: ':' })
 schema.parse('00:1A:2B:3C:4D:5E') // OK
@@ -930,7 +930,7 @@ Password lists sourced from [SecLists](https://github.com/danielmiessler/SecList
 **Example:**
 
 ```ts
-import { Password } from 'validex'
+import { Password } from '@validex/core'
 
 const schema = Password({
   length: { min: 10 },
@@ -966,7 +966,7 @@ schema.parse('ABcdefgh1!') // OK
 
 ```ts
 import { z } from 'zod'
-import { Password, PasswordConfirmation, validate } from 'validex'
+import { Password, PasswordConfirmation, validate } from '@validex/core'
 
 const schema = z.object({
   password: Password(),
@@ -1016,7 +1016,7 @@ const result = await validate(schema, {
 **Example:**
 
 ```ts
-import { PersonName } from 'validex'
+import { PersonName } from '@validex/core'
 
 const schema = PersonName({ words: { max: 3 }, titleCase: true })
 schema.parse('John Doe') // OK
@@ -1061,7 +1061,7 @@ schema.parse('John Doe') // OK
 **Example:**
 
 ```ts
-import { Phone } from 'validex'
+import { Phone } from '@validex/core'
 
 const schema = Phone({
   requireMobile: true,
@@ -1100,7 +1100,7 @@ If the country is unsupported, a config error is thrown at schema creation time.
 **Example:**
 
 ```ts
-import { PostalCode } from 'validex'
+import { PostalCode } from '@validex/core'
 
 const schema = PostalCode({ country: 'US' })
 schema.parse('90210') // OK
@@ -1134,7 +1134,7 @@ schema.parse('90210') // OK
 **Example:**
 
 ```ts
-import { Slug } from 'validex'
+import { Slug } from '@validex/core'
 
 const schema = Slug({ length: { min: 5, max: 80 } })
 schema.parse('my-awesome-post') // OK
@@ -1178,7 +1178,7 @@ schema.parse('my-awesome-post') // OK
 **Example:**
 
 ```ts
-import { Text } from 'validex'
+import { Text } from '@validex/core'
 
 const schema = Text({
   length: { min: 10, max: 5000 },
@@ -1225,7 +1225,7 @@ schema.parse('This is a clean text input without HTML or URLs.') // OK
 **Example:**
 
 ```ts
-import { Token } from 'validex'
+import { Token } from '@validex/core'
 
 const schema = Token({ type: 'nanoid' })
 schema.parse('V1StGXR8_Z5jdHi6B-myT') // OK
@@ -1265,7 +1265,7 @@ schema.parse('V1StGXR8_Z5jdHi6B-myT') // OK
 **Example:**
 
 ```ts
-import { Url } from 'validex'
+import { Url } from '@validex/core'
 
 const schema = Url({ protocols: ['https'], allowAuth: false })
 schema.parse('https://example.com/path?q=1') // OK
@@ -1307,7 +1307,7 @@ schema.parse('https://example.com/path?q=1') // OK
 **Example:**
 
 ```ts
-import { Username } from 'validex'
+import { Username } from '@validex/core'
 
 const schema = Username({
   length: { min: 3, max: 30 },
@@ -1342,7 +1342,7 @@ schema.parse('john_doe') // OK
 **Example:**
 
 ```ts
-import { Uuid } from 'validex'
+import { Uuid } from '@validex/core'
 
 const schema = Uuid({ version: 4 })
 schema.parse('550e8400-e29b-41d4-a716-446655440000') // OK
@@ -1376,7 +1376,7 @@ schema.parse('550e8400-e29b-41d4-a716-446655440000') // OK
 **Example:**
 
 ```ts
-import { VatNumber } from 'validex'
+import { VatNumber } from '@validex/core'
 
 const schema = VatNumber({ country: 'DE', requirePrefix: true })
 schema.parse('DE123456789') // OK
@@ -1419,7 +1419,7 @@ When `normalize: true`, bare domains (e.g. `google.com`) are auto-prepended with
 **Example:**
 
 ```ts
-import { Website } from 'validex'
+import { Website } from '@validex/core'
 
 const schema = Website({
   requireHttps: true,
@@ -1563,7 +1563,7 @@ Default `min: 1`. Both min and max checked in a single refinement.
 Chaining adds checks — it cannot override internal rule checks. Rule options are the configuration mechanism.
 
 ```ts
-import { Email, Password } from 'validex'
+import { Email, Password } from '@validex/core'
 
 // Adds a noSpaces check after Password's built-in checks
 const schema = Password().noSpaces()
@@ -1618,7 +1618,7 @@ function sameAs(
 
 ```ts
 import { z } from 'zod'
-import { Password } from 'validex'
+import { Password } from '@validex/core'
 import { sameAs } from 'validex/utilities'
 
 const schema = z.object({
@@ -1673,7 +1673,7 @@ const schema = z.object({
 
 ## Adapters
 
-### Nuxt (`validex/nuxt`)
+### Nuxt (`@validex/nuxt`)
 
 Nuxt integration with module setup and a validation state composable.
 
@@ -1706,7 +1706,7 @@ interface ValidexNuxtOptions {
 
 ```ts
 // plugins/validex.ts
-import { setupValidex } from 'validex/nuxt'
+import { setupValidex } from '@validex/nuxt'
 
 await setupValidex({
   rules: {
@@ -1743,8 +1743,8 @@ interface ValidationState<T> {
 **Example:**
 
 ```ts
-import { useValidation } from 'validex/nuxt'
-import { Email, Password } from 'validex'
+import { useValidation } from '@validex/nuxt'
+import { Email, Password } from '@validex/core'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -1797,7 +1797,7 @@ function detectNuxtI18n(installedModules: readonly string[]): boolean
 
 ---
 
-### Fastify (`validex/fastify`)
+### Fastify (`@validex/fastify`)
 
 Fastify plugin that registers instance and request decorators for validation, with optional route-level `preValidation`.
 
@@ -1864,9 +1864,9 @@ When validation fails and no custom `errorHandler` is provided, the plugin repli
 
 ```ts
 import Fastify from 'fastify'
-import { validexPlugin } from 'validex/fastify'
+import { validexPlugin } from '@validex/fastify'
 import { z } from 'zod'
-import { Email, Password } from 'validex'
+import { Email, Password } from '@validex/core'
 
 const app = Fastify()
 
@@ -1898,7 +1898,7 @@ app.post('/login', async (request, reply) => {
 All types are exported from the main `validex` entry point and can be used as type-only imports.
 
 ```ts
-import type { ValidationResult, GlobalConfig, ErrorParams } from 'validex'
+import type { ValidationResult, GlobalConfig, ErrorParams } from '@validex/core'
 ```
 
 ### Core Types
@@ -1971,12 +1971,12 @@ import type { ValidationResult, GlobalConfig, ErrorParams } from 'validex'
 
 | Type | Source | Description |
 | --- | --- | --- |
-| `ValidexNuxtOptions` | `validex/nuxt` | Nuxt module options. |
-| `ValidexNuxtI18nOptions` | `validex/nuxt` | Nuxt i18n options. |
-| `NuxtModuleDefinition` | `validex/nuxt` | Nuxt module definition shape. |
-| `ValidationState<T>` | `validex/nuxt` | Validation state container. |
-| `ValidexFastifyOptions` | `validex/fastify` | Fastify plugin options. |
-| `ValidateSource` | `validex/fastify` | `'body' \| 'params' \| 'query'` |
+| `ValidexNuxtOptions` | `@validex/nuxt` | Nuxt module options. |
+| `ValidexNuxtI18nOptions` | `@validex/nuxt` | Nuxt i18n options. |
+| `NuxtModuleDefinition` | `@validex/nuxt` | Nuxt module definition shape. |
+| `ValidationState<T>` | `@validex/nuxt` | Validation state container. |
+| `ValidexFastifyOptions` | `@validex/fastify` | Fastify plugin options. |
+| `ValidateSource` | `@validex/fastify` | `'body' \| 'params' \| 'query'` |
 
 ---
 

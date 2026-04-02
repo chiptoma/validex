@@ -29,17 +29,20 @@ jobs:
       - name: Lint
         run: pnpm lint
       - name: Typecheck
-        run: pnpm typecheck
+        run: pnpm -r typecheck
       - name: Test with coverage
-        run: pnpm test:coverage
+        run: pnpm -r test:coverage
       - name: Build
-        run: pnpm build
+        run: pnpm -r build
 
-      # Package correctness
+      # Package correctness (per-package)
       - name: Publint
-        run: pnpm publint
+        run: pnpm -r exec publint
       - name: Are the types wrong?
-        run: pnpm attw --pack --ignore-rules no-resolution unexpected-module-syntax
+        run: |
+          cd packages/core && pnpm attw --pack --ignore-rules no-resolution unexpected-module-syntax && cd ../..
+          cd packages/nuxt && pnpm attw --pack --ignore-rules no-resolution unexpected-module-syntax && cd ../..
+          cd packages/fastify && pnpm attw --pack --ignore-rules no-resolution unexpected-module-syntax && cd ../..
       - name: Dead code check
         run: pnpm knip
       - name: Bundle size check
@@ -58,8 +61,10 @@ jobs:
           cache: pnpm
           registry-url: 'https://registry.npmjs.org'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build
+      - run: pnpm -r build
+      # pnpm -r publish respects topological sort —
+      # @validex/core publishes first, then adapters
       - name: Publish
-        run: pnpm publish --no-git-checks
+        run: pnpm -r publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
