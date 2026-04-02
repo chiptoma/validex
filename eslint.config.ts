@@ -144,16 +144,9 @@ export default antfu(
     rules: {
       'ts/strict-boolean-expressions': 'off',
       'ts/no-unsafe-argument': 'off',
+      'ts/no-unsafe-assignment': 'off',
       'ts/no-unsafe-call': 'off',
       'ts/no-unsafe-member-access': 'off',
-    },
-  },
-
-  // pnpm workspace settings — pnpm 9.x keeps settings in package.json
-  {
-    files: ['package.json'],
-    rules: {
-      'pnpm/json-prefer-workspace-settings': 'off',
     },
   },
 )
