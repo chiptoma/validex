@@ -36,19 +36,19 @@ import {
 } from '../../src/loaders/vatPatterns'
 
 describe('commonPasswords', () => {
-  it('should load tier1 (basic) with 100 entries', async () => {
+  it('should load tier1 (basic) with 99 entries from SecLists top 100', async () => {
     clearCommonPasswordsCache()
     const passwords = await loadCommonPasswords('basic')
-    expect(passwords.size).toBe(100)
+    expect(passwords.size).toBe(99)
     expect(passwords.has('123456')).toBe(true)
     expect(passwords.has('password')).toBe(true)
     expect(passwords.has('qwerty')).toBe(true)
   })
 
-  it('should load tier2 (moderate) with ~1000 entries', async () => {
+  it('should load tier2 (moderate) with ~999 entries from SecLists top 1000', async () => {
     clearCommonPasswordsCache()
     const passwords = await loadCommonPasswords('moderate')
-    expect(passwords.size).toBeGreaterThanOrEqual(1000)
+    expect(passwords.size).toBe(999)
   })
 
   it('should have tier2 include all of tier1', async () => {
@@ -64,8 +64,7 @@ describe('commonPasswords', () => {
   it('should load tier3 (strict) with ~10000 entries', async () => {
     clearCommonPasswordsCache()
     const passwords = await loadCommonPasswords('strict')
-    // Some overlap between tiers reduces unique count slightly
-    expect(passwords.size).toBeGreaterThanOrEqual(9900)
+    expect(passwords.size).toBe(9999)
   })
 
   it('should return cached data on second call', async () => {
@@ -84,7 +83,7 @@ describe('commonPasswords', () => {
     clearCommonPasswordsCache()
     await loadCommonPasswords('basic')
     const passwords = getCommonPasswords('basic')
-    expect(passwords.size).toBe(100)
+    expect(passwords.size).toBe(99)
   })
 })
 

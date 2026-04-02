@@ -40,6 +40,7 @@ Complete reference for the validex public API. Every option, default value, and 
   - [VatNumber](#vatnumberoptions)
   - [Website](#websiteoptions)
 - [Checks (`validex/checks`)](#checks-validexchecks)
+- [Chainable Methods](#chainable-methods)
 - [Utilities (`validex/utilities`)](#utilities-validexutilities)
   - [`sameAs`](#sameas)
   - [`requiredWhen`](#requiredwhen)
@@ -52,6 +53,20 @@ Complete reference for the validex public API. Every option, default value, and 
 ---
 
 ## Configuration
+
+### `configure(config)`
+
+Deep-merges the given configuration into the current global config. Can be called multiple times — each call merges with existing config, never replaces. Unlike `setup()`, this does not register the Zod customError handler.
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `config` | `Partial<GlobalConfig>` | Yes | Partial configuration to merge. |
+
+**Returns:** `void`
+
+---
 
 ### `setup(config?)`
 
@@ -86,6 +101,20 @@ interface I18nConfig {
 }
 ```
 
+- `enabled` -- When `true`, activates i18n mode.
+- `prefix` -- Key prefix for all i18n keys (default: `'validation'`).
+- `separator` -- Separator between key segments (default: `'.'`).
+- `pathMode` -- How field paths are encoded into message keys (default: `'semantic'`). See path mode table below.
+- `t` -- Translation function. When provided, validex calls `t(key, params)` to produce error messages instead of using English templates. Labels are also translated via `t(labelKey)` unless an explicit label or `label.transform` is set.
+
+**Behavior by mode:**
+
+| `enabled` | `t` provided | Error messages | Labels |
+| --- | --- | --- | --- |
+| `false` | -- | English from `en.json` | Path-derived or explicit |
+| `true` | No | Raw i18n key (e.g. `validation.messages.email.invalid`) | Path-derived or explicit |
+| `true` | Yes | `t(key, params)` return value | `t(labelKey)` or explicit |
+
 For the complete translation guide with all error codes and a ready-to-copy template, see [Translation Guide](./I18N.md).
 
 **`LabelConfig` interface:**
@@ -97,6 +126,16 @@ interface LabelConfig {
 }
 ```
 
+- `fallback` -- How labels are derived when not explicitly provided (default: `'derived'`).
+- `transform` -- Custom label transform function. When configured, called with `{ path, fieldName, defaultLabel }` and its return value is used as the label. Takes priority over `i18n.t()` for label resolution.
+
+**Label priority chain** (highest to lowest):
+
+1. Explicit `label` option on the rule (e.g. `Email({ label: 'Work Email' })`)
+2. `label.transform()` return value (if configured)
+3. `i18n.t(labelKey)` return value (if i18n enabled with `t()`)
+4. Path derivation (camelCase to Title Case)
+
 **`MessageConfig` interface:**
 
 ```ts
@@ -104,6 +143,8 @@ interface MessageConfig {
   readonly transform?: MessageTransform
 }
 ```
+
+- `transform` -- Post-processing function for error messages. Called with `{ key, code, namespace, path, label, message, params }` after message resolution (whether from `t()`, raw key, or English interpolation). Its return value becomes the final error message.
 
 **Example:**
 
@@ -117,15 +158,25 @@ setup({
   },
   i18n: {
     enabled: true,
-    prefix: 'validation',
-    separator: '.',
-    t: (key, params) => translate(key, params),
+    t: (key, params) => i18next.t(key, params),
   },
   label: {
     fallback: 'derived',
+    transform: ({ defaultLabel }) => defaultLabel,
+  },
+  message: {
+    transform: ({ code, message }) => `[${code}] ${message}`,
   },
 })
 ```
+
+---
+
+### `resetConfig()`
+
+Resets the global configuration back to the built-in defaults, discarding any changes from `setup()` or `configure()`.
+
+**Returns:** `void`
 
 ---
 
@@ -213,6 +264,7 @@ interface PreloadOptions {
   readonly ibanPatterns?: boolean
   readonly vatPatterns?: boolean
   readonly creditCardPrefixes?: boolean
+  readonly postalCodes?: boolean
 }
 ```
 
@@ -227,6 +279,7 @@ interface PreloadOptions {
 | `ibanPatterns` | `boolean` | Preload IBAN patterns. |
 | `vatPatterns` | `boolean` | Preload VAT patterns. |
 | `creditCardPrefixes` | `boolean` | Preload credit card prefixes. |
+| `postalCodes` | `boolean` | Preload postal code validation module. |
 
 **Example:**
 
@@ -304,14 +357,14 @@ Factory function for building custom validation rules with three-tier option mer
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `config` | `CreateRuleConfig<T>` | Yes | The rule configuration object. |
+| `config` | `CreateRuleOptions<T>` | Yes | The rule configuration object. |
 
 **Returns:** `RuleFactory<T>` -- A function that accepts per-call `Partial<T>` options and returns a Zod schema.
 
-**`CreateRuleConfig<T>` interface:**
+**`CreateRuleOptions<T>` interface:**
 
 ```ts
-interface CreateRuleConfig<T extends BaseRuleOptions> {
+interface CreateRuleOptions<T extends BaseRuleOptions> {
   readonly name: string
   readonly defaults: Partial<T>
   readonly build: (opts: T) => unknown
@@ -858,6 +911,8 @@ schema.parse('00:1A:2B:3C:4D:5E') // OK
 - `'moderate'` = top 1,000
 - `'strict'` = top 10,000
 
+Password lists sourced from [SecLists](https://github.com/danielmiessler/SecLists) (MIT license), derived from real breach data (RockYou, LinkedIn, Adobe, etc.).
+
 **Normalization:** trim only
 
 **Error Codes:**
@@ -1030,9 +1085,9 @@ schema.parse('+14155552671') // OK
 | --- | --- | --- | --- |
 | `country` | `string` | **REQUIRED** | ISO 3166 country code. |
 
-**Dependency:** `postal-codes-js` (dynamic import on first use, supports 200+ countries)
+**Dependency:** `postcode-validator` (synchronous, supports 200+ countries)
 
-If the country is unsupported, a config error is thrown. Use `regex` or `customFn` as an escape hatch.
+If the country is unsupported, a config error is thrown at schema creation time. Use `regex` or `customFn` as an escape hatch.
 
 **Normalization:** uppercase + trim
 
@@ -1400,13 +1455,14 @@ import { hasUppercase, containsEmail, maxWords } from 'validex/checks'
 | `containsEmail` | `(value: string) => boolean` | Returns `true` if the string contains an email-like pattern. |
 | `containsUrl` | `(value: string) => boolean` | Returns `true` if the string contains a URL-like pattern. |
 | `containsHtml` | `(value: string) => boolean` | Returns `true` if the string contains HTML tags. |
-| `containsPhoneNumber` | `(value: string) => boolean` | Returns `true` if the string contains a phone number (uses `libphonenumber-js`). |
+| `containsPhoneNumber` | `(value: string) => Promise<boolean>` | Returns `true` if the string contains a phone number. Uses `libphonenumber-js` via dynamic import. |
 
 ### Limit Checks
 
 | Function | Signature | Description |
 | --- | --- | --- |
 | `maxWords` | `(value: string, max: number) => boolean` | Returns `true` if the string has at most `max` words. |
+| `minWords` | `(value: string, min: number) => boolean` | Returns `true` if the string has at least `min` words. |
 | `maxConsecutive` | `(value: string, max: number) => boolean` | Returns `true` if no character repeats more than `max` times consecutively. |
 | `noSpaces` | `(value: string) => boolean` | Returns `true` if the string contains no whitespace. |
 
@@ -1429,6 +1485,102 @@ import { hasUppercase, containsEmail, maxWords } from 'validex/checks'
 | `toSlug` | `(value: string) => string` | Converts to a URL-safe slug (lowercase, hyphens, trimmed). |
 | `stripHtml` | `(value: string) => string` | Removes all HTML tags from a string. |
 | `collapseWhitespace` | `(value: string) => string` | Collapses multiple whitespace into a single space and trims. |
+
+---
+
+## Chainable Methods
+
+All Zod types gain these methods via module augmentation when `validex` is imported. They bridge Layer 0 pure functions to Zod's schema API.
+
+```ts
+import { z } from 'zod'
+import 'validex' // activates chainable methods
+
+const schema = z.string()
+  .hasUppercase({ min: 1 })
+  .hasDigits({ min: 2 })
+  .noEmails()
+  .maxWords({ max: 10 })
+```
+
+### Default Namespace
+
+Standalone usage defaults to `namespace: 'string'`. Rules override with their own namespace (e.g., `'password'`).
+
+### Composition (4)
+
+| Method | Options | Error Codes |
+|--------|---------|-------------|
+| `.hasUppercase(opts?)` | `{ min?, max?, label?, namespace? }` | `minUppercase` / `maxUppercase` |
+| `.hasLowercase(opts?)` | `{ min?, max?, label?, namespace? }` | `minLowercase` / `maxLowercase` |
+| `.hasDigits(opts?)` | `{ min?, max?, label?, namespace? }` | `minDigits` / `maxDigits` |
+| `.hasSpecial(opts?)` | `{ min?, max?, label?, namespace? }` | `minSpecial` / `maxSpecial` |
+
+Default `min: 1`. Both min and max checked in a single refinement.
+
+### Blocking (5)
+
+| Method | Options | Error Code |
+|--------|---------|------------|
+| `.noEmails(opts?)` | `{ label?, namespace? }` | `noEmails` |
+| `.noUrls(opts?)` | `{ label?, namespace? }` | `noUrls` |
+| `.noHtml(opts?)` | `{ label?, namespace? }` | `noHtml` |
+| `.noPhoneNumbers(opts?)` | `{ label?, namespace? }` | `noPhoneNumbers` |
+| `.noSpaces(opts?)` | `{ label?, namespace? }` | `noSpaces` |
+
+`.noPhoneNumbers()` is async — use `safeParseAsync()`.
+
+### Restriction (5)
+
+| Method | Options | Error Code |
+|--------|---------|------------|
+| `.onlyAlpha(opts?)` | `{ label?, namespace? }` | `onlyAlpha` |
+| `.onlyNumeric(opts?)` | `{ label?, namespace? }` | `onlyNumeric` |
+| `.onlyAlphanumeric(opts?)` | `{ label?, namespace? }` | `onlyAlphanumeric` |
+| `.onlyAlphaSpaceHyphen(opts?)` | `{ label?, namespace? }` | `onlyAlphaSpaceHyphen` |
+| `.onlyAlphanumericSpaceHyphen(opts?)` | `{ label?, namespace? }` | `onlyAlphanumericSpaceHyphen` |
+
+### Limits (3)
+
+| Method | Options | Error Code |
+|--------|---------|------------|
+| `.maxWords(opts)` | `{ max, label?, namespace? }` | `maxWords` |
+| `.minWords(opts)` | `{ min, label?, namespace? }` | `minWords` |
+| `.maxConsecutive(opts)` | `{ max, label?, namespace? }` | `maxConsecutive` |
+
+### Transforms (5)
+
+| Method | Returns |
+|--------|---------|
+| `.toTitleCase()` | `ZodPipe<this, ZodTransform<string, string>>` |
+| `.toSlug()` | `ZodPipe<this, ZodTransform<string, string>>` |
+| `.stripHtml()` | `ZodPipe<this, ZodTransform<string, string>>` |
+| `.collapseWhitespace()` | `ZodPipe<this, ZodTransform<string, string>>` |
+| `.emptyToUndefined()` | `ZodPipe<this, ZodTransform<string \| undefined, unknown>>` |
+
+### Chaining After Rules
+
+Chaining adds checks — it cannot override internal rule checks. Rule options are the configuration mechanism.
+
+```ts
+import { Email, Password } from 'validex'
+
+// Adds a noSpaces check after Password's built-in checks
+const schema = Password().noSpaces()
+
+// Adds noPhoneNumbers after Email's built-in checks
+const emailSchema = Email().noPhoneNumbers()
+```
+
+### Bundler Configuration
+
+The main entry has side effects (prototype patching). `package.json` declares:
+
+```json
+"sideEffects": ["./src/augmentation.ts", "./dist/index.js", "./dist/index.mjs", "./dist/index.cjs"]
+```
+
+Subpath exports (`validex/checks`, `validex/rules`) remain side-effect-free.
 
 ---
 
@@ -1765,7 +1917,8 @@ import type { ValidationResult, GlobalConfig, ErrorParams } from 'validex'
 | `ValidationResult<T>` | Structured result from `validate()`. |
 | `NestedErrors` | Recursive nested error object type. |
 | `ErrorParams` | Structured error parameters from `getParams()`. |
-| `CreateRuleConfig<T>` | Configuration object for `createRule()`. |
+| `CreateRuleOptions<T>` | Configuration object for `createRule()`. |
+| `RuleDefaults` | Default option values for all built-in rules. |
 | `RuleFactory<T>` | Function returned by `createRule()`. |
 | `TranslationFunction` | `(key: string, params?: Record<string, unknown>) => string` |
 | `PathTransform` | `(path: ReadonlyArray<string \| number>) => string` |
@@ -1874,24 +2027,23 @@ Complete list of all error namespaces and codes. Every rule also supports a `{na
 | Namespace | Codes |
 | --- | --- |
 | `base` | `required`, `min`, `max`, `type`, `format` |
-| `string` | `minUppercase`, `minLowercase`, `minDigits`, `minSpecial`, `maxUppercase`, `maxConsecutive`, `maxWords`, `noSpaces` |
 | `email` | `invalid`, `plusAliasBlocked`, `disposableBlocked`, `domainBlocked`, `domainNotAllowed`, `subdomainNotAllowed` |
 | `personName` | `invalid`, `maxWords`, `boundary`, `maxConsecutive` |
 | `businessName` | `invalid`, `boundary`, `maxConsecutive` |
-| `password` | `minUppercase`, `minLowercase`, `minDigits`, `minSpecial`, `maxUppercase`, `maxConsecutive`, `commonBlocked` |
+| `password` | `minUppercase`, `minLowercase`, `minDigits`, `minSpecial`, `maxUppercase`, `maxLowercase`, `maxDigits`, `maxSpecial`, `maxConsecutive`, `commonBlocked` |
 | `confirmation` | `mismatch` |
-| `phone` | `invalid`, `requireMobile`, `countryBlocked`, `countryNotAllowed` |
-| `website` | `invalid`, `domainBlocked`, `domainNotAllowed`, `subdomainNotAllowed` |
-| `url` | `invalid`, `protocolNotAllowed`, `domainBlocked`, `domainNotAllowed` |
+| `phone` | `invalid`, `requireMobile`, `countryCodeRequired`, `countryBlocked`, `countryNotAllowed` |
+| `website` | `invalid`, `httpsRequired`, `wwwRequired`, `pathNotAllowed`, `queryNotAllowed`, `domainBlocked`, `domainNotAllowed`, `subdomainNotAllowed` |
+| `url` | `invalid`, `protocolNotAllowed`, `tldRequired`, `queryNotAllowed`, `authNotAllowed`, `domainBlocked`, `domainNotAllowed` |
 | `username` | `invalid`, `reservedBlocked`, `boundary`, `maxConsecutive` |
 | `slug` | `invalid` |
 | `postalCode` | `invalid` |
 | `licenseKey` | `invalid` |
 | `uuid` | `invalid` |
-| `jwt` | `invalid`, `expired`, `notYetValid`, `missingClaim`, `algorithmNotAllowed` |
+| `jwt` | `invalid`, `expiryRequired`, `expired`, `notYetValid`, `missingClaim`, `algorithmNotAllowed` |
 | `dateTime` | `invalid`, `tooEarly`, `tooLate`, `noFuture`, `noPast` |
 | `token` | `invalid` |
-| `text` | `noEmails`, `noUrls`, `noPhoneNumbers`, `noHtml`, `maxWords`, `maxConsecutive` |
+| `text` | `noEmails`, `noUrls`, `noPhoneNumbers`, `noHtml`, `minWords`, `maxWords`, `maxConsecutive` |
 | `country` | `invalid`, `blocked`, `notAllowed` |
 | `currency` | `invalid`, `blocked`, `notAllowed` |
 | `color` | `invalid` |

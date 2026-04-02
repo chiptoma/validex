@@ -31,7 +31,7 @@ describe('nuxt adapter — module registration', () => {
   it('module applies rules config to global config', async () => {
     await setupValidex({ rules: { email: { blockPlusAlias: true } } })
     const config = getConfig()
-    expect(config.rules?.['email']?.['blockPlusAlias']).toBe(true)
+    expect(config.rules?.email?.blockPlusAlias).toBe(true)
   })
 
   it('module applies i18n config', async () => {
@@ -338,7 +338,7 @@ describe('nuxt adapter — SSR simulation', () => {
       rules: { email: { blockPlusAlias: true } },
     })
     const config = getConfig()
-    expect(config.rules?.['email']?.['blockPlusAlias']).toBe(true)
+    expect(config.rules?.email?.blockPlusAlias).toBe(true)
   })
 })
 

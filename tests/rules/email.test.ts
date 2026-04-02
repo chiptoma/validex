@@ -191,6 +191,45 @@ describe('email (blockPlusAlias)', () => {
 })
 
 // ----------------------------------------------------------
+// LENGTH CONSTRAINTS
+// ----------------------------------------------------------
+
+describe('email (length)', () => {
+  it('accepts email within min length', () => {
+    const schema = Email({ length: { min: 10 } })
+    expect(parse(schema, 'user@example.com').success).toBe(true)
+  })
+
+  it('accepts email within min and max length', () => {
+    const schema = Email({ length: { min: 5, max: 30 } })
+    expect(parse(schema, 'a@b.cc').success).toBe(true)
+  })
+
+  it('accepts email at exactly max length boundary', () => {
+    const schema = Email({ length: { max: 16 } })
+    expect(parse(schema, 'user@example.com').success).toBe(true)
+  })
+
+  it('rejects email shorter than min length with min error code', () => {
+    const schema = Email({ length: { min: 10 } })
+    expect(parse(schema, 'a@b.cc').success).toBe(false)
+    expect(getErrorCodes(schema, 'a@b.cc')).toContain('min')
+  })
+
+  it('rejects email longer than max length with max error code', () => {
+    const schema = Email({ length: { max: 10 } })
+    expect(parse(schema, 'user@example.com').success).toBe(false)
+    expect(getErrorCodes(schema, 'user@example.com')).toContain('max')
+  })
+
+  it('rejects email far below min length with min error code', () => {
+    const schema = Email({ length: { min: 50 } })
+    expect(parse(schema, 'user@example.com').success).toBe(false)
+    expect(getErrorCodes(schema, 'user@example.com')).toContain('min')
+  })
+})
+
+// ----------------------------------------------------------
 // ALLOW DOMAINS
 // ----------------------------------------------------------
 

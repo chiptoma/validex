@@ -6,8 +6,23 @@
 
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
+import { getParams } from '../../src/core/getParams'
 import { Website } from '../../src/rules/website'
 import { testRuleContract } from '../helpers/testRule'
+
+// ----------------------------------------------------------
+// HELPERS
+// ----------------------------------------------------------
+
+function getErrorCodes(schema: z.ZodType, value: unknown): ReadonlyArray<string> {
+  const result = schema.safeParse(value)
+  if (result.success)
+    return []
+  return result.error.issues.map((issue) => {
+    const params = getParams(issue as Parameters<typeof getParams>[0])
+    return params.code
+  })
+}
 
 // ----------------------------------------------------------
 // CONTRACT TESTS
@@ -68,6 +83,49 @@ describe('website (invalid)', () => {
 // NORMALIZATION
 // ----------------------------------------------------------
 
+// ----------------------------------------------------------
+// LENGTH CONSTRAINTS
+// ----------------------------------------------------------
+
+describe('website (length)', () => {
+  it('accepts URL within min length', () => {
+    const schema = Website({ length: { min: 15 } }) as z.ZodType
+    expect(schema.safeParse('https://example.com').success).toBe(true)
+  })
+
+  it('accepts URL within min and max range', () => {
+    const schema = Website({ length: { min: 10, max: 100 } }) as z.ZodType
+    expect(schema.safeParse('https://example.com').success).toBe(true)
+  })
+
+  it('accepts long URL within generous max', () => {
+    const schema = Website({ length: { max: 255 } }) as z.ZodType
+    expect(schema.safeParse('https://example.com/some/long/path/here').success).toBe(true)
+  })
+
+  it('rejects URL shorter than min length with min error code', () => {
+    const schema = Website({ length: { min: 30 } }) as z.ZodType
+    expect(schema.safeParse('https://a.co').success).toBe(false)
+    expect(getErrorCodes(schema, 'https://a.co')).toContain('min')
+  })
+
+  it('rejects URL longer than max length with max error code', () => {
+    const schema = Website({ length: { max: 15 } }) as z.ZodType
+    expect(schema.safeParse('https://example.com').success).toBe(false)
+    expect(getErrorCodes(schema, 'https://example.com')).toContain('max')
+  })
+
+  it('rejects URL exceeding tight max with max error code', () => {
+    const schema = Website({ length: { max: 10 } }) as z.ZodType
+    expect(schema.safeParse('https://example.com').success).toBe(false)
+    expect(getErrorCodes(schema, 'https://example.com')).toContain('max')
+  })
+})
+
+// ----------------------------------------------------------
+// NORMALIZATION
+// ----------------------------------------------------------
+
 describe('website (normalization)', () => {
   it('auto-prepends https:// to bare domains', () => {
     const schema = Website() as z.ZodType
@@ -93,6 +151,27 @@ describe('website (normalization)', () => {
     expect(result.success).toBe(true)
     if (result.success) {
       expect(result.data).toBe('https://example.com')
+    }
+  })
+})
+
+// ----------------------------------------------------------
+// NORMALIZE FALSE
+// ----------------------------------------------------------
+
+describe('website (normalize: false)', () => {
+  it('does not auto-prepend protocol to bare domains', () => {
+    const schema = Website({ normalize: false }) as z.ZodType
+    const result = schema.safeParse('example.com')
+    expect(result.success).toBe(false)
+  })
+
+  it('preserves original case', () => {
+    const schema = Website({ normalize: false }) as z.ZodType
+    const result = schema.safeParse('https://EXAMPLE.COM')
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data).toBe('https://EXAMPLE.COM')
     }
   })
 })

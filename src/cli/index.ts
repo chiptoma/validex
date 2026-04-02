@@ -13,9 +13,7 @@ import { fileURLToPath } from 'node:url'
 // TYPES
 // ----------------------------------------------------------
 
-/**
- *
- */
+/** Parsed command-line arguments for the CLI. */
 interface CliArgs {
   languages: string[]
   output: string

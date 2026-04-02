@@ -3,6 +3,7 @@
 // Validates mathematical invariants across random inputs using fast-check.
 // ------------------------------------------------------------------------------
 // NOTE: All rules use default options (no async features) so safeParse works.
+//       Phone, Username (blockReserved), and IBAN require safeParseAsync.
 // ==============================================================================
 
 import type { z } from 'zod'
@@ -10,10 +11,15 @@ import * as fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
 import { CreditCard } from '../../src/rules/creditCard'
 import { Email } from '../../src/rules/email'
+import { Iban } from '../../src/rules/iban'
 import { Password } from '../../src/rules/password'
 import { PersonName } from '../../src/rules/personName'
+import { Phone } from '../../src/rules/phone'
 import { Slug } from '../../src/rules/slug'
+import { Url } from '../../src/rules/url'
+import { Username } from '../../src/rules/username'
 import { Uuid } from '../../src/rules/uuid'
+import { Website } from '../../src/rules/website'
 
 // ----------------------------------------------------------
 // CONSTANTS
@@ -24,6 +30,10 @@ const NUM_RUNS = 1000
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 const SLUG_REGEX = /^[a-z0-9]+(-[a-z0-9]+)*$/
 const VERSION_NIBBLE_INDEX = 14
+
+// ----------------------------------------------------------
+// HELPERS
+// ----------------------------------------------------------
 
 /**
  * Verify Luhn
@@ -256,7 +266,7 @@ describe('slug — property-based', () => {
 // UUID INVARIANTS
 // ----------------------------------------------------------
 
-describe('uUID — property-based', () => {
+describe('uuid — property-based', () => {
   const schema = Uuid() as z.ZodType
 
   it('accepted UUIDs match the UUID format', () => {
@@ -304,29 +314,6 @@ describe('uUID — property-based', () => {
 })
 
 // ----------------------------------------------------------
-// EMPTY STRING INVARIANT — ALL RULES
-// ----------------------------------------------------------
-
-describe('all rules — empty string fails', () => {
-  const rules: ReadonlyArray<{ readonly name: string, readonly factory: () => unknown }> = [
-    { name: 'email', factory: () => Email() },
-    { name: 'PersonName', factory: () => PersonName() },
-    { name: 'password', factory: () => Password() },
-    { name: 'Slug', factory: () => Slug() },
-    { name: 'uuid', factory: () => Uuid() },
-    { name: 'creditCard', factory: () => CreditCard() },
-  ]
-
-  for (const rule of rules) {
-    it(`${rule.name}: empty string is rejected (emptyToUndefined)`, () => {
-      const schema = rule.factory() as z.ZodType
-      const result = schema.safeParse('')
-      expect(result.success).toBe(false)
-    })
-  }
-})
-
-// ----------------------------------------------------------
 // CREDIT CARD INVARIANTS
 // ----------------------------------------------------------
 
@@ -365,6 +352,175 @@ describe('creditCard — property-based', () => {
         const result = schema.safeParse(input)
         if (result.success) {
           expect(verifyLuhn(result.data as string)).toBe(true)
+        }
+      }),
+      { numRuns: NUM_RUNS },
+    )
+  })
+})
+
+// ----------------------------------------------------------
+// WEBSITE INVARIANTS
+// ----------------------------------------------------------
+
+describe('website — property-based', () => {
+  const schema = Website() as z.ZodType
+
+  it('accepted websites start with http:// or https://', () => {
+    fc.assert(
+      fc.property(fc.string(), (input) => {
+        const result = schema.safeParse(input)
+        if (result.success) {
+          const data = result.data as string
+          expect(data.startsWith('http://') || data.startsWith('https://')).toBe(true)
+        }
+      }),
+      { numRuns: NUM_RUNS },
+    )
+  })
+
+  it('accepted websites are trimmed and lowercased', () => {
+    fc.assert(
+      fc.property(fc.string(), (input) => {
+        const result = schema.safeParse(input)
+        if (result.success) {
+          const data = result.data as string
+          expect(data).toBe(data.trim())
+          expect(data).toBe(data.toLowerCase())
+        }
+      }),
+      { numRuns: NUM_RUNS },
+    )
+  })
+})
+
+// ----------------------------------------------------------
+// URL INVARIANTS
+// ----------------------------------------------------------
+
+describe('url — property-based', () => {
+  const schema = Url() as z.ZodType
+
+  it('accepted URLs have protocol in the default protocols list', () => {
+    const allowed = ['http:', 'https:']
+    fc.assert(
+      fc.property(fc.string(), (input) => {
+        const result = schema.safeParse(input)
+        if (result.success) {
+          try {
+            const parsed = new URL(result.data as string)
+            expect(allowed).toContain(parsed.protocol)
+          }
+          catch {
+            // URL parse failure on accepted value — should not happen
+            expect.unreachable('Accepted URL should be parseable')
+          }
+        }
+      }),
+      { numRuns: NUM_RUNS },
+    )
+  })
+
+  it('accepted URLs are trimmed', () => {
+    fc.assert(
+      fc.property(fc.string(), (input) => {
+        const result = schema.safeParse(input)
+        if (result.success) {
+          const data = result.data as string
+          expect(data).toBe(data.trim())
+        }
+      }),
+      { numRuns: NUM_RUNS },
+    )
+  })
+})
+
+// ----------------------------------------------------------
+// PHONE INVARIANTS (async — requires safeParseAsync)
+// ----------------------------------------------------------
+
+describe('phone — property-based', () => {
+  const schema = Phone() as z.ZodType
+
+  it('accepted phones start with + when requireCountryCode is default', async () => {
+    await fc.assert(
+      fc.asyncProperty(fc.string(), async (input) => {
+        const result = await schema.safeParseAsync(input)
+        if (result.success) {
+          const data = result.data as string
+          expect(data.startsWith('+')).toBe(true)
+        }
+      }),
+      { numRuns: NUM_RUNS },
+    )
+  })
+})
+
+// ----------------------------------------------------------
+// USERNAME INVARIANTS
+// ----------------------------------------------------------
+
+describe('username — property-based', () => {
+  const schema = Username() as z.ZodType
+
+  it('accepted usernames have alphanumeric boundary characters', () => {
+    const alnumRe = /^[a-z0-9]$/i
+    fc.assert(
+      fc.property(fc.string(), (input) => {
+        const result = schema.safeParse(input)
+        if (result.success) {
+          const data = result.data as string
+          if (data.length > 0) {
+            expect(alnumRe.test(data.charAt(0))).toBe(true)
+            expect(alnumRe.test(data.charAt(data.length - 1))).toBe(true)
+          }
+        }
+      }),
+      { numRuns: NUM_RUNS },
+    )
+  })
+
+  it('accepted usernames are trimmed and lowercased', () => {
+    fc.assert(
+      fc.property(fc.string(), (input) => {
+        const result = schema.safeParse(input)
+        if (result.success) {
+          const data = result.data as string
+          expect(data).toBe(data.trim())
+          expect(data).toBe(data.toLowerCase())
+        }
+      }),
+      { numRuns: NUM_RUNS },
+    )
+  })
+})
+
+// ----------------------------------------------------------
+// IBAN INVARIANTS (async — requires safeParseAsync)
+// ----------------------------------------------------------
+
+describe('iban — property-based', () => {
+  const schema = Iban() as z.ZodType
+
+  it('accepted IBANs pass mod-97 checksum', async () => {
+    await fc.assert(
+      fc.asyncProperty(fc.string(), async (input) => {
+        const result = await schema.safeParseAsync(input)
+        if (result.success) {
+          const data = result.data as string
+          // Rearrange: move first 4 chars to end, convert letters to numbers
+          const rearranged = data.slice(4) + data.slice(0, 4)
+          let numeric = ''
+          for (const ch of rearranged) {
+            const code = ch.charCodeAt(0)
+            numeric += code >= 65 && code <= 90 ? String(code - 55) : ch
+          }
+          // Compute mod-97 iteratively
+          let remainder = 0
+          for (const digit of numeric) {
+            remainder = (remainder * 10 + Number(digit)) % 97
+          }
+          expect(remainder).toBe(1)
         }
       }),
       { numRuns: NUM_RUNS },

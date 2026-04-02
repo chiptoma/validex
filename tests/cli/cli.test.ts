@@ -56,6 +56,7 @@ const RULE_LABEL_KEYS = [
   'vatNumber',
   'macAddress',
   'ipAddress',
+  'string',
 ]
 
 /**
@@ -77,7 +78,7 @@ function runCli(args: string): string {
 // ----------------------------------------------------------
 
 describe('en.json locale file', () => {
-  it('should have all 25 rule labels', () => {
+  it('should have all 26 labels (25 rules + string namespace)', () => {
     const labels = enLocale.validation.labels
     for (const key of RULE_LABEL_KEYS) {
       expect(labels).toHaveProperty(key)

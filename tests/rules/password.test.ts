@@ -179,6 +179,57 @@ describe('password (maxUppercase)', () => {
 })
 
 // ----------------------------------------------------------
+// MAX LOWERCASE
+// ----------------------------------------------------------
+
+describe('password (maxLowercase)', () => {
+  it('rejects password exceeding max lowercase', () => {
+    const schema = Password({ lowercase: { min: 1, max: 3 } })
+    const codes = getErrorCodes(schema, 'ABCDefgh1!')
+    expect(codes).toContain('maxLowercase')
+  })
+
+  it('accepts password within max lowercase', () => {
+    const schema = Password({ lowercase: { min: 1, max: 3 } })
+    expect(parse(schema, 'ABCDEef1!!').success).toBe(true)
+  })
+})
+
+// ----------------------------------------------------------
+// MAX DIGITS
+// ----------------------------------------------------------
+
+describe('password (maxDigits)', () => {
+  it('rejects password exceeding max digits', () => {
+    const schema = Password({ digits: { min: 1, max: 2 } })
+    const codes = getErrorCodes(schema, 'Abcdef123!')
+    expect(codes).toContain('maxDigits')
+  })
+
+  it('accepts password within max digits', () => {
+    const schema = Password({ digits: { min: 1, max: 3 } })
+    expect(parse(schema, 'Abcdef12!!').success).toBe(true)
+  })
+})
+
+// ----------------------------------------------------------
+// MAX SPECIAL
+// ----------------------------------------------------------
+
+describe('password (maxSpecial)', () => {
+  it('rejects password exceeding max special characters', () => {
+    const schema = Password({ special: { min: 1, max: 2 } })
+    const codes = getErrorCodes(schema, 'Abcdef1!@#')
+    expect(codes).toContain('maxSpecial')
+  })
+
+  it('accepts password within max special characters', () => {
+    const schema = Password({ special: { min: 1, max: 3 } })
+    expect(parse(schema, 'Abcdef1!@').success).toBe(true)
+  })
+})
+
+// ----------------------------------------------------------
 // NORMALIZE
 // ----------------------------------------------------------
 

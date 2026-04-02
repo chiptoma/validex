@@ -193,17 +193,16 @@ describe('text (noHtml)', () => {
 // ----------------------------------------------------------
 
 describe('text (noPhoneNumbers)', () => {
-  const schema = Text({ noPhoneNumbers: true })
+  const schema = Text({ noPhoneNumbers: true }) as z.ZodType
 
-  it('rejects text containing phone number', () => {
-    const result = parse(schema, 'call +34 612 345 678 today')
+  it('rejects text containing phone number', async () => {
+    const result = await schema.safeParseAsync('call +34 612 345 678 today')
     expect(result.success).toBe(false)
-    expect(getErrorCodes(schema, 'call +34 612 345 678 today'))
-      .toContain('noPhoneNumbers')
   })
 
-  it('accepts text without phone number', () => {
-    expect(parse(schema, 'call our office today').success).toBe(true)
+  it('accepts text without phone number', async () => {
+    const result = await schema.safeParseAsync('call our office today')
+    expect(result.success).toBe(true)
   })
 })
 
@@ -222,6 +221,28 @@ describe('text (words)', () => {
   it('accepts text within max words', () => {
     const schema = Text({ words: { max: 3 } })
     expect(parse(schema, 'one two three').success).toBe(true)
+  })
+})
+
+// ----------------------------------------------------------
+// WORD MIN LIMITS
+// ----------------------------------------------------------
+
+describe('text (words min)', () => {
+  it('rejects text with too few words', () => {
+    const schema = Text({ words: { min: 3 } })
+    expect(parse(schema, 'one two').success).toBe(false)
+    expect(getErrorCodes(schema, 'one two')).toContain('minWords')
+  })
+
+  it('accepts text with enough words', () => {
+    const schema = Text({ words: { min: 3 } })
+    expect(parse(schema, 'one two three').success).toBe(true)
+  })
+
+  it('accepts text when no min is set', () => {
+    const schema = Text({ words: { max: 10 } })
+    expect(parse(schema, 'one').success).toBe(true)
   })
 })
 

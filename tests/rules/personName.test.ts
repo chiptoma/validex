@@ -5,6 +5,7 @@
 
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
+import { getParams } from '../../src/core/getParams'
 import { PersonName } from '../../src/rules/personName'
 import { testRuleContract } from '../helpers/testRule'
 
@@ -14,6 +15,16 @@ import { testRuleContract } from '../helpers/testRule'
 
 function parse(schema: unknown, value: unknown): { success: boolean, data?: unknown } {
   return (schema as z.ZodType).safeParse(value)
+}
+
+function getErrorCodes(schema: unknown, value: unknown): ReadonlyArray<string> {
+  const result = (schema as z.ZodType).safeParse(value)
+  if (result.success)
+    return []
+  return result.error.issues.map((issue) => {
+    const params = getParams(issue as Parameters<typeof getParams>[0])
+    return params.code
+  })
 }
 
 // ----------------------------------------------------------
@@ -232,5 +243,83 @@ describe('personName (security)', () => {
     'John<img src=x onerror=alert(1)>',
   ])('rejects malicious input: %s', (value) => {
     expect(parse(schema, value).success).toBe(false)
+  })
+})
+
+// ----------------------------------------------------------
+// EXTRA CHARS
+// ----------------------------------------------------------
+
+describe('personName (extraChars)', () => {
+  it('allows dot when extraChars includes .', () => {
+    const schema = PersonName({ extraChars: '.' })
+    expect(parse(schema, 'Dr. Smith').success).toBe(true)
+  })
+
+  it('allows ampersand when extraChars includes &', () => {
+    const schema = PersonName({ extraChars: '&' })
+    expect(parse(schema, 'Ben & Jerry').success).toBe(true)
+  })
+
+  it('preserves default chars (hyphen) when extraChars is set', () => {
+    const schema = PersonName({ extraChars: '.' })
+    expect(parse(schema, 'Jean-Paul').success).toBe(true)
+  })
+
+  it('rejects dot without extraChars and returns invalid code', () => {
+    const schema = PersonName()
+    expect(parse(schema, 'Dr. Smith').success).toBe(false)
+    expect(getErrorCodes(schema, 'Dr. Smith')).toContain('invalid')
+  })
+
+  it('rejects at-sign even with dot in extraChars and returns invalid code', () => {
+    const schema = PersonName({ extraChars: '.' })
+    expect(parse(schema, 'Name@Here').success).toBe(false)
+    expect(getErrorCodes(schema, 'Name@Here')).toContain('invalid')
+  })
+
+  it('rejects hash even with ampersand in extraChars and returns invalid code', () => {
+    const schema = PersonName({ extraChars: '&' })
+    expect(parse(schema, 'Name#Tag').success).toBe(false)
+    expect(getErrorCodes(schema, 'Name#Tag')).toContain('invalid')
+  })
+})
+
+// ----------------------------------------------------------
+// DISALLOW CHARS
+// ----------------------------------------------------------
+
+describe('personName (disallowChars)', () => {
+  it('accepts name without apostrophe when apostrophe is disallowed', () => {
+    const schema = PersonName({ disallowChars: '\'' })
+    expect(parse(schema, 'Jean Paul').success).toBe(true)
+  })
+
+  it('accepts name without hyphen when hyphen is disallowed', () => {
+    const schema = PersonName({ disallowChars: '-' })
+    expect(parse(schema, 'John Doe').success).toBe(true)
+  })
+
+  it('accepts single word when space is disallowed', () => {
+    const schema = PersonName({ disallowChars: ' ' })
+    expect(parse(schema, 'SingleName').success).toBe(true)
+  })
+
+  it('rejects apostrophe when disallowed and returns invalid code', () => {
+    const schema = PersonName({ disallowChars: '\'' })
+    expect(parse(schema, 'O\'Brien').success).toBe(false)
+    expect(getErrorCodes(schema, 'O\'Brien')).toContain('invalid')
+  })
+
+  it('rejects hyphen when disallowed and returns invalid code', () => {
+    const schema = PersonName({ disallowChars: '-' })
+    expect(parse(schema, 'Jean-Paul').success).toBe(false)
+    expect(getErrorCodes(schema, 'Jean-Paul')).toContain('invalid')
+  })
+
+  it('rejects space when disallowed and returns invalid code', () => {
+    const schema = PersonName({ disallowChars: ' ' })
+    expect(parse(schema, 'John Doe').success).toBe(false)
+    expect(getErrorCodes(schema, 'John Doe')).toContain('invalid')
   })
 })

@@ -5,6 +5,7 @@
 
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
+import { getParams } from '../../src/core/getParams'
 import { BusinessName } from '../../src/rules/businessName'
 import { testRuleContract } from '../helpers/testRule'
 
@@ -14,6 +15,16 @@ import { testRuleContract } from '../helpers/testRule'
 
 function parse(schema: unknown, value: unknown): { success: boolean, data?: unknown } {
   return (schema as z.ZodType).safeParse(value)
+}
+
+function getErrorCodes(schema: unknown, value: unknown): ReadonlyArray<string> {
+  const result = (schema as z.ZodType).safeParse(value)
+  if (result.success)
+    return []
+  return result.error.issues.map((issue) => {
+    const params = getParams(issue as Parameters<typeof getParams>[0])
+    return params.code
+  })
 }
 
 // ----------------------------------------------------------
@@ -198,5 +209,83 @@ describe('businessName (security)', () => {
     'Robert"); DROP TABLE Companies;--',
   ])('rejects malicious input: %s', (value) => {
     expect(parse(schema, value).success).toBe(false)
+  })
+})
+
+// ----------------------------------------------------------
+// EXTRA CHARS
+// ----------------------------------------------------------
+
+describe('businessName (extraChars)', () => {
+  it('allows slash when extraChars includes /', () => {
+    const schema = BusinessName({ extraChars: '/' })
+    expect(parse(schema, 'A/B Corp').success).toBe(true)
+  })
+
+  it('allows plus when extraChars includes +', () => {
+    const schema = BusinessName({ extraChars: '+' })
+    expect(parse(schema, 'C++ Labs').success).toBe(true)
+  })
+
+  it('preserves default chars (ampersand) when extraChars is set', () => {
+    const schema = BusinessName({ extraChars: '/' })
+    expect(parse(schema, 'AT&T').success).toBe(true)
+  })
+
+  it('rejects slash without extraChars and returns invalid code', () => {
+    const schema = BusinessName()
+    expect(parse(schema, 'A/B Corp').success).toBe(false)
+    expect(getErrorCodes(schema, 'A/B Corp')).toContain('invalid')
+  })
+
+  it('rejects at-sign even with slash in extraChars and returns invalid code', () => {
+    const schema = BusinessName({ extraChars: '/' })
+    expect(parse(schema, 'Name@Corp').success).toBe(false)
+    expect(getErrorCodes(schema, 'Name@Corp')).toContain('invalid')
+  })
+
+  it('rejects equals even with plus in extraChars and returns invalid code', () => {
+    const schema = BusinessName({ extraChars: '+' })
+    expect(parse(schema, 'Name=Corp').success).toBe(false)
+    expect(getErrorCodes(schema, 'Name=Corp')).toContain('invalid')
+  })
+})
+
+// ----------------------------------------------------------
+// DISALLOW CHARS
+// ----------------------------------------------------------
+
+describe('businessName (disallowChars)', () => {
+  it('accepts name without ampersand when ampersand is disallowed', () => {
+    const schema = BusinessName({ disallowChars: '&' })
+    expect(parse(schema, 'Acme Corp').success).toBe(true)
+  })
+
+  it('accepts name without dot when dot is disallowed', () => {
+    const schema = BusinessName({ disallowChars: '.' })
+    expect(parse(schema, 'Acme Inc').success).toBe(true)
+  })
+
+  it('accepts name without parens when parens are disallowed', () => {
+    const schema = BusinessName({ disallowChars: '()' })
+    expect(parse(schema, 'Acme Corp').success).toBe(true)
+  })
+
+  it('rejects ampersand when disallowed and returns invalid code', () => {
+    const schema = BusinessName({ disallowChars: '&' })
+    expect(parse(schema, 'AT&T').success).toBe(false)
+    expect(getErrorCodes(schema, 'AT&T')).toContain('invalid')
+  })
+
+  it('rejects dot when disallowed and returns invalid code', () => {
+    const schema = BusinessName({ disallowChars: '.' })
+    expect(parse(schema, 'L.L. Bean').success).toBe(false)
+    expect(getErrorCodes(schema, 'L.L. Bean')).toContain('invalid')
+  })
+
+  it('rejects open paren when disallowed and returns invalid code', () => {
+    const schema = BusinessName({ disallowChars: '(' })
+    expect(parse(schema, 'Corp (UK)').success).toBe(false)
+    expect(getErrorCodes(schema, 'Corp (UK)')).toContain('invalid')
   })
 })

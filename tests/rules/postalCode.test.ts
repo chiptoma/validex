@@ -153,6 +153,40 @@ describe('postalCode (normalization)', () => {
 })
 
 // ----------------------------------------------------------
+// CREATION-TIME COUNTRY CHECK
+// ----------------------------------------------------------
+
+describe('postalCode (unsupported country)', () => {
+  it('throws at creation time when module is preloaded', async () => {
+    const { loadPostalCodes } = await import('../../src/loaders/postalCodes')
+    await loadPostalCodes()
+    expect(() => PostalCode({ country: 'XX' })).toThrow('validex: PostalCode country "XX" is not supported')
+  })
+
+  it('defers to parse time when module is NOT preloaded', async () => {
+    const { clearPostalCodesCache } = await import('../../src/loaders/postalCodes')
+    clearPostalCodesCache()
+    // Does NOT throw at creation time
+    const schema = PostalCode({ country: 'XX' })
+    // Fails at parse time with invalid code
+    const result = await parseAsync(schema, '12345')
+    expect(result.success).toBe(false)
+  })
+
+  it('does NOT throw when regex escape hatch is provided', async () => {
+    const schema = PostalCode({ country: 'XX', regex: /^\d{4}$/ })
+    const result = await parseAsync(schema, '1234')
+    expect(result.success).toBe(true)
+  })
+
+  it('does NOT throw when customFn escape hatch is provided', async () => {
+    const schema = PostalCode({ country: 'XX', customFn: v => v.length === 4 ? true : 'bad' })
+    const result = await parseAsync(schema, '1234')
+    expect(result.success).toBe(true)
+  })
+})
+
+// ----------------------------------------------------------
 // SECURITY VECTORS
 // ----------------------------------------------------------
 

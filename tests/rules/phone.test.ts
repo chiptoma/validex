@@ -6,6 +6,7 @@
 
 import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
+import { getParams } from '../../src/core/getParams'
 import { Phone } from '../../src/rules/phone'
 
 // ----------------------------------------------------------
@@ -25,6 +26,16 @@ async function parseAsync(
   value: unknown,
 ): Promise<{ success: boolean, data?: unknown, error?: unknown }> {
   return (schema as z.ZodType).safeParseAsync(value)
+}
+
+async function getAsyncErrorCodes(schema: unknown, value: unknown): Promise<ReadonlyArray<string>> {
+  const result = await (schema as z.ZodType).safeParseAsync(value)
+  if (result.success)
+    return []
+  return result.error.issues.map((issue) => {
+    const params = getParams(issue as Parameters<typeof getParams>[0])
+    return params.code
+  })
 }
 
 // ----------------------------------------------------------
@@ -154,6 +165,115 @@ describe('phone (format)', () => {
     expect(result.success).toBe(true)
     if (result.success) {
       expect(result.data).toBe('(212) 555-1234')
+    }
+  })
+})
+
+// ----------------------------------------------------------
+// METADATA
+// ----------------------------------------------------------
+
+describe('phone (metadata)', () => {
+  it('accepts mobile number with metadata: mobile + requireMobile', async () => {
+    const schema = Phone({ metadata: 'mobile', requireMobile: true })
+    const result = await parseAsync(schema, '+34612345678')
+    expect(result.success).toBe(true)
+  })
+
+  it('rejects landline with metadata: max + requireMobile', async () => {
+    const schema = Phone({ metadata: 'max', requireMobile: true })
+    // UK London landline (FIXED_LINE); max metadata needed to classify non-mobile
+    const result = await parseAsync(schema, '+442071234567')
+    expect(result.success).toBe(false)
+  })
+
+  it('parses successfully with metadata: max', async () => {
+    const schema = Phone({ metadata: 'max' })
+    const result = await parseAsync(schema, '+12125551234')
+    expect(result.success).toBe(true)
+  })
+
+  it('throws config error when requireMobile with default metadata (min)', () => {
+    expect(() => Phone({ requireMobile: true })).toThrow('validex: requireMobile')
+  })
+
+  it('throws config error when requireMobile with metadata: min', () => {
+    expect(() => Phone({ requireMobile: true, metadata: 'min' })).toThrow('validex: requireMobile')
+  })
+
+  it('throws config error when metadata: custom without customMetadataPath', () => {
+    expect(() => Phone({ metadata: 'custom' })).toThrow('validex: Phone metadata "custom" requires customMetadataPath')
+  })
+})
+
+// ----------------------------------------------------------
+// REQUIRE MOBILE
+// ----------------------------------------------------------
+
+describe('phone (requireMobile)', () => {
+  it('accepts Spanish mobile with metadata: mobile', async () => {
+    const schema = Phone({ requireMobile: true, metadata: 'mobile' })
+    const result = await parseAsync(schema, '+34612345678')
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts UK mobile with metadata: mobile', async () => {
+    const schema = Phone({ requireMobile: true, metadata: 'mobile' })
+    const result = await parseAsync(schema, '+447911123456')
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts US mobile with metadata: max', async () => {
+    const schema = Phone({ requireMobile: true, metadata: 'max' })
+    const result = await parseAsync(schema, '+12025551234')
+    expect(result.success).toBe(true)
+  })
+
+  it('rejects UK landline and returns requireMobile error code', async () => {
+    const schema = Phone({ requireMobile: true, metadata: 'max' })
+    const result = await parseAsync(schema, '+442071234567')
+    expect(result.success).toBe(false)
+    const codes = await getAsyncErrorCodes(schema, '+442071234567')
+    expect(codes).toContain('requireMobile')
+  })
+
+  it('rejects Paris landline and returns requireMobile error code', async () => {
+    const schema = Phone({ requireMobile: true, metadata: 'max' })
+    const result = await parseAsync(schema, '+33142123456')
+    expect(result.success).toBe(false)
+    const codes = await getAsyncErrorCodes(schema, '+33142123456')
+    expect(codes).toContain('requireMobile')
+  })
+
+  it('rejects Berlin landline and returns requireMobile error code', async () => {
+    const schema = Phone({ requireMobile: true, metadata: 'max' })
+    const result = await parseAsync(schema, '+4930123456')
+    expect(result.success).toBe(false)
+    const codes = await getAsyncErrorCodes(schema, '+4930123456')
+    expect(codes).toContain('requireMobile')
+  })
+})
+
+// ----------------------------------------------------------
+// NORMALIZE
+// ----------------------------------------------------------
+
+describe('phone (normalize)', () => {
+  it('trims and formats when normalize is true (default)', async () => {
+    const schema = Phone({ format: 'e164' })
+    const result = await parseAsync(schema, '  +1 212 555 1234  ')
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data).toBe('+12125551234')
+    }
+  })
+
+  it('does not format output when normalize is false', async () => {
+    const schema = Phone({ normalize: false })
+    const result = await parseAsync(schema, '+12125551234')
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data).toBe('+12125551234')
     }
   })
 })

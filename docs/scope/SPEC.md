@@ -281,7 +281,7 @@ validex ships as a **single npm package** with subpath exports. Framework adapte
     "./next":    "./dist/adapters/next/index.js",
     "./fastify": "./dist/adapters/fastify/index.js"
   },
-  "sideEffects": false,
+  "sideEffects": ["./src/augmentation.ts", "./dist/index.js", "./dist/index.mjs", "./dist/index.cjs"],
   "peerDependencies": {
     "zod": "^3.25.0 || ^4.0.0"
   },
@@ -296,7 +296,7 @@ validex ships as a **single npm package** with subpath exports. Framework adapte
 
 **Rationale:** Single package avoids multi-package maintenance overhead. Framework dependencies are optional peers — only required when importing the corresponding subpath. Consumers who only use the core never install or bundle framework code.
 
-**Tree-shaking contract:** All exports are named. No side effects on import. `"sideEffects": false` enables bundlers to eliminate all unreachable code. If a consumer imports only `Email` from `validex`, only the Email rule, its checks, and the config system are bundled — no other rules, no adapter code.
+**Tree-shaking contract:** All exports are named. The main entry has side effects (Zod prototype augmentation via `src/augmentation.ts`), declared in the `"sideEffects"` array. Subpath exports (`validex/checks`, `validex/rules`) remain side-effect-free. If a consumer imports only `Email` from `validex`, only the Email rule, its checks, the augmentation, and the config system are bundled — no other rules, no adapter code.
 
 **Import patterns:**
 
@@ -396,10 +396,10 @@ export { emptyToUndefined, toTitleCase, toSlug, stripHtml, collapseWhitespace } 
 
 // Rules
 export { Email, PersonName, BusinessName, Password, PasswordConfirmation } from "./rules";
-export { Phone, Website, URL, Username, Slug } from "./rules";
-export { PostalCode, LicenseKey, UUID, JWT, DateTime } from "./rules";
+export { Phone, Website, Url, Username, Slug } from "./rules";
+export { PostalCode, LicenseKey, Uuid, Jwt, DateTime } from "./rules";
 export { Token, Text, Country, Currency, Color } from "./rules";
-export { CreditCard, IBAN, VatNumber, MacAddress, IpAddress } from "./rules";
+export { CreditCard, Iban, VatNumber, MacAddress, IpAddress } from "./rules";
 ```
 
 **What is NOT exported (delegated to Zod 4):**
@@ -518,12 +518,12 @@ interface RuleDefaults {
   BusinessName: Partial<BusinessNameOptions>;
   Username: Partial<UsernameOptions>;
   Website: Partial<WebsiteOptions>;
-  URL: Partial<URLOptions>;
+  Url: Partial<URLOptions>;
   Slug: Partial<SlugOptions>;
   PostalCode: Partial<PostalCodeOptions>;
   LicenseKey: Partial<LicenseKeyOptions>;
-  UUID: Partial<UUIDOptions>;
-  JWT: Partial<JWTOptions>;
+  Uuid: Partial<UUIDOptions>;
+  Jwt: Partial<JWTOptions>;
   DateTime: Partial<DateTimeOptions>;
   Token: Partial<TokenOptions>;
   Text: Partial<TextOptions>;
@@ -531,7 +531,7 @@ interface RuleDefaults {
   Currency: Partial<CurrencyOptions>;
   Color: Partial<ColorOptions>;
   CreditCard: Partial<CreditCardOptions>;
-  IBAN: Partial<IbanOptions>;
+  Iban: Partial<IbanOptions>;
   VatNumber: Partial<VatNumberOptions>;
   MacAddress: Partial<MacAddressOptions>;
   IpAddress: Partial<IpAddressOptions>;
@@ -1122,16 +1122,19 @@ const issue = result.error.issues[0];
 
 ### 6. Checks
 
-Checks are pure functions with no Zod coupling. They serve as building blocks that Rules compose internally via Zod's `.refine()` and `.superRefine()` APIs. Consumers can also import checks directly for standalone use (filtering, custom logic, custom schemas).
+Checks exist in two layers:
+
+- **Layer 0 — Pure functions** (`src/checks/`): No Zod coupling, no side effects. Standalone building blocks for filtering, custom logic, and custom schemas. Importable via `validex/checks`.
+- **Layer 1 — Chainable Zod methods** (`src/augmentation.ts`): Wraps Layer 0 functions in `.superRefine()` or `.transform()` on `ZodType.prototype` via module augmentation. Imported as a side effect from `src/index.ts`. Consumers chain them directly: `z.string().hasUppercase({ min: 1 }).noEmails()`. Rules compose these internally.
 
 #### 6.1 Check Contract
 
-Every check must satisfy:
+Every Layer 0 check must satisfy:
 
 1. **Pure function** — No side effects, deterministic output
 2. **Type-safe** — Throws `TypeError` on invalid input type
 3. **Trims input** — Whitespace handled consistently
-4. **No Zod coupling** — Does not import Zod, does not register extensions, does not touch prototypes
+4. **No Zod coupling** — Does not import Zod, does not register extensions, does not touch prototypes. (Layer 1 methods are Zod-coupled by design — they augment `ZodType.prototype` at import time.)
 5. **Patterns internal** — Regex not exported, encapsulated in check function
 6. **Independently importable** — Each check is a standalone module
 
@@ -1190,7 +1193,7 @@ Return `true` if content is detected. Used by Rules to block unwanted content.
 |5 |`containsEmail`      |`(value): boolean`|`noEmails`                    |
 |6 |`containsUrl`        |`(value): boolean`|`noUrls`                      |
 |7 |`containsHtml`       |`(value): boolean`|`noHtml`                      |
-|8 |`containsPhoneNumber`|`(value): boolean`|`noPhoneNumbers`              |
+|8 |`containsPhoneNumber`|`(value): Promise<boolean>`|`noPhoneNumbers`              |
 
 **Note:** The check returns `true` if detected (for filtering use). When used inside a Rule, detection causes validation failure (inverted logic).
 
@@ -1268,7 +1271,7 @@ validex uses a combination of external npm packages and bundled curated lists fo
 |------------------|---------------------------|------------------------------------|------------------|
 |Disposable domains|Email (`blockDisposable`)  |`disposable-email-domains` npm pkg  |External dep      |
 |Phone metadata    |Phone                      |`libphonenumber-js/core` + metadata |External dep      |
-|Postal code patterns|PostalCode               |`postal-codes-js` npm pkg           |External dep      |
+|Postal code patterns|PostalCode               |`postcode-validator` npm pkg           |External dep      |
 |Common passwords  |Password (`blockCommon`)   |Breach compilations (10k+ entries)  |Bundled           |
 |Reserved usernames|Username (`blockReserved`) |Platform standards (200+ entries)   |Bundled           |
 |Country codes     |Country, Phone             |ISO 3166-1 (249 entries)            |Bundled           |
@@ -1303,10 +1306,10 @@ Every rule must satisfy:
 1. **Function signature:** `RuleName(options?: RuleOptions) => ZodSchema`
 2. **Options optional:** Default config produces sensible validation (exceptions: PostalCode requires `country`, Token requires `type` — see §7.12, §7.17)
 3. **Uses global defaults:** Merges with `setup({ rules: {...} })` config at parse-time (lazy)
-4. **Composes Zod 4 + checks:** Uses Zod 4 native validators where available (e.g., `z.email()`, `z.uuid()`), adds business logic via `.refine()` / `.superRefine()`
-5. **Chainable result:** Returns standard Zod schema for further chaining
+4. **Composes Layer 1 chainable methods:** Rules compose chainable Zod methods (`.hasUppercase()`, `.noEmails()`, etc.) for reusable check-type validations. Rules NEVER create their own validation logic for operations a check can perform. Rule-specific logic (charset patterns, format parsing, boundary checks) may use `.superRefine()` directly.
+5. **Chainable result:** Returns standard Zod schema for further chaining. Consumers can chain additional checks after a rule: `Password().noSpaces()`.
 6. **Handles empty:** Uses `emptyToUndefined()` internally for form compatibility
-7. **No prototype patching:** Does not modify Zod's prototypes or register extensions
+7. **Augmentation is separate:** Prototype patching lives in `src/augmentation.ts`, not in rule files. Rules import it as a side effect.
 8. **Extensible:** All rules accept `customFn` (BaseRuleOptions) for additional validation. Rules extending `FormatRuleOptions` also accept `regex` for format override.
 
 **`allow*` / `block*` semantics (universal):**
@@ -1750,9 +1753,9 @@ interface PostalCodeOptions extends FormatRuleOptions {
 
 **Exception to "options optional" contract:** `country` is required because postal code formats are entirely country-dependent. A default would be presumptuous and error-prone. This exception is explicitly acknowledged in the Rule Design Contract (§7.1).
 
-**Dependency:** `postal-codes-js` npm package (covers 200+ countries, supports alpha-2 and alpha-3 codes, case-insensitive). Same pattern as Phone: regular dependency, only bundled when PostalCode is imported (tree-shaking). Dynamic import on first use.
+**Dependency:** `postcode-validator` npm package (covers 200+ countries, supports alpha-2 and alpha-3 codes, case-insensitive). Same pattern as Phone: regular dependency, only bundled when PostalCode is imported (tree-shaking). Dynamic import on first use.
 
-**Unsupported country behavior:** If the country code is not recognized by `postal-codes-js`, the rule throws a config error at schema creation time. Consumer can use `regex` (from `FormatRuleOptions`) to provide a custom pattern, or `customFn` for advanced validation.
+**Unsupported country behavior:** If the country code is not recognized by `postcode-validator`, the rule throws a config error at schema creation time. Consumer can use `regex` (from `FormatRuleOptions`) to provide a custom pattern, or `customFn` for advanced validation.
 
 **Error codes:** `postalCode.invalid`
 
@@ -2219,7 +2222,7 @@ const securityInputs = [
 |With phone (mobile metadata)   |+ ~22kb (raw) |
 |With phone (max metadata)      |+ ~37kb (raw) |
 |libphonenumber-js/core         |+ ~8kb        |
-|postal-codes-js                |+ ~15kb       |
+|postcode-validator                |+ ~15kb       |
 |disposable-email-domains       |+ ~30kb       |
 
 **Note:** Phone metadata, postal code data, and disposable domain lists are loaded via dynamic import — not included in the initial bundle. Core bundle target assumes none of these are imported.
@@ -2230,7 +2233,7 @@ const securityInputs = [
 |---------------------------|------------------|-----------------|-------------------------------|
 |`zod` ^3.25.0 || ^4.0.0               |peer dependency   |Everything       |Always                         |
 |`libphonenumber-js/core`   |regular dependency|Phone            |In bundle if Phone imported    |
-|`postal-codes-js`          |regular dependency|PostalCode       |Dynamic import on first use    |
+|`postcode-validator`          |regular dependency|PostalCode       |Dynamic import on first use    |
 |`disposable-email-domains` |regular dependency|Email (blockDisposable)|Dynamic import on first use|
 
 **Verification:**

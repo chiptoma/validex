@@ -127,7 +127,7 @@ validex/
   "version": "1.0.0-alpha.0",
   "type": "module",
   "packageManager": "pnpm@9.15.0",
-  "sideEffects": false,
+  "sideEffects": ["./src/augmentation.ts", "./dist/index.js", "./dist/index.mjs", "./dist/index.cjs"],
   "exports": {
     ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" },
     "./checks": { "import": "./dist/checks/index.js", "types": "./dist/checks/index.d.ts" },
@@ -170,7 +170,7 @@ validex/
   "peerDependencies": { "zod": "^3.25.0 || ^4.0.0" },
   "dependencies": {
     "libphonenumber-js": "^1.11.0",
-    "postal-codes-js": "^2.5.0",
+    "postcode-validator": "^3.10.15",
     "disposable-email-domains": "^1.0.0"
   },
   "devDependencies": {
@@ -706,7 +706,11 @@ Responsibilities:
 **Goal:** All 23 pure check functions, independently testable.
 **Ref:** SPEC.md §6.1-6.7
 
-Checks are pure functions. No Zod dependency, no config dependency. Build and test in isolation.
+Checks exist in three layers:
+
+- **Layer 0 — Pure functions** (`src/checks/`): No Zod dependency, no config dependency. Build and test in isolation.
+- **Layer 1 — Chainable Zod methods** (`src/augmentation.ts`): Wraps Layer 0 functions in `.superRefine()`/`.transform()` on `ZodType.prototype`. Imported as a side effect from `src/index.ts`.
+- **Layer 2 — Rules** (`src/rules/`): Compose Layer 1 chainable methods internally. Rules never duplicate check logic.
 
 ### 2.1 Character Composition (`src/checks/composition.ts`)
 
@@ -724,7 +728,7 @@ Checks are pure functions. No Zod dependency, no config dependency. Build and te
 | `containsEmail` | `(value: string) => boolean` | Regex-based |
 | `containsUrl` | `(value: string) => boolean` | Regex-based |
 | `containsHtml` | `(value: string) => boolean` | Detects `<tag>` patterns |
-| `containsPhoneNumber` | `(value: string) => boolean` | Uses `libphonenumber-js` `findPhoneNumbersInText()` |
+| `containsPhoneNumber` | `(value: string) => Promise<boolean>` | Uses `libphonenumber-js` `findPhoneNumbersInText()` via dynamic import |
 
 **Note:** `containsPhoneNumber` is the only check with an external dependency.
 
@@ -773,9 +777,9 @@ These ARE Zod-coupled (they produce refinements). Separate from checks.
 - [ ] `hasUppercase('MÜLLER', 1)` → `true` (German uppercase)
 - [ ] `containsEmail('contact test@example.com please')` → `true`
 - [ ] `containsEmail('user@sub.domain.co.uk is my email')` → `true`
-- [ ] `containsPhoneNumber('call +34 612 345 678 now')` → `true` (uses libphonenumber)
-- [ ] `containsPhoneNumber('call (212) 555-1234 now')` → `true` (US format)
-- [ ] `containsPhoneNumber('call 06 12 34 56 78 now')` → `true` (French format)
+- [ ] `await containsPhoneNumber('call +34 612 345 678 now')` → `true` (uses libphonenumber via dynamic import)
+- [ ] `await containsPhoneNumber('call (212) 555-1234 now')` → `true` (US format)
+- [ ] `await containsPhoneNumber('call 06 12 34 56 78 now')` → `true` (French format)
 - [ ] `maxConsecutive('aaab', 3)` → `true`, `maxConsecutive('aaaab', 3)` → `false`
 - [ ] `toTitleCase('jean-paul o\'brien')` → `"Jean-Paul O'Brien"` (handles hyphens + apostrophes)
 - [ ] `toTitleCase('maría garcía')` → `"María García"` (handles unicode)
@@ -980,13 +984,13 @@ These delegate format validation entirely to Zod. validex adds error surface own
 
 | # | Rule | External dep | SPEC ref |
 |---|---|---|---|
-| 22 | PostalCode | `postal-codes-js` | §7.12 |
+| 22 | PostalCode | `postcode-validator` | §7.12 |
 | 23 | Phone | `libphonenumber-js/core` | §7.7 |
 | 24 | Email | `disposable-email-domains` | §7.2 |
 | 25 | Text | checks + `libphonenumber-js` (for `noPhoneNumbers`) | §7.18 |
 
 **Implementation notes:**
-- PostalCode: dynamic import `postal-codes-js`. Call `postalCodes.validate(country, value)`. If country unsupported and no `regex`/`customFn`, throw config error at creation time.
+- PostalCode: dynamic import `postcode-validator`. Call `postalCodes.validate(country, value)`. If country unsupported and no `regex`/`customFn`, throw config error at creation time.
 - Phone: dynamic import metadata JSON. Use `parsePhoneNumber(value, { defaultCountry, extract: false })`. Check `.isValid()`. Apply `requireMobile` via `.getType()`. Apply `requireCountryCode` by checking input starts with `+`. Apply `format` via `.format('E164')` etc. Apply `allowCountries`/`blockCountries`.
 - Email: `z.email()` for format. Apply `blockPlusAlias` (check for `+`). Apply `allowSubdomains` (count dots in domain). Apply `blockDomains`/`allowDomains`. Dynamic import `disposable-email-domains` for `blockDisposable`.
 - Text: chain `containsEmail`, `containsUrl`, `containsPhoneNumber` (uses libphonenumber), `containsHtml` checks based on `no*` options. Apply `maxWords`, `maxConsecutive`.
@@ -1203,8 +1207,8 @@ Already built in Phase 1. Verify it matches §11.1-11.2 exactly.
 ### 6.2 Tree-Shaking Verification
 
 - [ ] Import `Email` only → build → bundle does NOT contain Phone, PostalCode, or any other rule code
-- [ ] Import `Email` only → build → bundle does NOT contain `libphonenumber-js`, `postal-codes-js`
-- [ ] Import `Phone` only → build → bundle contains `libphonenumber-js/core` but NOT `postal-codes-js`
+- [ ] Import `Email` only → build → bundle does NOT contain `libphonenumber-js`, `postcode-validator`
+- [ ] Import `Phone` only → build → bundle contains `libphonenumber-js/core` but NOT `postcode-validator`
 - [ ] Import nothing from `validex/nuxt` → build → no adapter code in bundle
 - [ ] `sideEffects: false` verified by bundler analysis (Vite/Rollup)
 

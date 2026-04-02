@@ -24,17 +24,17 @@ describe('getErrorMessage', () => {
 
   it('should return email.disposableBlocked message', () => {
     const msg = getErrorMessage('email', 'disposableBlocked', { label: 'Email' })
-    expect(msg).toBe('Disposable email addresses are not allowed')
+    expect(msg).toBe('Email must not use a disposable email provider')
   })
 
   it('should return password.commonBlocked message', () => {
     const msg = getErrorMessage('password', 'commonBlocked', { label: 'Password' })
-    expect(msg).toBe('This password is too common')
+    expect(msg).toBe('Password is too common')
   })
 
   it('should return confirmation.mismatch message', () => {
-    const msg = getErrorMessage('confirmation', 'mismatch', { label: 'Password' })
-    expect(msg).toBe('Passwords must match')
+    const msg = getErrorMessage('confirmation', 'mismatch', { label: 'Password Confirmation', targetLabel: 'Password' })
+    expect(msg).toBe('Password Confirmation must match Password')
   })
 
   it('should return jwt.missingClaim with claim interpolation', () => {

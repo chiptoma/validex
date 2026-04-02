@@ -18,6 +18,9 @@ interface BaseRuleOptions {
   // i18n disabled: string shown directly. i18n enabled: string treated as i18n key.
   // Async supported — triggers parseAsync requirement.
   // Error registered under {namespace}.custom
+  sameAs?: string;                   // Cross-field equality check (field name)
+  requiredWhen?: string | ((fields: Record<string, unknown>) => boolean);
+  // Conditional required: field name (truthy check) or predicate function
 }
 
 interface FormatRuleOptions extends BaseRuleOptions {
@@ -168,7 +171,7 @@ interface FormatRuleOptions extends BaseRuleOptions {
 
 ---
 
-## 8. URL — extends BaseRuleOptions
+## 8. Url — extends BaseRuleOptions
 
 | Option | Type | Default |
 |---|---|---|
@@ -223,7 +226,7 @@ interface FormatRuleOptions extends BaseRuleOptions {
 |---|---|---|
 | `country` | `string` | **REQUIRED** |
 
-**Dep:** `postal-codes-js` (200+ countries, dynamic import)
+**Dep:** `postcode-validator` (200+ countries, dynamic import)
 **Unsupported country:** Throws config error. Use `regex` or `customFn` as escape hatch.
 **Normalize:** uppercase + trim
 **Errors:** `invalid`
@@ -245,7 +248,7 @@ interface FormatRuleOptions extends BaseRuleOptions {
 
 ---
 
-## 13. UUID — extends BaseRuleOptions
+## 13. Uuid — extends BaseRuleOptions
 
 | Option | Type | Default |
 |---|---|---|
@@ -256,7 +259,7 @@ interface FormatRuleOptions extends BaseRuleOptions {
 
 ---
 
-## 14. JWT — extends BaseRuleOptions
+## 14. Jwt — extends BaseRuleOptions
 
 | Option | Type | Default |
 |---|---|---|
@@ -374,7 +377,7 @@ interface FormatRuleOptions extends BaseRuleOptions {
 
 ---
 
-## 22. IBAN — extends BaseRuleOptions
+## 22. Iban — extends BaseRuleOptions
 
 | Option | Type | Default |
 |---|---|---|
@@ -425,29 +428,29 @@ interface FormatRuleOptions extends BaseRuleOptions {
 
 ## Complete Error Code Registry
 
-**27 namespaces, ~82 error codes + `{namespace}.custom` for customFn**
+**27 namespaces, 141 error codes (including `{namespace}.custom` for customFn)**
 
 | Namespace | Codes |
 |---|---|
 | `base` | `required`, `min`, `max`, `type`, `format` |
-| `string` | `minUppercase`, `minLowercase`, `minDigits`, `minSpecial`, `maxUppercase`, `maxConsecutive`, `maxWords`, `noSpaces`, `alphaOnly`, `numericOnly`, `alphanumericOnly`, `alphanumericSpaceHyphenOnly`, `alphaSpaceHyphenOnly` |
+| `string` | `minUppercase`, `maxUppercase`, `minLowercase`, `maxLowercase`, `minDigits`, `maxDigits`, `minSpecial`, `maxSpecial`, `noEmails`, `noUrls`, `noPhoneNumbers`, `noHtml`, `noSpaces`, `onlyAlpha`, `onlyNumeric`, `onlyAlphanumeric`, `onlyAlphaSpaceHyphen`, `onlyAlphanumericSpaceHyphen`, `minWords`, `maxWords`, `maxConsecutive` |
 | `email` | `invalid`, `plusAliasBlocked`, `disposableBlocked`, `domainBlocked`, `domainNotAllowed`, `subdomainNotAllowed` |
 | `personName` | `invalid`, `maxWords`, `boundary`, `maxConsecutive` |
 | `businessName` | `invalid`, `boundary`, `maxConsecutive` |
-| `password` | `minUppercase`, `minLowercase`, `minDigits`, `minSpecial`, `maxUppercase`, `maxConsecutive`, `commonBlocked` |
-| `confirmation` | `mismatch` |
-| `phone` | `invalid`, `requireMobile`, `countryBlocked`, `countryNotAllowed` |
-| `website` | `invalid`, `domainBlocked`, `domainNotAllowed`, `subdomainNotAllowed` |
-| `url` | `invalid`, `protocolNotAllowed`, `domainBlocked`, `domainNotAllowed` |
+| `password` | `minUppercase`, `minLowercase`, `minDigits`, `minSpecial`, `maxUppercase`, `maxLowercase`, `maxDigits`, `maxSpecial`, `maxConsecutive`, `commonBlocked` |
+| `confirmation` | `mismatch`, `custom` |
+| `phone` | `invalid`, `requireMobile`, `countryCodeRequired`, `countryBlocked`, `countryNotAllowed` |
+| `website` | `invalid`, `httpsRequired`, `wwwRequired`, `pathNotAllowed`, `queryNotAllowed`, `domainBlocked`, `domainNotAllowed`, `subdomainNotAllowed` |
+| `url` | `invalid`, `protocolNotAllowed`, `tldRequired`, `queryNotAllowed`, `authNotAllowed`, `domainBlocked`, `domainNotAllowed` |
 | `username` | `invalid`, `reservedBlocked`, `boundary`, `maxConsecutive` |
 | `slug` | `invalid` |
 | `postalCode` | `invalid` |
 | `licenseKey` | `invalid` |
 | `uuid` | `invalid` |
-| `jwt` | `invalid`, `expired`, `notYetValid`, `missingClaim`, `algorithmNotAllowed` |
+| `jwt` | `invalid`, `expired`, `notYetValid`, `expiryRequired`, `missingClaim`, `algorithmNotAllowed` |
 | `dateTime` | `invalid`, `tooEarly`, `tooLate`, `noFuture`, `noPast` |
 | `token` | `invalid` |
-| `text` | `noEmails`, `noUrls`, `noPhoneNumbers`, `noHtml`, `maxWords`, `maxConsecutive` |
+| `text` | `invalid`, `minWords`, `noEmails`, `noUrls`, `noPhoneNumbers`, `noHtml`, `maxWords`, `maxConsecutive` |
 | `country` | `invalid`, `blocked`, `notAllowed` |
 | `currency` | `invalid`, `blocked`, `notAllowed` |
 | `color` | `invalid` |
@@ -457,6 +460,8 @@ interface FormatRuleOptions extends BaseRuleOptions {
 | `macAddress` | `invalid` |
 | `ipAddress` | `invalid`, `privateNotAllowed` |
 
+> Every namespace supports `{namespace}.custom` when `customFn` is configured.
+
 ---
 
 ## Dependencies
@@ -465,7 +470,7 @@ interface FormatRuleOptions extends BaseRuleOptions {
 |---|---|---|---|
 | `zod` ^3.25.0 || ^4.0.0 | peer | Everything | Always |
 | `libphonenumber-js/core` | regular | Phone, Text (`noPhoneNumbers`) | Bundle if Phone/Text imported |
-| `postal-codes-js` | regular | PostalCode | Dynamic import on first use |
+| `postcode-validator` | regular | PostalCode | Dynamic import on first use |
 | `disposable-email-domains` | regular | Email (`blockDisposable`) | Dynamic import on first use |
 
 ---

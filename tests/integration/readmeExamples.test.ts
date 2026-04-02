@@ -16,6 +16,7 @@ import {
 } from '../../src'
 import { setupValidex, useValidation } from '../../src/adapters/nuxt'
 import { resetConfig } from '../../src/config/store'
+import { registerCustomError } from '../../src/core/customError'
 
 // ----------------------------------------------------------
 // QUICK START EXAMPLES
@@ -157,6 +158,128 @@ describe('rEADME — i18n', () => {
     expect(params.key).toBe('validation.messages.username.reserved')
     expect(params.label).toBe('Username')
     expect(params.path).toEqual(['username'])
+  })
+
+  // I18N.md — Custom t() function example (exact code from docs)
+  it('i18n.md custom t() example produces translated output', async () => {
+    resetConfig()
+
+    // Simulate a translated locale (same structure as CLI scaffold output)
+    const fr = {
+      validation: {
+        labels: {
+          email: 'Courriel',
+        },
+        messages: {
+          email: {
+            invalid: '{{label}} n\'est pas un courriel valide',
+          },
+          base: {
+            required: '{{label}} est requis',
+          },
+        },
+      },
+    }
+
+    // --- Exact code from I18N.md "Custom t() function" ---
+    const translations: Record<string, string> = {}
+
+    const labels = fr.validation.labels
+    for (const [field, label] of Object.entries(labels)) {
+      translations[`validation.labels.${field}`] = label
+    }
+
+    const messages = fr.validation.messages
+    for (const [ns, codes] of Object.entries(messages)) {
+      for (const [code, msg] of Object.entries(codes)) {
+        translations[`validation.messages.${ns}.${code}`] = msg
+      }
+    }
+
+    setup({
+      i18n: {
+        enabled: true,
+        t: (key, params) => {
+          let msg = translations[key] ?? key
+          for (const [k, v] of Object.entries(params ?? {})) {
+            msg = msg.replaceAll(`{{${k}}}`, String(v))
+          }
+          return msg
+        },
+      },
+    })
+    // --- End exact code from I18N.md ---
+
+    registerCustomError()
+
+    const schema = z.object({ email: Email() as z.ZodType })
+    const result = await validate(schema, { email: 'bad' })
+
+    expect(result.success).toBe(false)
+    const emailErrors = result.errors['email'] ?? []
+    expect(emailErrors.length).toBeGreaterThan(0)
+    // The translated label + translated message should appear
+    expect(emailErrors).toContainEqual('Courriel n\'est pas un courriel valide')
+
+    resetConfig()
+  })
+
+  // API.md — setup() example with i18n, label.transform, message.transform
+  it('api.md setup example with t(), label.transform, and message.transform works', async () => {
+    resetConfig()
+
+    // Mock i18next.t — same contract as the doc example
+    const mockTranslations: Record<string, string> = {
+      'validation.labels.email': 'Email',
+      'validation.messages.email.invalid': '{{label}} is not a valid email address',
+    }
+    const i18next = {
+      t: (key: string, params?: Record<string, unknown>): string => {
+        let msg = mockTranslations[key] ?? key
+        if (params !== undefined) {
+          for (const [k, v] of Object.entries(params)) {
+            msg = msg.replaceAll(`{{${k}}}`, String(v))
+          }
+        }
+        return msg
+      },
+    }
+
+    // --- Exact code from API.md setup() example ---
+    setup({
+      rules: {
+        email: { blockDisposable: true },
+        password: { length: { min: 10 }, special: { min: 2 } },
+      },
+      i18n: {
+        enabled: true,
+        t: (key, params) => i18next.t(key, params),
+      },
+      label: {
+        fallback: 'derived',
+        transform: ({ defaultLabel }) => defaultLabel,
+      },
+      message: {
+        transform: ({ code, message }) => `[${code}] ${message}`,
+      },
+    })
+    // --- End exact code from API.md ---
+
+    registerCustomError()
+
+    const schema = z.object({ email: Email() as z.ZodType })
+    const result = await validate(schema, { email: 'bad' })
+
+    expect(result.success).toBe(false)
+    const emailErrors = result.errors['email'] ?? []
+    expect(emailErrors.length).toBeGreaterThan(0)
+    // message.transform wraps with [code], t() translates, label.transform runs
+    const hasWrapped = emailErrors.some(
+      (e: string) => e.startsWith('[') && e.includes(']'),
+    )
+    expect(hasWrapped).toBe(true)
+
+    resetConfig()
   })
 })
 
