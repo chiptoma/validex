@@ -110,6 +110,7 @@ function matchPrefix(cardNumber: string, prefix: string): boolean {
     const parts = prefix.split('-')
     const low = parts[0]
     const high = parts[1]
+    /* c8 ignore next 2 -- defensive guard; split('-') on a string containing '-' always yields two parts */
     if (low === undefined || high === undefined)
       return false
     const cardPrefix = Number(cardNumber.slice(0, low.length))

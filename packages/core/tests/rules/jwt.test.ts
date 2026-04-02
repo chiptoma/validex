@@ -322,4 +322,30 @@ describe('jwt — edge cases', () => {
     const schema = Jwt({ checkNotBefore: true }) as z.ZodType
     expect(schema.safeParse(noNbf).success).toBe(true)
   })
+
+  it('rejects JWT with disallowed algorithm', () => {
+    // JWT with header: {"alg":"HS256","typ":"JWT"}, payload: {"sub":"user"}
+    const hsJwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyIn0.sNMBcBUDjJBVcTJyQCsCEicdMaCV0H1Nh4gzJAqpiZY'
+    const schema = Jwt({ allowAlgorithms: ['RS256'] }) as z.ZodType
+    expect(schema.safeParse(hsJwt).success).toBe(false)
+  })
+
+  it('uses default clockTolerance of 0 when cleared', () => {
+    // JWT with payload: {"sub":"user","exp":<past timestamp>}
+    // Use a JWT with far-past expiry
+    const expiredPayload = btoa(JSON.stringify({ sub: 'user', exp: 1000000000 })).replace(/=/g, '')
+    const header = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'
+    const sig = 'dummysig'
+    const expiredJwt = `${header}.${expiredPayload}.${sig}`
+    const schema = Jwt({ checkExpiry: true, clockTolerance: undefined }) as z.ZodType
+    expect(schema.safeParse(expiredJwt).success).toBe(false)
+  })
+
+  it('validates JWT without trimming when normalize is false', () => {
+    const validJwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyIn0.sNMBcBUDjJBVcTJyQCsCEicdMaCV0H1Nh4gzJAqpiZY'
+    const schema = Jwt({ normalize: false }) as z.ZodType
+    // Valid JWT should still pass even without normalization
+    expect(schema.safeParse(validJwt).success).toBe(true)
+    expect(schema.safeParse('not.a.jwt').success).toBe(false)
+  })
 })

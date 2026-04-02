@@ -125,4 +125,18 @@ describe('password — blockCommon async', () => {
     const result = await parseAsync(schema, 'monkey')
     expect(result.success).toBe(false)
   })
+
+  it('rejects a common password with blockCommon: "strict"', async () => {
+    const schema = Password({
+      blockCommon: 'strict',
+      length: { min: 1 },
+      uppercase: undefined,
+      lowercase: undefined,
+      digits: undefined,
+      special: undefined,
+      consecutive: undefined,
+    })
+    const result = await parseAsync(schema, 'password')
+    expect(result.success).toBe(false)
+  })
 })

@@ -213,8 +213,18 @@ describe('creditCard (security)', () => {
 describe('creditCard — edge cases', () => {
   it('rejects unrecognized card prefix with allowIssuers constraint', async () => {
     const schema = CreditCard({ allowIssuers: ['visa'] }) as z.ZodType
-    // 9999 prefix not recognized by any issuer
-    const result = await schema.safeParseAsync('9999999999999993')
+    // 9999000000000004 passes Luhn but 9999 prefix is not recognized by any issuer
+    const result = await schema.safeParseAsync('9999000000000004')
     expect(result.success).toBe(false)
+  })
+
+  it('preserves original input when normalize is false', async () => {
+    const schema = CreditCard({ normalize: false }) as z.ZodType
+    // Without normalization, spaces/dashes are NOT stripped, causing format failure
+    const result = await schema.safeParseAsync('4532 0151 1283 0366')
+    expect(result.success).toBe(false)
+    // Digits-only should still pass
+    const ok = await schema.safeParseAsync('4532015112830366')
+    expect(ok.success).toBe(true)
   })
 })

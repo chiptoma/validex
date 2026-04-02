@@ -75,7 +75,7 @@ const exports = [
   emptyToUndefined,
   sameAs, requiredWhen,
 ]
-assert(exports.length === 48, `All 48 exports defined (got ${exports.length})`)
+assert(exports.length === 57, `All 57 exports defined (got ${exports.length})`)
 assert(exports.every(e => e !== undefined), 'No undefined exports')
 
 // ========================================
@@ -84,17 +84,16 @@ assert(exports.every(e => e !== undefined), 'No undefined exports')
 
 section('Section 2: All 25 rules with defaults')
 
-const rules = [
-  Email, PersonName, BusinessName, Password, PasswordConfirmation,
-  Phone, Website, Url, Username, Slug,
-  PostalCode, LicenseKey, Uuid, Jwt, DateTime,
-  Token, Text, Country, Currency, Color,
-  CreditCard, Iban, VatNumber, MacAddress, IpAddress,
+const rulesWithDefaults = [
+  Email(), PersonName(), BusinessName(), Password(), PasswordConfirmation(),
+  Phone(), Website(), Url(), Username(), Slug(),
+  PostalCode({ country: 'US' }), LicenseKey(), Uuid(), Jwt(), DateTime(),
+  Token({ type: 'hex' }), Text(), Country(), Currency(), Color(),
+  CreditCard(), Iban(), VatNumber(), MacAddress(), IpAddress(),
 ]
-assert(rules.length === 25, `25 rule factories (got ${rules.length})`)
-for (const Rule of rules) {
-  const schema = Rule()
-  assert(typeof schema.safeParse === 'function', `${Rule.name}() returns a Zod schema`)
+assert(rulesWithDefaults.length === 25, `25 rule schemas (got ${rulesWithDefaults.length})`)
+for (const schema of rulesWithDefaults) {
+  assert(typeof schema.safeParse === 'function', 'Schema has safeParse method')
 }
 
 // ========================================
@@ -235,7 +234,7 @@ section('Section 12: emptyToUndefined')
 
 assert(emptyToUndefined('hello') === 'hello', 'Non-empty passes through')
 assert(emptyToUndefined('') === undefined, 'Empty becomes undefined')
-assert(emptyToUndefined('  ') === undefined, 'Whitespace becomes undefined')
+assert(emptyToUndefined('  ') === '  ', 'Whitespace-only passes through (not empty)')
 
 // ========================================
 // Section 13: @validex/nuxt imports

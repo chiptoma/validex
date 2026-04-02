@@ -199,3 +199,26 @@ describe('color (security)', () => {
     expect(parse(schema, value).success).toBe(false)
   })
 })
+
+describe('color — edge cases', () => {
+  it('uses hex format fallback when format is cleared', () => {
+    // Clearing format triggers ?? 'hex' fallback
+    const schema = Color({ format: undefined }) as z.ZodType
+    expect(schema.safeParse('#ff0000').success).toBe(true)
+  })
+
+  it('disables alpha channel validation when alpha is false', () => {
+    // alpha: false means alpha !== false is false — exercising the false branch
+    const schema = Color({ alpha: false }) as z.ZodType
+    // #ff000080 has alpha — should be rejected when alpha is disabled
+    expect(schema.safeParse('#ff000080').success).toBe(false)
+    expect(schema.safeParse('#ff0000').success).toBe(true)
+  })
+
+  it('rejects leading whitespace when normalize is false', () => {
+    const schema = Color({ normalize: false }) as z.ZodType
+    // Without normalization, leading/trailing spaces are not trimmed
+    expect(schema.safeParse(' #ff0000 ').success).toBe(false)
+    expect(schema.safeParse('#ff0000').success).toBe(true)
+  })
+})

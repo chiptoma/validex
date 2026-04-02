@@ -300,4 +300,10 @@ describe('url — edge cases', () => {
     if (result.success)
       expect(result.data).toBe('https://Example.COM/Path')
   })
+
+  it('uses empty domain lists when cleared via undefined', async () => {
+    const schema = Url({ blockDomains: undefined, allowDomains: undefined }) as z.ZodType
+    const result = await schema.safeParseAsync('https://example.com')
+    expect(result.success).toBe(true)
+  })
 })

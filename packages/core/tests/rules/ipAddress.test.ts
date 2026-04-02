@@ -245,4 +245,50 @@ describe('ipAddress — edge cases', () => {
     const schema = IpAddress({ version: 'any', allowPrivate: false }) as z.ZodType
     expect(schema.safeParse('::1').success).toBe(false)
   })
+
+  it('accepts valid IPv6 with CIDR notation when allowCidr is true', () => {
+    const schema = IpAddress({ version: 'v6', allowCidr: true }) as z.ZodType
+    expect(schema.safeParse('2001:db8::/32').success).toBe(true)
+  })
+
+  it('rejects IPv6 CIDR when allowCidr is false', () => {
+    const schema = IpAddress({ version: 'v6', allowCidr: false }) as z.ZodType
+    expect(schema.safeParse('2001:db8::/32').success).toBe(false)
+  })
+
+  it('preserves whitespace for IPv6 when normalize is false', () => {
+    const schema = IpAddress({ version: 'v6', normalize: false }) as z.ZodType
+    expect(schema.safeParse(' 2001:db8::1 ').success).toBe(false)
+    expect(schema.safeParse('2001:db8::1').success).toBe(true)
+  })
+
+  it('accepts any version with CIDR notation when allowCidr is true', () => {
+    const schema = IpAddress({ version: 'any', allowCidr: true }) as z.ZodType
+    expect(schema.safeParse('192.168.1.0/24').success).toBe(true)
+    expect(schema.safeParse('2001:db8::/32').success).toBe(true)
+  })
+
+  it('preserves whitespace for any version when normalize is false', () => {
+    const schema = IpAddress({ version: 'any', normalize: false }) as z.ZodType
+    expect(schema.safeParse(' 192.168.1.1 ').success).toBe(false)
+    expect(schema.safeParse('192.168.1.1').success).toBe(true)
+  })
+
+  it('uses default version "any" when version is cleared', () => {
+    const schema = IpAddress({ version: undefined }) as z.ZodType
+    // Should accept both v4 and v6
+    expect(schema.safeParse('192.168.1.1').success).toBe(true)
+    expect(schema.safeParse('2001:db8::1').success).toBe(true)
+  })
+
+  it('accepts IPv4 with CIDR notation when allowCidr is true', () => {
+    const schema = IpAddress({ version: 'v4', allowCidr: true }) as z.ZodType
+    expect(schema.safeParse('192.168.1.0/24').success).toBe(true)
+  })
+
+  it('preserves whitespace for IPv4 when normalize is false', () => {
+    const schema = IpAddress({ version: 'v4', normalize: false }) as z.ZodType
+    expect(schema.safeParse(' 192.168.1.1 ').success).toBe(false)
+    expect(schema.safeParse('192.168.1.1').success).toBe(true)
+  })
 })

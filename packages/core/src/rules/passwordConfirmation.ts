@@ -51,6 +51,7 @@ export const PasswordConfirmation = /* @__PURE__ */ (() => {
   return (options?: Partial<PasswordConfirmationOptions>): unknown => {
     ensureCustomError()
 
+    /* c8 ignore next 2 -- defensive fallback; RULE_DEFAULTS always has passwordConfirmation key */
     const tier1 = RULE_DEFAULTS['passwordConfirmation'] ?? {}
     const tier2 = getConfig().rules?.passwordConfirmation ?? {}
     // SAFETY: Options are plain objects flowing through three-tier merge

@@ -232,4 +232,18 @@ describe('username — edge cases', () => {
     const result = await schema.safeParseAsync('admin')
     expect(result.success).toBe(false)
   })
+
+  it('falls through to built-in check when custom reserved word does not match', async () => {
+    // Custom list has 'forbidden' but input is 'admin' — falls through to built-in check
+    const schema = Username({ blockReserved: true, reservedWords: ['forbidden'] }) as z.ZodType
+    const result = await schema.safeParseAsync('admin')
+    expect(result.success).toBe(false)
+  })
+
+  it('uses empty reservedWords fallback when cleared via undefined', async () => {
+    // Clearing reservedWords to undefined triggers the ?? [] fallback on line 202
+    const schema = Username({ blockReserved: true, reservedWords: undefined }) as z.ZodType
+    const result = await schema.safeParseAsync('admin')
+    expect(result.success).toBe(false)
+  })
 })

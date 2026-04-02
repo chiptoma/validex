@@ -360,3 +360,141 @@ describe('crossFieldResolver — label and i18n edge cases', () => {
     expect(issues[0]?.message).toContain('validation.messages.confirmation.mismatch')
   })
 })
+
+// ----------------------------------------------------------
+// EDGE CASES
+// ----------------------------------------------------------
+
+describe('crossFieldResolver — edge cases', () => {
+  it('derives empty label when label.fallback is none', () => {
+    resetConfig()
+    _resetCustomErrorFlag()
+    setup({ label: { fallback: 'none' } })
+    registerCustomError()
+
+    const passwordSchema = z.string()
+    const confirmSchema = z.string()
+    registerCrossField(confirmSchema, { sameAs: 'password' })
+
+    const schema = z.object({ password: passwordSchema, confirmPassword: confirmSchema })
+    const parsed = { password: 'abc123', confirmPassword: 'wrong' }
+    const issues = resolveCrossFieldConstraints(schema, parsed, new Set(), parsed)
+
+    expect(issues).toHaveLength(1)
+    // With 'none' fallback, the label should be empty
+    expect(issues[0]?.message).toBeDefined()
+  })
+
+  it('returns empty array for field not in shape', () => {
+    resetConfig()
+    _resetCustomErrorFlag()
+    registerCustomError()
+
+    const passwordSchema = z.string()
+    // confirmSchema is NOT in the z.object shape
+    const schema = z.object({ password: passwordSchema })
+    const parsed = { password: 'abc123' }
+    const issues = resolveCrossFieldConstraints(schema, parsed, new Set(), parsed)
+
+    expect(issues).toEqual([])
+  })
+
+  it('uses label.transform when configured', () => {
+    resetConfig()
+    _resetCustomErrorFlag()
+    setup({
+      label: {
+        transform: ({ fieldName }) => `Custom ${fieldName}`,
+      },
+    })
+    registerCustomError()
+
+    const passwordSchema = z.string()
+    const confirmSchema = z.string()
+    registerCrossField(confirmSchema, { sameAs: 'password' })
+
+    const schema = z.object({ password: passwordSchema, confirmPassword: confirmSchema })
+    const parsed = { password: 'abc123', confirmPassword: 'wrong' }
+    const issues = resolveCrossFieldConstraints(schema, parsed, new Set(), parsed)
+
+    expect(issues).toHaveLength(1)
+    expect(issues[0]?.message).toContain('Custom')
+  })
+
+  it('derives label from field name with no config (derived fallback)', () => {
+    resetConfig()
+    _resetCustomErrorFlag()
+    // No label config — uses 'derived' fallback by default
+    registerCustomError()
+
+    const passwordSchema = z.string()
+    const confirmSchema = z.string()
+    registerCrossField(confirmSchema, { sameAs: 'password' })
+
+    const schema = z.object({ password: passwordSchema, confirmPassword: confirmSchema })
+    const parsed = { password: 'abc123', confirmPassword: 'wrong' }
+    const issues = resolveCrossFieldConstraints(schema, parsed, new Set(), parsed)
+
+    expect(issues).toHaveLength(1)
+    // With derived fallback, 'confirmPassword' becomes 'Confirm Password'
+    expect(issues[0]?.message).toBeDefined()
+  })
+
+  it('uses derived fallback when label.fallback is cleared', () => {
+    resetConfig()
+    _resetCustomErrorFlag()
+    // Clearing label.fallback triggers the ?? 'derived' fallback
+    setup({ label: {} })
+    registerCustomError()
+
+    const passwordSchema = z.string()
+    const confirmSchema = z.string()
+    registerCrossField(confirmSchema, { sameAs: 'password' })
+
+    const schema = z.object({ password: passwordSchema, confirmPassword: confirmSchema })
+    const parsed = { password: 'abc123', confirmPassword: 'wrong' }
+    const issues = resolveCrossFieldConstraints(schema, parsed, new Set(), parsed)
+
+    expect(issues).toHaveLength(1)
+    expect(issues[0]?.message).toBeDefined()
+  })
+
+  it('uses generic label fallback in cross-field resolution', () => {
+    resetConfig()
+    _resetCustomErrorFlag()
+    setup({ label: { fallback: 'generic' } })
+    registerCustomError()
+
+    const passwordSchema = z.string()
+    const confirmSchema = z.string()
+    registerCrossField(confirmSchema, { sameAs: 'password' })
+
+    const schema = z.object({ password: passwordSchema, confirmPassword: confirmSchema })
+    const parsed = { password: 'abc123', confirmPassword: 'wrong' }
+    const issues = resolveCrossFieldConstraints(schema, parsed, new Set(), parsed)
+
+    expect(issues).toHaveLength(1)
+    expect(issues[0]?.message).toContain('This field')
+  })
+
+  it('uses default i18n prefix/separator when cleared for cross-field messages', () => {
+    resetConfig()
+    _resetCustomErrorFlag()
+    setup({
+      i18n: { enabled: true },
+    })
+    registerCustomError()
+
+    const passwordSchema = z.string()
+    const confirmSchema = z.string()
+    registerCrossField(confirmSchema, { sameAs: 'password' })
+
+    const schema = z.object({ password: passwordSchema, confirmPassword: confirmSchema })
+    const parsed = { password: 'abc123', confirmPassword: 'wrong' }
+    const issues = resolveCrossFieldConstraints(schema, parsed, new Set(), parsed)
+
+    expect(issues).toHaveLength(1)
+    // With cleared prefix/separator, defaults to 'validation.messages.confirmation.mismatch'
+    expect(issues[0]?.message).toContain('validation')
+  })
+})

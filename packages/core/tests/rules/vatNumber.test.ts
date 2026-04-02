@@ -185,4 +185,13 @@ describe('vatNumber — edge cases', () => {
     // Without uppercase normalization, DE pattern may fail
     expect(result.success).toBe(false)
   })
+
+  it('uses default requirePrefix false when cleared via undefined', async () => {
+    // Clearing requirePrefix to undefined triggers the ?? false fallback
+    const schema = VatNumber({ requirePrefix: undefined }) as z.ZodType
+    // Without prefix requirement, a valid VAT number without country prefix should fail
+    // because the format still needs a country prefix in the string for pattern matching
+    const result = await schema.safeParseAsync('DE123456789')
+    expect(result.success).toBe(true)
+  })
 })

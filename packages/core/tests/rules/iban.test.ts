@@ -214,4 +214,11 @@ describe('iban — edge cases', () => {
     if (result.success)
       expect(result.data).toBe('DE89370400440532013000')
   })
+
+  it('uses empty array fallback when country constraints are cleared', async () => {
+    // Passing undefined clears three-tier defaults, triggering ?? [] fallback
+    const schema = Iban({ allowCountries: undefined, blockCountries: undefined }) as z.ZodType
+    const result = await schema.safeParseAsync('DE89370400440532013000')
+    expect(result.success).toBe(true)
+  })
 })

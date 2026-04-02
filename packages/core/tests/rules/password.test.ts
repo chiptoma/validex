@@ -307,4 +307,68 @@ describe('password — edge cases', () => {
     const fail = await schema.safeParseAsync('Abcdef1!@')
     expect(fail.success).toBe(false)
   })
+
+  it('enforces uppercase max-only when min is explicitly 0', async () => {
+    // min: 0 means upper.min > 0 is false, so the upper.max branch is exercised
+    const schema = Password({ uppercase: { min: 0, max: 2 } }) as z.ZodType
+    const fail = await schema.safeParseAsync('ABCdef1!')
+    expect(fail.success).toBe(false)
+    const ok = await schema.safeParseAsync('Abcdef1!')
+    expect(ok.success).toBe(true)
+  })
+
+  it('enforces lowercase max-only when min is explicitly 0', async () => {
+    const schema = Password({ lowercase: { min: 0, max: 2 } }) as z.ZodType
+    const fail = await schema.safeParseAsync('ABcdef1!')
+    expect(fail.success).toBe(false)
+    const ok = await schema.safeParseAsync('ABCDeF1!')
+    expect(ok.success).toBe(true)
+  })
+
+  it('enforces digits max-only when min is explicitly 0', async () => {
+    const schema = Password({ digits: { min: 0, max: 1 } }) as z.ZodType
+    const fail = await schema.safeParseAsync('Abcdef12!')
+    expect(fail.success).toBe(false)
+    const ok = await schema.safeParseAsync('Abcdefg1!')
+    expect(ok.success).toBe(true)
+  })
+
+  it('enforces special max-only when min is explicitly 0', async () => {
+    const schema = Password({ special: { min: 0, max: 1 } }) as z.ZodType
+    const fail = await schema.safeParseAsync('Abcdef1!@')
+    expect(fail.success).toBe(false)
+    const ok = await schema.safeParseAsync('Abcdef12!')
+    expect(ok.success).toBe(true)
+  })
+
+  it('skips all composition checks when all are cleared via undefined', async () => {
+    // Clearing uppercase/lowercase/digits/special/consecutive triggers the false branches
+    const schema = Password({
+      uppercase: undefined,
+      lowercase: undefined,
+      digits: undefined,
+      special: undefined,
+      consecutive: undefined,
+    }) as z.ZodType
+    // Password with no composition requirements — only length matters
+    const ok = await schema.safeParseAsync('abcdefgh')
+    expect(ok.success).toBe(true)
+  })
+
+  it('enforces max-only composition when min is cleared for all types', async () => {
+    // Clear min (via undefined) so resolveRange returns {max} without min property
+    // This triggers min !== undefined = false, then max !== undefined = true
+    const schema = Password({
+      uppercase: { max: 2 },
+      lowercase: { max: 5 },
+      digits: { max: 2 },
+      special: { max: 2 },
+    }) as z.ZodType
+    // Exceeds uppercase max (3 uppercase > max 2)
+    const fail = await schema.safeParseAsync('ABCdefgh1!')
+    expect(fail.success).toBe(false)
+    // Passes all max constraints (2 upper, 4 lower, 1 digit, 1 special)
+    const ok = await schema.safeParseAsync('ABcdef1!')
+    expect(ok.success).toBe(true)
+  })
 })

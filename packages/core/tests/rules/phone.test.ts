@@ -309,4 +309,12 @@ describe('phone — edge cases', () => {
     const result = await schema.safeParseAsync('+447911123456')
     expect(result.success).toBe(false)
   })
+
+  it('throws when metadata is custom without customMetadataPath', () => {
+    expect(() => Phone({ metadata: 'custom' })).toThrow('customMetadataPath')
+  })
+
+  it('throws when metadata is custom with empty customMetadataPath', () => {
+    expect(() => Phone({ metadata: 'custom', customMetadataPath: '' })).toThrow('customMetadataPath')
+  })
 })
