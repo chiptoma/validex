@@ -6,6 +6,7 @@
 import type { FormatRuleOptions, Range } from '../types'
 import { z } from 'zod'
 import { createRule } from '../core/createRule'
+import { applyLengthCheck } from '../internal/lengthCheck'
 import { resolveRange } from '../internal/resolveRange'
 import '../augmentation'
 
@@ -118,11 +119,6 @@ function buildLengthSchema(
   const max = range?.max
 
   return z.string().superRefine((v: string, ctx): void => {
-    if (min !== undefined && v.length < min) {
-      ctx.addIssue({ code: 'custom', params: { code: 'min', namespace: 'base', label, minimum: min } })
-    }
-    if (max !== undefined && v.length > max) {
-      ctx.addIssue({ code: 'custom', params: { code: 'max', namespace: 'base', label, maximum: max } })
-    }
+    applyLengthCheck(v, min, max, label, ctx)
   })
 }

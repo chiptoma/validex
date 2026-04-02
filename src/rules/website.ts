@@ -9,6 +9,8 @@ import type { BaseRuleOptions, Range } from '../types'
 import { z } from 'zod'
 import { createRule } from '../core/createRule'
 import { matchesDomainList } from '../internal/domainMatch'
+import { URL_FORMAT_CHECK } from '../internal/formatChecks'
+import { applyLengthCheck } from '../internal/lengthCheck'
 import { resolveRange } from '../internal/resolveRange'
 
 // ----------------------------------------------------------
@@ -124,12 +126,6 @@ function checkWebsiteConstraints(
 }
 
 // ----------------------------------------------------------
-// CACHED CHECK SCHEMAS
-// ----------------------------------------------------------
-
-const URL_FORMAT_CHECK = z.string().url()
-
-// ----------------------------------------------------------
 // RULE FACTORY
 // ----------------------------------------------------------
 
@@ -160,12 +156,7 @@ export const Website = /* @__PURE__ */ createRule<WebsiteOptions>({
       : z.string()
 
     return base.pipe(z.string().superRefine((v: string, ctx): void => {
-      if (min !== undefined && v.length < min) {
-        ctx.addIssue({ code: 'custom', params: { code: 'min', namespace: 'base', label: lbl, minimum: min } })
-      }
-      if (v.length > max) {
-        ctx.addIssue({ code: 'custom', params: { code: 'max', namespace: 'base', label: lbl, maximum: max } })
-      }
+      applyLengthCheck(v, min, max, lbl, ctx)
       if (!URL_FORMAT_CHECK.safeParse(v).success) {
         ctx.addIssue({ code: 'custom', params: { code: 'invalid', namespace: ns, label: lbl } })
         return
