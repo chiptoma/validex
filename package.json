@@ -25,7 +25,7 @@
     "fastify",
     "tree-shakeable"
   ],
-  "sideEffects": ["./src/augmentation.ts", "./dist/index.js", "./dist/index.mjs", "./dist/index.cjs"],
+  "sideEffects": ["./src/augmentation/index.ts", "./src/augmentation/types.ts", "./src/augmentation/methods.ts", "./dist/index.js", "./dist/index.mjs", "./dist/index.cjs"],
   "exports": {
     ".": {
       "import": {
@@ -206,8 +206,8 @@
     }
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged",
-    "commit-msg": "node --input-type=module -e \"import {readFileSync} from 'fs'; const msg = readFileSync(process.argv[1], 'utf8').trim(); if (!/^(feat|fix|docs|refactor|test|chore|perf|ci|build|style|revert)(\\\\(.+\\\\))?!?:.+/.test(msg)) { console.error('Invalid commit message. Use conventional commits: feat|fix|docs|refactor|test|chore: message'); process.exit(1); }\" \"$1\""
+    "pre-commit": "pnpm lint-staged && pnpm typecheck",
+    "commit-msg": "node --input-type=module -e \"import {readFileSync} from 'fs'; const msg = readFileSync(process.argv[1], 'utf8').trim(); if (!/^(feat|fix|docs|refactor|test|chore|perf|ci|build|style|revert|security)(\\\\(.+\\\\))?!?:.+/.test(msg)) { console.error('Invalid commit message. Use conventional commits: feat|fix|docs|refactor|test|chore: message'); process.exit(1); }\" \"$1\""
   },
   "lint-staged": {
     "*.ts": [

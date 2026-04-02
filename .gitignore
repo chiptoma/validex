@@ -1,6 +1,38 @@
+# Dependencies
 node_modules/
+
+# Build output
 dist/
-coverage/
+build/
 *.tgz
+*.tsbuildinfo
+
+# Test & lint
+coverage/
+.eslintcache
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS files
 .DS_Store
+Thumbs.db
+
+# IDEs & editors
+.idea/
+*.sw[op]
+
+# Frameworks
 .nuxt/
+.turbo/
+
+# Tooling
+.claude/
