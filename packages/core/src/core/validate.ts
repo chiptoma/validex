@@ -8,9 +8,9 @@ import type { NestedErrors, ValidationResult } from '../types'
 import type { IssueRecord } from './crossFieldResolver'
 
 import { z } from 'zod'
-import { resolveCrossFieldConstraints } from './crossFieldResolver'
+import { initAugmentation } from '../augmentation'
 
-import { ensureCustomError } from './customError'
+import { resolveCrossFieldConstraints } from './crossFieldResolver'
 
 // ----------------------------------------------------------
 // HELPERS
@@ -105,7 +105,7 @@ export async function validate<T extends z.ZodType>(
   schema: T,
   data: unknown,
 ): Promise<ValidationResult<z.output<T>>> {
-  ensureCustomError()
+  initAugmentation()
   const result = await schema.safeParseAsync(data)
 
   if (result.success)

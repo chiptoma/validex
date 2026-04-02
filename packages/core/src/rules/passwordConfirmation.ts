@@ -14,11 +14,11 @@
 import type { z } from 'zod'
 import type { BaseRuleOptions } from '../types'
 import type { PasswordOptions } from './password'
+import { initAugmentation } from '../augmentation'
 import { RULE_DEFAULTS } from '../config/defaults'
 import { getConfig } from '../config/index'
 import { mergeThreeTiers } from '../config/merge'
 import { registerCrossField } from '../core/crossFieldRegistry'
-import { ensureCustomError } from '../core/customError'
 import { Password } from './password'
 
 // ----------------------------------------------------------
@@ -49,7 +49,7 @@ export interface PasswordConfirmationOptions extends BaseRuleOptions {
  */
 export const PasswordConfirmation = /* @__PURE__ */ (() => {
   return (options?: Partial<PasswordConfirmationOptions>): unknown => {
-    ensureCustomError()
+    initAugmentation()
 
     /* c8 ignore next 2 -- defensive fallback; RULE_DEFAULTS always has passwordConfirmation key */
     const tier1 = RULE_DEFAULTS['passwordConfirmation'] ?? {}

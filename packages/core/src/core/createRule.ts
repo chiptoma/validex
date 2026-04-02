@@ -5,11 +5,11 @@
 
 import type { BaseRuleOptions, CreateRuleOptions, RuleFactory } from '../types'
 import { z } from 'zod'
+import { initAugmentation } from '../augmentation'
 import { RULE_DEFAULTS } from '../config/defaults'
 import { getConfig } from '../config/index'
 import { mergeThreeTiers } from '../config/merge'
 import { registerCrossField } from './crossFieldRegistry'
-import { ensureCustomError } from './customError'
 import { registerMessages } from './errorMap'
 
 // ----------------------------------------------------------
@@ -117,7 +117,7 @@ export function createRule<T extends BaseRuleOptions>(
   let messagesRegistered = false
 
   return (options?: Partial<T>): unknown => {
-    ensureCustomError()
+    initAugmentation()
     if (!messagesRegistered) {
       if (Object.keys(config.messages).length > 0) {
         registerMessages(config.name, config.messages)

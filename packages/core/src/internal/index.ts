@@ -3,8 +3,5 @@
 // Re-exports types from internal utilities for the public API.
 // ==============================================================================
 
-export { checkAsciiBoundary, checkUnicodeBoundary } from './boundary'
-export { URL_FORMAT_CHECK } from './formatChecks'
-export { applyLengthCheck } from './lengthCheck'
 export type { ResolvedBoundary } from './resolveBoundary'
 export type { ResolvedRange } from './resolveRange'

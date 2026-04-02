@@ -4,7 +4,9 @@
 // ==============================================================================
 
 // Zod type augmentation — must execute before any schema creation
-import './augmentation'
+import { initAugmentation } from './augmentation'
+
+initAugmentation()
 
 // Augmentation option types (for consumers typing chainable method options)
 export type {
