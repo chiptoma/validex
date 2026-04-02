@@ -1,9 +1,9 @@
 {
   "name": "validex-monorepo",
   "type": "module",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0",
   "private": true,
-  "packageManager": "pnpm@9.15.0",
+  "packageManager": "pnpm@10.33.0",
   "description": "Type-safe validation rules built on Zod — monorepo workspace",
   "license": "MIT",
   "engines": {
@@ -27,24 +27,22 @@
     "knip": "knip",
     "size": "size-limit",
     "size:detail": "node --experimental-strip-types packages/core/scripts/measureBundle.ts",
-    "changelog": "conventional-changelog -p conventionalcommits -i CHANGELOG.md -s",
-    "release": "bumpp && pnpm changelog && git add CHANGELOG.md && git commit -m 'chore: changelog' && git push --follow-tags && pnpm -r publish --no-git-checks",
+    "changeset": "changeset",
+    "release": "changeset version && pnpm install --lockfile-only && changeset publish",
     "prepare": "simple-git-hooks"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^7.7.3",
+    "@antfu/eslint-config": "^8.0.0",
     "@arethetypeswrong/cli": "^0.18.2",
-    "@emnapi/core": "^1.9.1",
-    "@emnapi/runtime": "^1.9.1",
+    "@changesets/cli": "^2.30.0",
+    "@emnapi/core": "^1.9.2",
+    "@emnapi/runtime": "^1.9.2",
     "@faker-js/faker": "^10.4.0",
     "@nuxt/kit": "^4.4.2",
     "@nuxt/test-utils": "^4.0.0",
     "@size-limit/preset-small-lib": "^12.0.1",
     "@types/node": "^25.5.0",
     "@vitest/coverage-v8": "^4.1.2",
-    "bumpp": "^11.0.1",
-    "conventional-changelog-cli": "^5.0.0",
-    "conventional-changelog-conventionalcommits": "^9.3.1",
     "eslint": "^10.1.0",
     "eslint-plugin-regexp": "^3.1.0",
     "eslint-plugin-sonarjs": "^4.0.2",
@@ -52,7 +50,7 @@
     "fast-check": "^4.6.0",
     "fastify": "^5.8.4",
     "fastify-plugin": "^5.1.0",
-    "knip": "^6.1.0",
+    "knip": "^6.2.0",
     "lint-staged": "^16.4.0",
     "nuxt": "^4.4.2",
     "publint": "^0.3.18",
@@ -62,16 +60,6 @@
     "typescript": "^5.9.3",
     "vitest": "^4.1.2",
     "zod": "^4.3.6"
-  },
-  "pnpm": {
-    "peerDependencyRules": {
-      "ignoreMissing": [
-        "@typescript-eslint/rule-tester"
-      ],
-      "allowAny": [
-        "eslint"
-      ]
-    }
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged && pnpm typecheck",

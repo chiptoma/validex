@@ -1,3 +1,12 @@
 packages:
   - 'packages/*'
   - 'packages/nuxt/tests/fixtures/nuxt-app'
+
+peerDependencyRules:
+  ignoreMissing:
+    - '@typescript-eslint/rule-tester'
+  allowAny:
+    - eslint
+
+onlyBuiltDependencies:
+  - esbuild

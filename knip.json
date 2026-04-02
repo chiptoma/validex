@@ -5,14 +5,17 @@
       "ignoreDependencies": [
         "@emnapi/core",
         "@emnapi/runtime",
-        "conventional-changelog-conventionalcommits",
-        "eslint-plugin-vitest"
+        "@nuxt/kit",
+        "eslint-plugin-vitest",
+        "fastify",
+        "fastify-plugin",
+        "zod"
       ]
     },
-    "packages/core": {},
-    "packages/nuxt": {
-      "ignore": ["tests/fixtures/nuxt-app/**"]
+    "packages/core": {
+      "ignore": ["tests/smoke/**"]
     },
+    "packages/nuxt": {},
     "packages/fastify": {}
   },
   "ignoreDependencies": ["nuxt"]

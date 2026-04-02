@@ -1,7 +1,7 @@
 {
   "name": "@validex/core",
   "type": "module",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0",
   "description": "Type-safe validation rules built on Zod",
   "author": "Ciprian Toma",
   "license": "MIT",
@@ -24,13 +24,7 @@
     "i18n",
     "tree-shakeable"
   ],
-  "sideEffects": [
-    "./src/augmentation/index.ts",
-    "./src/augmentation/methods.ts",
-    "./dist/index.js",
-    "./dist/index.mjs",
-    "./dist/index.cjs"
-  ],
+  "sideEffects": false,
   "exports": {
     ".": {
       "import": {
