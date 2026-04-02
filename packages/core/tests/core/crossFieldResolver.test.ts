@@ -5,6 +5,7 @@
 
 import { beforeEach, describe, expect, it } from 'vitest'
 import { z } from 'zod'
+import { setup } from '../../src/config/index'
 import { resetConfig } from '../../src/config/store'
 import { registerCrossField } from '../../src/core/crossFieldRegistry'
 import { resolveCrossFieldConstraints } from '../../src/core/crossFieldResolver'
@@ -270,5 +271,92 @@ describe('edge cases', () => {
     const issues = resolveCrossFieldConstraints(schema, parsed, new Set(), parsed)
 
     expect(issues).toEqual([])
+  })
+})
+
+// ----------------------------------------------------------
+// CROSS-FIELD RESOLVER — LABEL & I18N EDGE CASES
+// ----------------------------------------------------------
+
+describe('crossFieldResolver — label and i18n edge cases', () => {
+  it('uses generic label when fallback is generic', () => {
+    resetConfig()
+    _resetCustomErrorFlag()
+    setup({ label: { fallback: 'generic' } })
+    registerCustomError()
+
+    const passwordSchema = z.string()
+    const confirmSchema = z.string()
+    registerCrossField(confirmSchema, { sameAs: 'password' })
+
+    const schema = z.object({ password: passwordSchema, confirm: confirmSchema })
+    const parsed = { password: 'abc123', confirm: 'wrong' }
+    const issues = resolveCrossFieldConstraints(schema, parsed, new Set(), parsed)
+
+    expect(issues).toHaveLength(1)
+    expect(issues[0]?.message).toContain('This field')
+  })
+
+  it('applies label transform to cross-field error labels', () => {
+    resetConfig()
+    _resetCustomErrorFlag()
+    setup({
+      label: { transform: ({ defaultLabel }) => defaultLabel.toUpperCase() },
+    })
+    registerCustomError()
+
+    const passwordSchema = z.string()
+    const confirmSchema = z.string()
+    registerCrossField(confirmSchema, { sameAs: 'password' })
+
+    const schema = z.object({ password: passwordSchema, confirm: confirmSchema })
+    const parsed = { password: 'abc123', confirm: 'wrong' }
+    const issues = resolveCrossFieldConstraints(schema, parsed, new Set(), parsed)
+
+    expect(issues).toHaveLength(1)
+    expect(issues[0]?.message).toContain('CONFIRM')
+  })
+
+  it('translates cross-field errors when i18n t() is configured', () => {
+    resetConfig()
+    _resetCustomErrorFlag()
+    setup({
+      i18n: {
+        enabled: true,
+        t: (key: string) => `translated:${key}`,
+      },
+    })
+    registerCustomError()
+
+    const passwordSchema = z.string()
+    const confirmSchema = z.string()
+    registerCrossField(confirmSchema, { sameAs: 'password' })
+
+    const schema = z.object({ password: passwordSchema, confirm: confirmSchema })
+    const parsed = { password: 'abc123', confirm: 'wrong' }
+    const issues = resolveCrossFieldConstraints(schema, parsed, new Set(), parsed)
+
+    expect(issues).toHaveLength(1)
+    expect(issues[0]?.message).toMatch(/^translated:/)
+  })
+
+  it('returns i18n key when i18n enabled but no t() function', () => {
+    resetConfig()
+    _resetCustomErrorFlag()
+    setup({
+      i18n: { enabled: true },
+    })
+    registerCustomError()
+
+    const passwordSchema = z.string()
+    const confirmSchema = z.string()
+    registerCrossField(confirmSchema, { sameAs: 'password' })
+
+    const schema = z.object({ password: passwordSchema, confirm: confirmSchema })
+    const parsed = { password: 'abc123', confirm: 'wrong' }
+    const issues = resolveCrossFieldConstraints(schema, parsed, new Set(), parsed)
+
+    expect(issues).toHaveLength(1)
+    expect(issues[0]?.message).toContain('validation.messages.confirmation.mismatch')
   })
 })

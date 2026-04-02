@@ -137,3 +137,34 @@ describe('getParams', () => {
     expect(params.label).toBe('This field')
   })
 })
+
+describe('getParams — edge cases', () => {
+  afterEach(() => {
+    resetConfig()
+  })
+
+  it('handles issue with undefined code field', () => {
+    const params = getParams({ path: ['field'] })
+    expect(params.code).toBeDefined()
+    expect(params.namespace).toBe('base')
+    expect(params.code).toBe('format')
+  })
+
+  it('handles issue with no path and no code', () => {
+    const params = getParams({})
+    expect(params.code).toBe('format')
+    expect(params.namespace).toBe('base')
+    expect(params.label).toBe('This field')
+    expect(params.path).toEqual([])
+  })
+
+  it('handles numeric path segment', () => {
+    const issue = {
+      code: 'too_small',
+      minimum: 1,
+      path: ['items', 0],
+    }
+    const params = getParams(issue)
+    expect(params.label).toBe('Item 0')
+  })
+})

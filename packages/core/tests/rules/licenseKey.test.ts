@@ -179,3 +179,31 @@ describe('licenseKey (security)', () => {
     expect(parse(schema, value).success).toBe(false)
   })
 })
+
+describe('licenseKey — edge cases', () => {
+  it('validates single-segment license key', () => {
+    const schema = LicenseKey({ segments: 1, segmentLength: 5 }) as z.ZodType
+    expect(schema.safeParse('ABCDE').success).toBe(true)
+    expect(schema.safeParse('ABC').success).toBe(false)
+  })
+
+  it('validates UUID-type license key', () => {
+    const schema = LicenseKey({ type: 'uuid' }) as z.ZodType
+    expect(schema.safeParse('550e8400-e29b-41d4-a716-446655440000').success).toBe(true)
+    expect(schema.safeParse('not-a-uuid').success).toBe(false)
+  })
+
+  it('rejects lowercase input when normalize is false (format requires uppercase)', () => {
+    const schema = LicenseKey({ normalize: false }) as z.ZodType
+    const result = schema.safeParse('abcde-fghij-klmno-pqrst-uvwxy')
+    expect(result.success).toBe(false)
+  })
+
+  it('preserves already-uppercase input when normalize is false', () => {
+    const schema = LicenseKey({ normalize: false }) as z.ZodType
+    const result = schema.safeParse('ABCDE-FGHIJ-KLMNO-PQRST-UVWXY')
+    expect(result.success).toBe(true)
+    if (result.success)
+      expect(result.data).toBe('ABCDE-FGHIJ-KLMNO-PQRST-UVWXY')
+  })
+})

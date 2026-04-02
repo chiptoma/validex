@@ -270,3 +270,11 @@ describe('dateTime (security)', () => {
     expect(result.success).toBe(false)
   })
 })
+
+describe('dateTime — edge cases', () => {
+  it('validates ISO datetime with default options (no custom format flags)', () => {
+    const schema = DateTime() as z.ZodType
+    expect(schema.safeParse('2024-01-15T10:30:00Z').success).toBe(true)
+    expect(schema.safeParse('not-a-date').success).toBe(false)
+  })
+})

@@ -307,3 +307,19 @@ describe('jwt (security)', () => {
     expect(result.success).toBe(false)
   })
 })
+
+describe('jwt — edge cases', () => {
+  it('rejects JWT without exp claim when checkExpiry is true (missing exp treated as expired)', () => {
+    // JWT with payload: {"sub":"user"} (no exp)
+    const noExp = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyIn0.sNMBcBUDjJBVcTJyQCsCEicdMaCV0H1Nh4gzJAqpiZY'
+    const schema = Jwt({ checkExpiry: true }) as z.ZodType
+    expect(schema.safeParse(noExp).success).toBe(false)
+  })
+
+  it('accepts JWT without nbf claim when checkNotBefore is true (missing nbf treated as valid)', () => {
+    // JWT with payload: {"sub":"user"} (no nbf)
+    const noNbf = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyIn0.sNMBcBUDjJBVcTJyQCsCEicdMaCV0H1Nh4gzJAqpiZY'
+    const schema = Jwt({ checkNotBefore: true }) as z.ZodType
+    expect(schema.safeParse(noNbf).success).toBe(true)
+  })
+})

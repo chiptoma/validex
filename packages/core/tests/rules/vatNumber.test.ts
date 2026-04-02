@@ -177,3 +177,12 @@ describe('vatNumber (security)', () => {
     expect(result.success).toBe(false)
   })
 })
+
+describe('vatNumber — edge cases', () => {
+  it('preserves case when normalize is false', async () => {
+    const schema = VatNumber({ normalize: false }) as z.ZodType
+    const result = await schema.safeParseAsync('de123456789')
+    // Without uppercase normalization, DE pattern may fail
+    expect(result.success).toBe(false)
+  })
+})

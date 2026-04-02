@@ -323,3 +323,32 @@ describe('personName (disallowChars)', () => {
     expect(getErrorCodes(schema, 'John Doe')).toContain('invalid')
   })
 })
+
+describe('personName — edge cases', () => {
+  it('preserves inner text without trimming when normalize is false', async () => {
+    const schema = PersonName({ normalize: false }) as z.ZodType
+    const result = await schema.safeParseAsync('Alice Smith')
+    expect(result.success).toBe(true)
+    if (result.success)
+      expect(result.data).toBe('Alice Smith')
+  })
+
+  it('rejects leading whitespace when normalize is false due to boundary check', async () => {
+    const schema = PersonName({ normalize: false }) as z.ZodType
+    const result = await schema.safeParseAsync('  Alice Smith  ')
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects consecutive identical characters exceeding max (case-sensitive)', async () => {
+    const schema = PersonName({ consecutive: { max: 2 } }) as z.ZodType
+    // 'aaa' has 3 consecutive identical lowercase 'a' chars
+    const result = await schema.safeParseAsync('Baaab Smith')
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects names exceeding word max', async () => {
+    const schema = PersonName({ words: { max: 3 } }) as z.ZodType
+    const result = await schema.safeParseAsync('John James Robert Smith')
+    expect(result.success).toBe(false)
+  })
+})

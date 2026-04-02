@@ -209,3 +209,12 @@ describe('creditCard (security)', () => {
     expect(result.success).toBe(false)
   })
 })
+
+describe('creditCard — edge cases', () => {
+  it('rejects unrecognized card prefix with allowIssuers constraint', async () => {
+    const schema = CreditCard({ allowIssuers: ['visa'] }) as z.ZodType
+    // 9999 prefix not recognized by any issuer
+    const result = await schema.safeParseAsync('9999999999999993')
+    expect(result.success).toBe(false)
+  })
+})

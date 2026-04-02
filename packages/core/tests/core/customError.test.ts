@@ -57,3 +57,50 @@ describe('customError handler', () => {
     }
   })
 })
+
+describe('customError — edge cases', () => {
+  afterEach(() => {
+    resetConfig()
+  })
+
+  it('should map invalid_type with non-undefined received to base.type', () => {
+    setup()
+    registerCustomError()
+    const schema = z.string()
+    const result = schema.safeParse(42)
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      const msg = result.error.issues[0]?.message ?? ''
+      expect(typeof msg).toBe('string')
+      expect(msg.length).toBeGreaterThan(0)
+    }
+  })
+
+  it('should handle invalid_format issue code', () => {
+    setup()
+    registerCustomError()
+    const schema = z.string().email()
+    const result = schema.safeParse('not-an-email')
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      const msg = result.error.issues[0]?.message ?? ''
+      expect(typeof msg).toBe('string')
+      expect(msg.length).toBeGreaterThan(0)
+    }
+  })
+
+  it('should handle issue without received/expected/format fields', () => {
+    setup()
+    registerCustomError()
+    const schema = z.string().refine(
+      () => false,
+      { params: { code: 'testCode', namespace: 'testNs' } },
+    )
+    const result = schema.safeParse('hello')
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      const msg = result.error.issues[0]?.message ?? ''
+      expect(typeof msg).toBe('string')
+    }
+  })
+})

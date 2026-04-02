@@ -210,3 +210,12 @@ describe('postalCode (security)', () => {
     expect(result.success).toBe(false)
   })
 })
+
+describe('postalCode — edge cases', () => {
+  it('rejects whitespace when normalize is false', async () => {
+    const schema = PostalCode({ country: 'US', normalize: false }) as z.ZodType
+    const result = await schema.safeParseAsync(' 90210 ')
+    // Without trim, the leading/trailing space causes format failure
+    expect(result.success).toBe(false)
+  })
+})

@@ -302,3 +302,11 @@ describe('phone (security)', () => {
     expect(result.success).toBe(false)
   })
 })
+
+describe('phone — edge cases', () => {
+  it('rejects phone from non-allowed country', async () => {
+    const schema = Phone({ allowCountries: ['US'] }) as z.ZodType
+    const result = await schema.safeParseAsync('+447911123456')
+    expect(result.success).toBe(false)
+  })
+})

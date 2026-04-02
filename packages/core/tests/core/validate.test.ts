@@ -83,3 +83,38 @@ describe('validate', () => {
     expect(emailError).toBeDefined()
   })
 })
+
+describe('validate — edge cases', () => {
+  afterEach(() => {
+    resetConfig()
+  })
+
+  it('handles null input for object schema gracefully', async () => {
+    const schema = z.object({ name: z.string() })
+    const result = await validate(schema, null)
+    expect(result.success).toBe(false)
+    expect(result.errors).toBeDefined()
+    expect(Object.keys(result.errors).length).toBeGreaterThan(0)
+  })
+
+  it('handles string input for object schema gracefully', async () => {
+    const schema = z.object({ name: z.string() })
+    const result = await validate(schema, 'not an object')
+    expect(result.success).toBe(false)
+    expect(result.errors).toBeDefined()
+  })
+
+  it('handles undefined input for object schema gracefully', async () => {
+    const schema = z.object({ name: z.string() })
+    const result = await validate(schema, undefined)
+    expect(result.success).toBe(false)
+    expect(result.errors).toBeDefined()
+  })
+
+  it('handles numeric input for object schema gracefully', async () => {
+    const schema = z.object({ name: z.string() })
+    const result = await validate(schema, 42)
+    expect(result.success).toBe(false)
+    expect(result.errors).toBeDefined()
+  })
+})

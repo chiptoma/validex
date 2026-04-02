@@ -212,3 +212,24 @@ describe('username (security)', () => {
     expect(parse(schema, value).success).toBe(false)
   })
 })
+
+describe('username — edge cases', () => {
+  it('blocks custom reserved word with case-sensitive matching', async () => {
+    // ignoreCase: false means exact match is required for custom reserved words
+    const schema = Username({ blockReserved: true, reservedWords: ['mycustom'], ignoreCase: false }) as z.ZodType
+    const fail = await schema.safeParseAsync('mycustom')
+    expect(fail.success).toBe(false)
+  })
+
+  it('blocks custom reserved word with default case-insensitive matching', async () => {
+    const schema = Username({ blockReserved: true, reservedWords: ['admin'] }) as z.ZodType
+    const result = await schema.safeParseAsync('admin')
+    expect(result.success).toBe(false)
+  })
+
+  it('uses only built-in reserved list when reservedWords is not provided', async () => {
+    const schema = Username({ blockReserved: true }) as z.ZodType
+    const result = await schema.safeParseAsync('admin')
+    expect(result.success).toBe(false)
+  })
+})

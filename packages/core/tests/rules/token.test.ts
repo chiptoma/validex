@@ -181,3 +181,12 @@ describe('token (security)', () => {
     expect(parse(schema, value).success).toBe(false)
   })
 })
+
+describe('token — edge cases', () => {
+  it('preserves whitespace when normalize is false', () => {
+    const schema = Token({ type: 'hex', normalize: false }) as z.ZodType
+    const result = schema.safeParse(' abcdef1234567890abcdef1234567890 ')
+    // Without trim, leading space fails hex format
+    expect(result.success).toBe(false)
+  })
+})

@@ -291,3 +291,13 @@ describe('url (security)', () => {
     expect(result.success).toBe(false)
   })
 })
+
+describe('url — edge cases', () => {
+  it('preserves original URL casing when normalize is false', async () => {
+    const schema = Url({ normalize: false }) as z.ZodType
+    const result = await schema.safeParseAsync('https://Example.COM/Path')
+    expect(result.success).toBe(true)
+    if (result.success)
+      expect(result.data).toBe('https://Example.COM/Path')
+  })
+})

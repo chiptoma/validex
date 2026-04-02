@@ -179,3 +179,20 @@ describe('slug (security)', () => {
     expect(parse(schema, value).success).toBe(false)
   })
 })
+
+describe('slug — edge cases', () => {
+  it('rejects uppercase when normalize is false (format requires lowercase)', () => {
+    const schema = Slug({ normalize: false }) as z.ZodType
+    const result = schema.safeParse('My-Slug')
+    // Without normalize, input is not lowered, and slug pattern requires lowercase
+    expect(result.success).toBe(false)
+  })
+
+  it('preserves already-valid input when normalize is false', () => {
+    const schema = Slug({ normalize: false }) as z.ZodType
+    const result = schema.safeParse('my-slug')
+    expect(result.success).toBe(true)
+    if (result.success)
+      expect(result.data).toBe('my-slug')
+  })
+})

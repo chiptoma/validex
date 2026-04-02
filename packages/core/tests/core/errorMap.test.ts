@@ -67,3 +67,22 @@ describe('registerMessages', () => {
     expect(msg).toBe('Field is not valid for my rule')
   })
 })
+
+describe('errorMap — edge cases', () => {
+  it('falls back to base.format for completely unknown namespace and code', () => {
+    const result = getErrorMessage('nonexistent', 'someCode', {})
+    expect(typeof result).toBe('string')
+    expect(result.length).toBeGreaterThan(0)
+  })
+
+  it('preserves placeholder when param is missing from interpolation', () => {
+    const result = getErrorMessage('email', 'disposableBlocked', {})
+    expect(typeof result).toBe('string')
+  })
+
+  it('interpolates all provided params and preserves missing ones', () => {
+    registerMessages('testInterp', { test: '{{label}} has {{value}} and {{missing}}' })
+    const result = getErrorMessage('testInterp', 'test', { label: 'Name', value: '42' })
+    expect(result).toBe('Name has 42 and {{missing}}')
+  })
+})

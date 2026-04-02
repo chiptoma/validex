@@ -5,8 +5,10 @@
 // NOTE: Cross-field matching (sameAs) is tested in integration tests.
 // ==============================================================================
 
-import type { z } from 'zod'
 import { describe, expect, it } from 'vitest'
+import { z } from 'zod'
+import { validate } from '../../src/core/validate'
+import { Password } from '../../src/rules/password'
 import { PasswordConfirmation } from '../../src/rules/passwordConfirmation'
 
 // ----------------------------------------------------------
@@ -165,5 +167,40 @@ describe('passwordConfirmation (null and undefined)', () => {
 
   it('rejects undefined input', () => {
     expect(parse(schema, undefined).success).toBe(false)
+  })
+})
+
+describe('passwordConfirmation — edge cases', () => {
+  it('accepts custom passwordField name', async () => {
+    const schema = z.object({
+      pass: Password() as z.ZodType,
+      passConfirm: PasswordConfirmation({ passwordField: 'pass' }) as z.ZodType,
+    })
+    const result = await validate(schema, { pass: 'Str0ng!Pass', passConfirm: 'Str0ng!Pass' })
+    expect(result.success).toBe(true)
+  })
+
+  it('passes emptyToUndefined option through to Password', async () => {
+    const schema = PasswordConfirmation({ emptyToUndefined: false }) as z.ZodType
+    const result = await schema.safeParseAsync('')
+    expect(result.success).toBe(false)
+  })
+
+  it('passes normalize option through to Password', async () => {
+    const schema = PasswordConfirmation({ normalize: false }) as z.ZodType
+    const result = await schema.safeParseAsync('  Str0ng!Pass  ')
+    expect(result.success).toBe(true)
+    if (result.success)
+      expect(result.data).toBe('  Str0ng!Pass  ')
+  })
+
+  it('passes customFn option through to Password', async () => {
+    const schema = PasswordConfirmation({
+      customFn: v => v.includes('X') || 'Must contain X',
+    }) as z.ZodType
+    const fail = await schema.safeParseAsync('Str0ng!Pass')
+    expect(fail.success).toBe(false)
+    const ok = await schema.safeParseAsync('Str0ng!PassX')
+    expect(ok.success).toBe(true)
   })
 })

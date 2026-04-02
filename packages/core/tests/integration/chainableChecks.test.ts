@@ -363,3 +363,64 @@ describe('pipe early-return regression', () => {
     expect(codes).not.toContain('maxWords')
   })
 })
+
+// ----------------------------------------------------------
+// NON-STRING VALUE GUARDS
+// ----------------------------------------------------------
+
+describe('chainable methods — non-string value guards', () => {
+  it('noHtml skips validation for non-string values', () => {
+    const schema = z.unknown().noHtml()
+    expect(schema.safeParse(123).success).toBe(true)
+  })
+
+  it('noEmails skips validation for non-string values', () => {
+    const schema = z.unknown().noEmails()
+    expect(schema.safeParse(42).success).toBe(true)
+  })
+
+  it('noUrls skips validation for non-string values', () => {
+    const schema = z.unknown().noUrls()
+    expect(schema.safeParse(false).success).toBe(true)
+  })
+
+  it('noSpaces skips validation for non-string values', () => {
+    const schema = z.unknown().noSpaces()
+    expect(schema.safeParse(null).success).toBe(true)
+  })
+
+  it('maxWords skips validation for non-string values', () => {
+    const schema = z.unknown().maxWords({ max: 5 })
+    expect(schema.safeParse(42).success).toBe(true)
+  })
+
+  it('minWords skips validation for non-string values', () => {
+    const schema = z.unknown().minWords({ min: 1 })
+    expect(schema.safeParse(null).success).toBe(true)
+  })
+
+  it('maxConsecutive skips validation for non-string values', () => {
+    const schema = z.unknown().maxConsecutive({ max: 3 })
+    expect(schema.safeParse(true).success).toBe(true)
+  })
+
+  it('onlyAlpha skips validation for non-string values', () => {
+    const schema = z.unknown().onlyAlpha()
+    expect(schema.safeParse(99).success).toBe(true)
+  })
+
+  it('onlyAlphanumericSpaceHyphen skips validation for non-string values', () => {
+    const schema = z.unknown().onlyAlphanumericSpaceHyphen()
+    expect(schema.safeParse(99).success).toBe(true)
+  })
+
+  it('hasUppercase skips validation for non-string values', () => {
+    const schema = z.unknown().hasUppercase({ min: 1 })
+    expect(schema.safeParse(123).success).toBe(true)
+  })
+
+  it('hasDigits skips validation for non-string values', () => {
+    const schema = z.unknown().hasDigits({ min: 1 })
+    expect(schema.safeParse(undefined).success).toBe(true)
+  })
+})

@@ -76,3 +76,31 @@ describe('collapseWhitespace', () => {
     expect(collapseWhitespace('  hello   world  ')).toBe('hello world')
   })
 })
+
+describe('transforms — edge cases', () => {
+  it('handles trailing hyphen in toTitleCase producing empty segment', () => {
+    const result = toTitleCase('hello-')
+    expect(result).toBe('Hello-')
+  })
+
+  it('handles consecutive hyphens in toTitleCase', () => {
+    const result = toTitleCase('hello--world')
+    expect(result).toBe('Hello--World')
+  })
+
+  it('handles single character in toTitleCase', () => {
+    expect(toTitleCase('a')).toBe('A')
+  })
+
+  it('handles empty string in toTitleCase', () => {
+    expect(toTitleCase('')).toBe('')
+  })
+
+  it('handles whitespace-only string in emptyToUndefined', () => {
+    expect(emptyToUndefined('  ')).toBe('  ')
+  })
+
+  it('handles empty string in toSlug', () => {
+    expect(toSlug('')).toBe('')
+  })
+})

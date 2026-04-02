@@ -336,3 +336,13 @@ describe('website (security)', () => {
     expect(result.success).toBe(false)
   })
 })
+
+describe('website — edge cases', () => {
+  it('preserves case when normalize is false', async () => {
+    const schema = Website({ normalize: false }) as z.ZodType
+    const result = await schema.safeParseAsync('HTTPS://EXAMPLE.COM')
+    expect(result.success).toBe(true)
+    if (result.success)
+      expect(result.data).toBe('HTTPS://EXAMPLE.COM')
+  })
+})
