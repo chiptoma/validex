@@ -171,7 +171,7 @@ validex/
   "dependencies": {
     "libphonenumber-js": "^1.11.0",
     "postcode-validator": "^3.10.15",
-    "disposable-email-domains": "^1.0.0"
+    "disposable-email-domains-js": "^1.0.0"
   },
   "devDependencies": {
     "vitest": "^3.0.0",
@@ -986,13 +986,13 @@ These delegate format validation entirely to Zod. validex adds error surface own
 |---|---|---|---|
 | 22 | PostalCode | `postcode-validator` | §7.12 |
 | 23 | Phone | `libphonenumber-js/core` | §7.7 |
-| 24 | Email | `disposable-email-domains` | §7.2 |
+| 24 | Email | `disposable-email-domains-js` | §7.2 |
 | 25 | Text | checks + `libphonenumber-js` (for `noPhoneNumbers`) | §7.18 |
 
 **Implementation notes:**
 - PostalCode: dynamic import `postcode-validator`. Call `postalCodes.validate(country, value)`. If country unsupported and no `regex`/`customFn`, throw config error at creation time.
 - Phone: dynamic import metadata JSON. Use `parsePhoneNumber(value, { defaultCountry, extract: false })`. Check `.isValid()`. Apply `requireMobile` via `.getType()`. Apply `requireCountryCode` by checking input starts with `+`. Apply `format` via `.format('E164')` etc. Apply `allowCountries`/`blockCountries`.
-- Email: `z.email()` for format. Apply `blockPlusAlias` (check for `+`). Apply `allowSubdomains` (count dots in domain). Apply `blockDomains`/`allowDomains`. Dynamic import `disposable-email-domains` for `blockDisposable`.
+- Email: `z.email()` for format. Apply `blockPlusAlias` (check for `+`). Apply `allowSubdomains` (count dots in domain). Apply `blockDomains`/`allowDomains`. Dynamic import `disposable-email-domains-js` for `blockDisposable`.
 - Text: chain `containsEmail`, `containsUrl`, `containsPhoneNumber` (uses libphonenumber), `containsHtml` checks based on `no*` options. Apply `maxWords`, `maxConsecutive`.
 
 #### Tier 5: Async Data Rules

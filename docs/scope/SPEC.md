@@ -1289,7 +1289,7 @@ validex uses a combination of external npm packages and bundled curated lists fo
 
 |Data Set          |Used By                    |Source                              |Approach          |
 |------------------|---------------------------|------------------------------------|------------------|
-|Disposable domains|Email (`blockDisposable`)  |`disposable-email-domains` npm pkg  |External dep      |
+|Disposable domains|Email (`blockDisposable`)  |`disposable-email-domains-js` npm pkg  |External dep      |
 |Phone metadata    |Phone                      |`libphonenumber-js/core` + metadata |External dep      |
 |Postal code patterns|PostalCode               |`postcode-validator` npm pkg           |External dep      |
 |Common passwords  |Password (`blockCommon`)   |Breach compilations (10k+ entries)  |Bundled           |
@@ -1544,7 +1544,7 @@ interface EmailOptions extends BaseRuleOptions {
 
 **Note:** Normalization (lowercase + trim) is controlled by `normalize` in `BaseRuleOptions` (default: `true`).
 
-**Dependency:** `disposable-email-domains` npm package for disposable domain detection (dynamic import on first use, community-maintained).
+**Dependency:** `disposable-email-domains-js` npm package for disposable domain detection (dynamic import on first use, community-maintained).
 
 **Error codes:** `email.invalid`, `email.plusAliasBlocked`, `email.disposableBlocked`, `email.domainBlocked`, `email.domainNotAllowed`, `email.subdomainNotAllowed`
 
@@ -2254,7 +2254,7 @@ const securityInputs = [
 |`zod` ^3.25.0 || ^4.0.0               |peer dependency   |Everything       |Always                         |
 |`libphonenumber-js/core`   |regular dependency|Phone            |In bundle if Phone imported    |
 |`postcode-validator`          |regular dependency|PostalCode       |Dynamic import on first use    |
-|`disposable-email-domains` |regular dependency|Email (blockDisposable)|Dynamic import on first use|
+|`disposable-email-domains-js` |regular dependency|Email (blockDisposable)|Dynamic import on first use|
 
 **Verification:**
 

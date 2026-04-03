@@ -205,11 +205,8 @@ function applyDisposableCheck(schema: z.ZodType, label?: string): z.ZodType {
       catch {
         /* v8 ignore start -- fallback dynamic import when not preloaded */
         try {
-          const disposable = (
-            await import('disposable-email-domains')
-          // SAFETY: disposable-email-domains default export is a string array by package contract
-          ).default as readonly string[]
-          return !disposable.includes(domain)
+          const { isDisposableEmailDomain } = await import('disposable-email-domains-js')
+          return !isDisposableEmailDomain(domain)
         }
         catch {
           return true

@@ -682,7 +682,7 @@ schema.parse('2024-01-15T10:30:00Z') // OK if not in the future
 | `blockDisposable` | `boolean` | `false` | Block disposable/temporary email providers. Async -- requires `parseAsync`. |
 | `allowSubdomains` | `boolean` | `true` | Allow subdomain email addresses. |
 
-**Dependency:** `disposable-email-domains` (dynamic import, only when `blockDisposable: true`)
+**Dependency:** `disposable-email-domains-js` (dynamic import, only when `blockDisposable: true`)
 
 **Normalization:** lowercase + trim
 
