@@ -11,6 +11,7 @@ build/
 /coverage/
 packages/*/coverage/
 .eslintcache
+.tmp-size-test/
 
 # Logs
 *.log

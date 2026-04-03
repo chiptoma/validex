@@ -6,7 +6,6 @@
         "@emnapi/core",
         "@emnapi/runtime",
         "@nuxt/kit",
-        "eslint-plugin-vitest",
         "fastify",
         "fastify-plugin",
         "zod"
