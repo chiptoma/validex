@@ -65,9 +65,9 @@ importers:
 
   packages/core:
     dependencies:
-      disposable-email-domains:
-        specifier: ^1.0.62
-        version: 1.0.62
+      disposable-email-domains-js:
+        specifier: ^1.24.0
+        version: 1.24.0
       libphonenumber-js:
         specifier: ^1.12.41
         version: 1.12.41
@@ -2923,8 +2923,8 @@ packages:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==}
     engines: {node: '>=8'}
 
-  disposable-email-domains@1.0.62:
-    resolution: {integrity: sha512-LBQvhRw7mznQTPoyZbsmYeNOZt1pN5aCsx4BAU/3siVFuiM9f2oyKzUaB8v1jbxFjE3aYqYiMo63kAL4pHgfWQ==}
+  disposable-email-domains-js@1.24.0:
+    resolution: {integrity: sha512-IQz+XkhJYCaT58q2l9Pz5MFAHsHp1vJs3smTeEVpv7/6rvubc9RMbaFb8rQgBoIounXPAJyura5ynovFKrlQrg==}
 
   dom-serializer@2.0.0:
     resolution: {integrity: sha512-wIkAryiqt/nV5EQKqQpo3SToSOV9J0DnbJqwK7Wv/Trc92zIAYZ4FlMu+JPFW1DfGFt81ZTCGgDEabffXeLyJg==}
@@ -8618,7 +8618,7 @@ snapshots:
     dependencies:
       path-type: 4.0.0
 
-  disposable-email-domains@1.0.62: {}
+  disposable-email-domains-js@1.24.0: {}
 
   dom-serializer@2.0.0:
     dependencies:

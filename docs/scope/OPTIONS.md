@@ -64,7 +64,7 @@ interface FormatRuleOptions extends BaseRuleOptions {
 | `blockDisposable` | `boolean` | `false` (async) |
 | `allowSubdomains` | `boolean` | `true` |
 
-**Dep:** `disposable-email-domains` (dynamic import for `blockDisposable`)
+**Dep:** `disposable-email-domains-js` (dynamic import for `blockDisposable`)
 **Normalize:** lowercase + trim
 **Errors:** `invalid`, `plusAliasBlocked`, `disposableBlocked`, `domainBlocked`, `domainNotAllowed`, `subdomainNotAllowed`
 
@@ -472,7 +472,7 @@ interface FormatRuleOptions extends BaseRuleOptions {
 | `zod` ^3.25.0 || ^4.0.0 | peer | Everything | Always |
 | `libphonenumber-js/core` | regular | Phone, Text (`noPhoneNumbers`) | Bundle if Phone/Text imported |
 | `postcode-validator` | regular | PostalCode | Dynamic import on first use |
-| `disposable-email-domains` | regular | Email (`blockDisposable`) | Dynamic import on first use |
+| `disposable-email-domains-js` | regular | Email (`blockDisposable`) | Dynamic import on first use |
 
 ---
 

@@ -120,7 +120,7 @@
     "zod": "^3.25.0 || ^4.0.0"
   },
   "dependencies": {
-    "disposable-email-domains": "^1.0.62",
+    "disposable-email-domains-js": "^1.24.0",
     "libphonenumber-js": "^1.12.41",
     "postcode-validator": "^3.10.15"
   },
