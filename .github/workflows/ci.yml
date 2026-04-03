@@ -5,7 +5,7 @@ on:
     branches: [dev, main]
     tags: ['v*']
   pull_request:
-    branches: [main]
+    branches: [main, dev]
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -45,8 +45,10 @@ jobs:
           cd packages/fastify && pnpm attw --pack --ignore-rules no-resolution unexpected-module-syntax && cd ../..
       - name: Dead code check
         run: pnpm knip
+      - name: Smoke test
+        run: pnpm test:smoke
       - name: Bundle size check
-        run: pnpm size
+        run: pnpm test:bundle-size
 
   publish:
     needs: quality
