@@ -1,4 +1,8 @@
+import { resolve } from 'node:path'
+
 import { defineConfig } from 'tsup'
+
+const dir = (p: string): string => resolve(__dirname, `src/${p}`)
 
 export default defineConfig({
   entry: {
@@ -14,4 +18,17 @@ export default defineConfig({
   clean: true,
   sourcemap: false,
   splitting: true,
+  esbuildOptions(options) {
+    options.alias = {
+      '@checks': dir('checks'),
+      '@rules': dir('rules'),
+      '@core': dir('core'),
+      '@config': dir('config'),
+      '@internal': dir('internal'),
+      '@loaders': dir('loaders'),
+      '@utilities': dir('utilities'),
+      '@augmentation': dir('augmentation'),
+      '@validex-types': dir('types.ts'),
+    }
+  },
 })
