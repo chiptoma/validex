@@ -6,6 +6,7 @@
 
 import type { ValidationResult } from '@validex/core'
 import type { z } from 'zod'
+
 import { validate } from '@validex/core'
 
 // ----------------------------------------------------------

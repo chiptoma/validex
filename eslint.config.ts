@@ -1,5 +1,10 @@
+// ==============================================================================
+// ESLINT CONFIG — validex monorepo
+// Extends @antfu/eslint-config (type: lib) with stricter rules for a
+// validation library. Each override block documents what it changes and why.
+// ==============================================================================
+
 import antfu from '@antfu/eslint-config'
-import pluginRegexp from 'eslint-plugin-regexp'
 import sonarjs from 'eslint-plugin-sonarjs'
 
 export default antfu(
@@ -31,18 +36,18 @@ export default antfu(
     ignores: ['**/fixtures', '**/dist', '**/smoke'],
   },
 
-  // Strict TypeScript — scoped to .ts files for type-aware rules
+  // -- STRICT TS: Promotes no-explicit-any and no-non-null-assertion from
+  // -- antfu's defaults (off) to error. A validation library must never
+  // -- use `any` or `!` without explicit justification.
+  // -- Also adds max-lines, max-lines-per-function, max-depth, and
+  // -- unicorn/filename-case which antfu does not include.
+  // -- no-console is set to warn (antfu defaults to error with allow).
   {
     files: ['**/*.ts'],
     rules: {
-      'ts/consistent-type-definitions': ['error', 'interface'],
-      'ts/explicit-function-return-type': 'error',
       'ts/no-explicit-any': 'error',
-      'ts/strict-boolean-expressions': 'error',
-      'ts/consistent-type-imports': ['error', { prefer: 'type-imports' }],
       'ts/no-non-null-assertion': 'error',
       'no-console': 'warn',
-      'prefer-const': 'error',
       'max-lines': ['error', { max: 300, skipBlankLines: true, skipComments: true }],
       'max-lines-per-function': ['error', { max: 50, skipBlankLines: true, skipComments: true }],
       'max-depth': ['error', 3],
@@ -61,13 +66,47 @@ export default antfu(
           'vitest.config.ts',
           'tsup.config.ts',
           'eslint.config.ts',
-          'PLAN.md',
         ],
       }],
     },
   },
 
-  // JSDoc on public exports — only for src/ files
+  // -- IMPORT SORTING: Override antfu's perfectionist defaults to enforce
+  // -- blank lines between groups and recognize @-prefixed path aliases
+  // -- as internal imports.
+  {
+    rules: {
+      'perfectionist/sort-imports': ['error', {
+        groups: [
+          'type-import',
+          ['type-parent', 'type-sibling', 'type-index', 'type-internal'],
+          'value-builtin',
+          'value-external',
+          'value-internal',
+          ['value-parent', 'value-sibling', 'value-index'],
+          'side-effect',
+        ],
+        newlinesBetween: 1,
+        internalPattern: [
+          '^@checks',
+          '^@rules',
+          '^@core',
+          '^@config',
+          '^@internal',
+          '^@loaders',
+          '^@utilities',
+          '^@augmentation',
+          '^@locales',
+          '^@validex-types',
+        ],
+        order: 'asc',
+        type: 'natural',
+      }],
+    },
+  },
+
+  // -- JSDOC: Promotes antfu's warn-level defaults to error and requires
+  // -- JSDoc on all exported symbols in src/. Required for a public API.
   {
     files: ['packages/*/src/**/*.ts'],
     rules: {
@@ -89,17 +128,8 @@ export default antfu(
     },
   },
 
-  // Regex quality — critical for a validation library
-  pluginRegexp.configs['flat/recommended'],
-  {
-    rules: {
-      'regexp/no-super-linear-backtracking': 'error',
-      'regexp/no-misleading-unicode-character': 'error',
-      'regexp/strict': 'error',
-    },
-  },
-
-  // Code quality and complexity
+  // -- SONARJS: Cognitive complexity and code quality rules not included
+  // -- in antfu. Critical for readable validation logic.
   {
     plugins: { sonarjs },
     rules: {
@@ -112,7 +142,7 @@ export default antfu(
     },
   },
 
-  // Scripts — relaxed rules
+  // -- SCRIPTS: Relaxed for build/tooling scripts that don't ship.
   {
     files: ['packages/*/scripts/**/*.ts'],
     rules: {
@@ -124,7 +154,9 @@ export default antfu(
     },
   },
 
-  // Test quality — relaxed rules
+  // -- TESTS: Relaxed limits (large describe blocks), no JSDoc, no
+  // -- duplicate string (assertion messages repeat). Enforces vitest
+  // -- best practices.
   {
     files: ['packages/*/tests/**/*.ts'],
     rules: {
@@ -139,9 +171,10 @@ export default antfu(
     },
   },
 
-  // Config/script files — not in tsconfig scope, disable type-aware rules
+  // -- CONFIG FILES: Not in tsconfig project scope. Disable type-aware
+  // -- rules that require type information to avoid parser errors.
   {
-    files: ['**/*.config.ts', 'packages/*/scripts/**/*.ts'],
+    files: ['**/*.config.ts', '**/*.config.base.ts', 'packages/*/scripts/**/*.ts'],
     rules: {
       'ts/strict-boolean-expressions': 'off',
       'ts/no-unsafe-argument': 'off',

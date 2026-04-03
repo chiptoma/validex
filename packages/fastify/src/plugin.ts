@@ -11,9 +11,12 @@ import type {
   FastifyRequest,
 } from 'fastify'
 import type { z } from 'zod'
+
 import type { ValidateSource } from './decorators'
+
 import { preloadData, setup, validate } from '@validex/core'
 import fp from 'fastify-plugin'
+
 import { validateData, validateRequest } from './decorators'
 
 // ----------------------------------------------------------
