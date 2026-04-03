@@ -1,9 +1,9 @@
 # validex
 
-[![npm version](https://img.shields.io/npm/v/validex)](https://www.npmjs.com/package/validex)
+[![npm version](https://img.shields.io/npm/v/@validex/core)](https://www.npmjs.com/package/@validex/core)
 [![build](https://img.shields.io/github/actions/workflow/status/chiptoma/validex/ci.yml)](https://github.com/chiptoma/validex/actions)
 [![TypeScript 5.0+](https://img.shields.io/badge/TypeScript-5.0%2B-blue)](https://www.typescriptlang.org/)
-[![license MIT](https://img.shields.io/npm/l/validex)](./LICENSE)
+[![license MIT](https://img.shields.io/npm/l/@validex/core)](./LICENSE)
 
 **Type-safe validation rules built on Zod** — tree-shakeable, so you only ship what you use.
 
@@ -81,7 +81,7 @@ import { Email } from '@validex/core'
 - **One error surface** — every rule returns standard Zod errors; `validate()` wraps them into a structured `ValidationResult` with `errors`, `firstErrors`, `nestedErrors`, and `issues`.
 - **25 rules** — covering identity, auth, networking, finance, and general text.
 - **i18n-ready** — swap error messages via key mode, `t()` function, or label transforms. Keys follow `validation.messages.{namespace}.{code}`.
-- **Tree-shakeable** — import 2 rules and ship under 25 kB. Import all 25 and ship under 40 kB (uncompressed, excluding zod).
+- **Tree-shakeable** — import 2 rules and ship ~6 kB Brotli. Import all 25 and ship ~13 kB Brotli (excluding zod). Data files load on demand.
 - **Framework adapters** — first-class Nuxt and Fastify integrations.
 
 ## Rules
@@ -273,18 +273,33 @@ const schema = Text({
 
 ## Bundle Sizes
 
-Measured with esbuild + Brotli compression, excluding `zod` peer dependency and on-demand data files:
+Every rule shares a ~5 kB core (Brotli compressed). Each additional rule adds 0.1–0.8 kB. Measured with esbuild (`--splitting`, Brotli), excluding `zod` peer dependency.
 
-| Import | Raw (minified) | Brotli | Gzip |
-| --- | --- | --- | --- |
-| Core only (setup + validate) | 6.6 kB | 1.6 kB | 1.9 kB |
-| Email + Password | 13.7 kB | 3.4 kB | 3.9 kB |
-| Form (Email+Password+PersonName+Phone) | 16.9 kB | 4.3 kB | 4.8 kB |
-| All 25 rules | 43.7 kB | 10.5 kB | 11.7 kB |
+| Import | Initial bundle (Brotli) |
+| --- | --- |
+| Core only (setup + validate) | 5.1 kB |
+| Single rule (e.g. Email) | 5.7 kB |
+| Email + Password | 6.0 kB |
+| Form (Email + Password + PersonName + Phone) | 6.9 kB |
+| All 25 rules | 13.0 kB |
 
-Data files (common passwords, disposable domains, country codes, IBAN patterns) are loaded on demand and not included in the base bundle.
+Data files are lazy-loaded on demand and are **not** included in the initial bundle:
 
-Run `pnpm size:detail` for per-rule measurements.
+| Data | Size (Brotli) | Loaded when |
+| --- | --- | --- |
+| Password list — basic (top 100) | 0.5 kB | `Password({ blockCommon: 'basic' })` |
+| Password list — moderate (top 1,000) | 3.8 kB | `Password({ blockCommon: 'moderate' })` |
+| Password list — strict (top 10,000) | 35.5 kB | `Password({ blockCommon: 'strict' })` |
+| Country codes | 2.4 kB | `Country()` first use |
+| IBAN patterns | 0.7 kB | `Iban()` first use |
+| Reserved usernames | 0.8 kB | `Username({ blockReserved: true })` |
+| Currency codes | 0.3 kB | `Currency()` first use |
+| VAT patterns | 0.3 kB | `VatNumber()` first use |
+| Credit card prefixes | 0.3 kB | `CreditCard()` first use |
+
+Phone validation, postal codes, and disposable email detection use external packages (`libphonenumber-js`, `postcode-validator`, `disposable-email-domains`) which are peer/optional dependencies not included in these measurements.
+
+Run `pnpm test:bundle-size` for per-rule measurements.
 
 ## License
 
