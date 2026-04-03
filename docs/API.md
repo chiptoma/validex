@@ -39,9 +39,9 @@ Complete reference for the validex public API. Every option, default value, and 
   - [Uuid](#uuidoptions)
   - [VatNumber](#vatnumberoptions)
   - [Website](#websiteoptions)
-- [Checks (`validex/checks`)](#checks-validexchecks)
+- [Checks (`@validex/core/checks`)](#checks-validexcorechecks)
 - [Chainable Methods](#chainable-methods)
-- [Utilities (`validex/utilities`)](#utilities-validexutilities)
+- [Utilities (`@validex/core/utilities`)](#utilities-validexcoreutilities)
   - [`sameAs`](#sameas)
   - [`requiredWhen`](#requiredwhen)
 - [Adapters](#adapters)
@@ -1431,12 +1431,12 @@ schema.parse('https://mysite.com') // OK
 
 ---
 
-## Checks (`validex/checks`)
+## Checks (`@validex/core/checks`)
 
 Pure utility functions for character composition, content detection, string limits, character restrictions, and transforms. All functions are stateless and have zero side effects.
 
 ```ts
-import { hasUppercase, containsEmail, maxWords } from 'validex/checks'
+import { hasUppercase, containsEmail, maxWords } from '@validex/core/checks'
 ```
 
 ### Composition Checks
@@ -1494,7 +1494,7 @@ All Zod types gain these methods via module augmentation when `validex` is impor
 
 ```ts
 import { z } from 'zod'
-import 'validex' // activates chainable methods
+import '@validex/core' // activates chainable methods
 
 const schema = z.string()
   .hasUppercase({ min: 1 })
@@ -1580,16 +1580,16 @@ The main entry has side effects (prototype patching). `package.json` declares:
 "sideEffects": ["./src/augmentation.ts", "./dist/index.js", "./dist/index.mjs", "./dist/index.cjs"]
 ```
 
-Subpath exports (`validex/checks`, `validex/rules`) remain side-effect-free.
+Subpath exports (`@validex/core/checks`, `@validex/core/rules`) remain side-effect-free.
 
 ---
 
-## Utilities (`validex/utilities`)
+## Utilities (`@validex/core/utilities`)
 
 Cross-field refinement helpers for Zod object schemas.
 
 ```ts
-import { sameAs, requiredWhen } from 'validex/utilities'
+import { sameAs, requiredWhen } from '@validex/core/utilities'
 ```
 
 ### `sameAs`
@@ -1619,7 +1619,7 @@ function sameAs(
 ```ts
 import { z } from 'zod'
 import { Password } from '@validex/core'
-import { sameAs } from 'validex/utilities'
+import { sameAs } from '@validex/core/utilities'
 
 const schema = z.object({
   password: Password(),
@@ -1657,7 +1657,7 @@ A field is considered empty when its value is `undefined`, `null`, or `""`.
 
 ```ts
 import { z } from 'zod'
-import { requiredWhen } from 'validex/utilities'
+import { requiredWhen } from '@validex/core/utilities'
 
 const schema = z.object({
   accountType: z.string(),
