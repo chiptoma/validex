@@ -49,7 +49,7 @@ let _initialized = false
  * Registers the custom error handler and patches ZodType.prototype
  * with chainable validation and transform methods. Idempotent.
  */
-// eslint-disable-next-line max-lines-per-function
+// eslint-disable-next-line max-lines-per-function -- initAugmentation patches 22 methods on ZodType.prototype; cannot split without breaking idempotency guard
 export function initAugmentation(): void {
   if (_initialized)
     return
