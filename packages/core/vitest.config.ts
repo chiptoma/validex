@@ -29,6 +29,7 @@ export default mergeConfig(baseConfig, defineConfig({
   test: {
     setupFiles: ['./tests/_support/setup.ts'],
     coverage: {
+      // mergeConfig concatenates with base exclude ['src/**/index.ts']
       exclude: ['src/data/**', 'src/types.ts'],
       thresholds: {
         lines: 98,

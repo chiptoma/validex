@@ -5,7 +5,7 @@
   "fixed": [["@validex/core", "@validex/nuxt", "@validex/fastify"]],
   "linked": [],
   "access": "public",
-  "baseBranch": "dev",
+  "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": []
 }
