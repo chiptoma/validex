@@ -1,0 +1,41 @@
+name: Bug Report
+description: Report a bug in validex
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: What happened? What did you expect?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Minimal code or steps to reproduce.
+      render: typescript
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: |
+        - validex version:
+        - Zod version:
+        - Node.js version:
+        - Framework (if applicable):
+    validations:
+      required: true
+
+  - type: textarea
+    id: error-output
+    attributes:
+      label: Error Output
+      description: Paste any error messages or stack traces.
+      render: text
+    validations:
+      required: false

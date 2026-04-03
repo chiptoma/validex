@@ -6,11 +6,11 @@ Thanks for your interest in contributing. This guide covers setup, conventions, 
 
 ```bash
 # Clone and install
-git clone <repo-url>
+git clone https://github.com/chiptoma/validex.git
 cd validex
 pnpm install
 
-# Build
+# Build all packages
 pnpm build
 
 # Run tests
@@ -44,10 +44,25 @@ packages/
 │       ├── integration/  # Cross-rule and schema composition tests
 │       ├── e2e/          # End-to-end consumer tests
 │       ├── property/     # Property-based tests (fast-check)
-│       └── fuzz/         # Fuzz tests
+│       └── fuzz/         # Fuzz tests with faker data
 ├── nuxt/             # @validex/nuxt — Nuxt module adapter
 └── fastify/          # @validex/fastify — Fastify plugin adapter
 ```
+
+### Path Aliases (core package)
+
+The core package uses TypeScript path aliases to avoid deep relative imports:
+
+| Alias | Maps to |
+|-------|---------|
+| `@rules/email` | `src/rules/email.ts` |
+| `@core/createRule` | `src/core/createRule.ts` |
+| `@checks/composition` | `src/checks/composition.ts` |
+| `@config/store` | `src/config/store.ts` |
+| `@internal/resolveRange` | `src/internal/resolveRange.ts` |
+| `@loaders/phoneParser` | `src/loaders/phoneParser.ts` |
+
+Use aliases in both `src/` and `tests/`. Keep relative `./` imports for same-directory files.
 
 ## Branching
 
@@ -79,18 +94,15 @@ Valid prefixes: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `perf`, `ci`
 
 ## Changesets
 
-This monorepo uses [changesets](https://github.com/changesets/changesets) for versioning.
+This monorepo uses [changesets](https://github.com/changesets/changesets) for versioning and release notes.
 
-1. Make your changes on a feature branch.
-2. Run `pnpm changeset` and follow the prompts to describe the change and select affected packages.
-3. Commit the generated changeset file along with your code changes.
-4. Open a PR. The changeset is consumed during the release process:
+When your PR includes a user-facing change (new feature, bug fix, breaking change):
 
-```bash
-pnpm changeset        # create a changeset
-pnpm changeset:version # bump versions (maintainers only)
-pnpm release          # publish to npm (maintainers only)
-```
+1. Run `pnpm changeset` and follow the prompts.
+2. Select the affected packages and describe the change.
+3. Commit the generated `.changeset/*.md` file with your code.
+
+Releases are automated via GitHub Actions when changesets are merged to `main`.
 
 ## Adding a New Rule
 
@@ -110,8 +122,8 @@ pnpm release          # publish to npm (maintainers only)
 6. **Write tests** — create `packages/core/tests/unit/rules/yourRule.test.ts`. Include `testRuleContract()` to verify the standard contract:
 
 ```ts
-import { testRuleContract } from '../helpers/ruleContract'
-import { YourRule } from '../../../src/rules/yourRule'
+import { testRuleContract } from '../../_support/helpers/testRule'
+import { YourRule } from '@rules/yourRule'
 
 testRuleContract(YourRule, {
   valid: ['good-input-1', 'good-input-2'],
@@ -144,13 +156,13 @@ testRuleContract(YourRule, {
 - **Max 300 lines per file** — split into modules when a file grows beyond this.
 - **No commented-out code** — delete unused code; git keeps history.
 - **No empty catch blocks** — handle errors properly or re-throw.
+- **Import sorting** — handled automatically by `pnpm lint:fix`. Blank lines between import groups.
 
 ## Pull Request Checklist
 
 Before opening a PR, verify:
 
 - [ ] `pnpm check:full` passes
-- [ ] `pnpm test:bundle-size` passes
 - [ ] `pnpm test:smoke` passes
 - [ ] Changeset added (if user-facing change): `pnpm changeset`
 - [ ] New code has tests
