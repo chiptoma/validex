@@ -3,7 +3,7 @@
 ## Reporting a Vulnerability
 
 If you discover a security vulnerability, please report it
-responsibly by emailing security@validex.dev instead of opening a
+responsibly by emailing dev@bootes.cloud instead of opening a
 public issue.
 
 We will acknowledge your report within 48 hours and provide
