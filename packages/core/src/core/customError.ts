@@ -65,7 +65,7 @@ function adaptIssue(issue: Record<string, unknown>): IssueAdapter {
     : undefined
 
   return {
-    /* c8 ignore start -- defensive ternary guards; Zod always provides code/expected/received as strings when present */
+    /* v8 ignore start -- defensive ternary guards; Zod always provides code/expected/received as strings when present */
     code: typeof issue['code'] === 'string' ? issue['code'] : undefined,
     path,
     minimum: issue['minimum'],
@@ -74,7 +74,7 @@ function adaptIssue(issue: Record<string, unknown>): IssueAdapter {
     received: typeof issue['received'] === 'string' ? issue['received'] : undefined,
     input: issue['input'],
     format: typeof issue['format'] === 'string' ? issue['format'] : undefined,
-    /* c8 ignore stop */
+    /* v8 ignore stop */
     // SAFETY: Zod issues have untyped params; narrowed via isValidexIssue guard
     params: issue['params'] as Readonly<Record<string, unknown>> | undefined,
   }
@@ -126,11 +126,11 @@ export function registerCustomError(): void {
       const shouldHandle = isValidexIssue(params)
         || (adapted.code !== undefined && NATIVE_CODES.has(adapted.code))
 
-      /* c8 ignore start -- defensive fallthrough; prev handler may be undefined or return undefined */
+      /* v8 ignore start -- defensive fallthrough; prev handler may be undefined or return undefined */
       if (!shouldHandle) {
         return prev?.(issue) ?? undefined
       }
-      /* c8 ignore stop */
+      /* v8 ignore stop */
 
       const errorParams = getParams(adapted)
       const config = getConfig()

@@ -83,7 +83,7 @@ function applyCustomFn(
   label?: string,
 ): z.ZodType {
   return schema.superRefine(async (value: unknown, ctx) => {
-    /* c8 ignore next 2 -- defensive type guard; schema is z.string() so value is always string */
+    /* v8 ignore next 2 -- defensive type guard; schema is z.string() so value is always string */
     if (typeof value !== 'string')
       return
     const result: true | string = await customFn(value)

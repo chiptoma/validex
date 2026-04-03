@@ -49,7 +49,7 @@ export interface EmailOptions extends BaseRuleOptions {
  * @returns The domain after the @ sign, or empty string.
  */
 function extractDomain(email: string): string {
-  /* c8 ignore next -- defensive fallback; email already validated to contain @ */
+  /* v8 ignore next -- defensive fallback; email already validated to contain @ */
   return email.split('@')[1] ?? ''
 }
 
@@ -61,7 +61,7 @@ function extractDomain(email: string): string {
  * @returns The local part before the @ sign, or empty string.
  */
 function extractLocalPart(email: string): string {
-  /* c8 ignore next -- defensive fallback; split always returns at least one element */
+  /* v8 ignore next -- defensive fallback; split always returns at least one element */
   return email.split('@')[0] ?? ''
 }
 
@@ -86,7 +86,7 @@ export const Email = /* @__PURE__ */ createRule<EmailOptions>({
   messages: {},
   build: (opts: EmailOptions): unknown => {
     const range = resolveRange(opts.length)
-    /* c8 ignore next -- defensive fallback; defaults always provide length */
+    /* v8 ignore next -- defensive fallback; defaults always provide length */
     const maxLen = range?.max ?? 254
     const minLen = range?.min
     const ns = 'email'
@@ -162,10 +162,10 @@ function applyBusinessRules(
  */
 function applyDomainFilters(schema: z.ZodType, opts: EmailOptions): z.ZodType {
   let result = schema
-  /* c8 ignore start -- defensive fallback; defaults always provide allow/block arrays */
+  /* v8 ignore start -- defensive fallback; defaults always provide allow/block arrays */
   const allow = opts.allowDomains ?? []
   const block = opts.blockDomains ?? []
-  /* c8 ignore stop */
+  /* v8 ignore stop */
 
   if (allow.length > 0) {
     result = result.pipe(z.string().superRefine((v: string, ctx): void => {
@@ -203,7 +203,7 @@ function applyDisposableCheck(schema: z.ZodType, label?: string): z.ZodType {
         return !preloaded.has(domain)
       }
       catch {
-        /* c8 ignore start -- fallback dynamic import when not preloaded */
+        /* v8 ignore start -- fallback dynamic import when not preloaded */
         try {
           const disposable = (
             await import('disposable-email-domains')
@@ -214,7 +214,7 @@ function applyDisposableCheck(schema: z.ZodType, label?: string): z.ZodType {
         catch {
           return true
         }
-        /* c8 ignore stop */
+        /* v8 ignore stop */
       }
     },
     { params: { code: 'disposableBlocked', namespace: 'email', label } },

@@ -63,10 +63,10 @@ export const Currency = /* @__PURE__ */ createRule<CurrencyOptions>({
   defaults: {},
   messages: {},
   build: (opts: CurrencyOptions): z.ZodType => {
-    /* c8 ignore start -- defensive fallback; defaults always provide allow/block */
+    /* v8 ignore start -- defensive fallback; defaults always provide allow/block */
     const allow = opts.allowCurrencies ?? []
     const block = opts.blockCurrencies ?? []
-    /* c8 ignore stop */
+    /* v8 ignore stop */
 
     let schema: z.ZodType = opts.normalize !== false
       ? z.string().transform((v: string): string => v.trim().toUpperCase())

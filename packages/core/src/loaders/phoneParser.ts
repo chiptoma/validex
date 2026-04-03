@@ -61,7 +61,7 @@ export async function loadPhoneParser(
       parser = mod.parsePhoneNumberWithError
       break
     }
-    /* c8 ignore start -- custom metadata requires user-provided path; not testable without fixtures */
+    /* v8 ignore start -- custom metadata requires user-provided path; not testable without fixtures */
     case 'custom': {
       if (customPath === undefined || customPath === '') {
         throw new Error('validex: Phone metadata "custom" requires customMetadataPath')
@@ -75,7 +75,7 @@ export async function loadPhoneParser(
         core.parsePhoneNumberWithError(v, c as CountryCode, meta.default as Parameters<typeof core.parsePhoneNumberWithError>[2])) as PhoneParser
       break
     }
-    /* c8 ignore stop */
+    /* v8 ignore stop */
   }
 
   cache.set(metadata, parser)

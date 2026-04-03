@@ -39,7 +39,7 @@ export interface IpAddressOptions extends BaseRuleOptions {
  */
 function isPrivateIpv4(ip: string): boolean {
   const parts = ip.split('.').map(Number)
-  /* c8 ignore next 2 -- defensive fallback; ip already passed Zod .ipv4() so split always yields 4 parts */
+  /* v8 ignore next 2 -- defensive fallback; ip already passed Zod .ipv4() so split always yields 4 parts */
   const first = parts[0] ?? -1
   const second = parts[1] ?? -1
   if (first === 10)
