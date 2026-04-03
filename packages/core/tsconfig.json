@@ -1,6 +1,27 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@checks": ["src/checks/index.ts"],
+      "@checks/*": ["src/checks/*"],
+      "@rules": ["src/rules/index.ts"],
+      "@rules/*": ["src/rules/*"],
+      "@core": ["src/core/index.ts"],
+      "@core/*": ["src/core/*"],
+      "@config": ["src/config/index.ts"],
+      "@config/*": ["src/config/*"],
+      "@internal": ["src/internal/index.ts"],
+      "@internal/*": ["src/internal/*"],
+      "@loaders": ["src/loaders/index.ts"],
+      "@loaders/*": ["src/loaders/*"],
+      "@utilities": ["src/utilities/index.ts"],
+      "@utilities/*": ["src/utilities/*"],
+      "@augmentation": ["src/augmentation/index.ts"],
+      "@augmentation/*": ["src/augmentation/*"],
+      "@locales/*": ["src/locales/*"],
+      "@validex-types": ["src/types.ts"]
+    },
     "types": ["node", "vitest/globals"],
     "outDir": "dist"
   },

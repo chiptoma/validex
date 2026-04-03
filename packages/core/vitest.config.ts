@@ -1,18 +1,35 @@
 // ==============================================================================
 // VITEST CONFIG — @validex/core
-// Extends shared base with core-specific setup and coverage thresholds.
+// Extends shared base with core-specific setup, aliases, and coverage thresholds.
 // ==============================================================================
+
+import { resolve } from 'node:path'
 
 import { defineConfig, mergeConfig } from 'vitest/config'
 
 import baseConfig from '../../vitest.config.base'
 
+const dir = (p: string): string => resolve(__dirname, `src/${p}`)
+
 export default mergeConfig(baseConfig, defineConfig({
+  resolve: {
+    alias: {
+      '@checks': dir('checks'),
+      '@rules': dir('rules'),
+      '@core': dir('core'),
+      '@config': dir('config'),
+      '@internal': dir('internal'),
+      '@loaders': dir('loaders'),
+      '@utilities': dir('utilities'),
+      '@augmentation': dir('augmentation'),
+      '@locales': dir('locales'),
+      '@validex-types': dir('types.ts'),
+    },
+  },
   test: {
     setupFiles: ['./tests/_support/setup.ts'],
     coverage: {
-      include: ['src/**/*.ts'],
-      exclude: ['src/**/index.ts', 'src/data/**', 'src/types.ts'],
+      exclude: ['src/data/**', 'src/types.ts'],
       thresholds: {
         lines: 98,
         functions: 98,
