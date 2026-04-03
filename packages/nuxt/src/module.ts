@@ -7,7 +7,9 @@
 // ==============================================================================
 
 import type { Resolver } from '@nuxt/kit'
+import type { NuxtModule } from '@nuxt/schema'
 import type { GlobalConfig, I18nConfig, PreloadOptions } from '@validex/core'
+
 import { addImports, createResolver, defineNuxtModule } from '@nuxt/kit'
 import { preloadData, setup } from '@validex/core'
 
@@ -40,13 +42,15 @@ export interface ValidexNuxtOptions {
 // NUXT MODULE (DEFAULT EXPORT)
 // ----------------------------------------------------------
 
-export default defineNuxtModule<ValidexNuxtOptions>({
+// SAFETY: explicit type avoids TS2742 — inferred NuxtModule type references @nuxt/schema via .pnpm path
+const validexModule: NuxtModule<ValidexNuxtOptions> = /* v8 ignore next -- Nuxt module setup runs inside Nuxt runtime; covered by E2E test via @nuxt/test-utils */ defineNuxtModule<ValidexNuxtOptions>({
   meta: {
     name: 'validex',
     configKey: 'validex',
     compatibility: { nuxt: '>=3.0.0' },
   },
   defaults: {},
+  /* v8 ignore start -- Nuxt module setup callback requires running Nuxt instance */
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
@@ -61,7 +65,9 @@ export default defineNuxtModule<ValidexNuxtOptions>({
       await preloadData(options.preload)
     }
   },
+  /* v8 ignore stop */
 })
+export default validexModule
 
 // ----------------------------------------------------------
 // AUTO-IMPORTS
@@ -74,7 +80,7 @@ export default defineNuxtModule<ValidexNuxtOptions>({
  *
  * @param resolver - The Nuxt module resolver instance.
  */
-function registerAutoImports(resolver: Resolver): void {
+function registerAutoImports(resolver: Resolver): void { /* v8 ignore start -- requires Nuxt runtime */
   const core = '@validex/core'
 
   addImports([
@@ -107,7 +113,7 @@ function registerAutoImports(resolver: Resolver): void {
     { name: 'setup', as: 'validexSetup', from: core },
     { name: 'useValidation', from: resolver.resolve('./composables') },
   ])
-}
+} /* v8 ignore stop */
 
 // ----------------------------------------------------------
 // I18N DETECTION
@@ -121,7 +127,7 @@ function registerAutoImports(resolver: Resolver): void {
  * @param modules - The raw modules array from nuxt.options.modules.
  * @param options - The validex module options.
  */
-function detectAndEnableI18n(
+function detectAndEnableI18n(/* v8 ignore start -- internal to Nuxt module setup */
   modules: readonly unknown[],
   options: ValidexNuxtOptions,
 ): void {
@@ -138,7 +144,7 @@ function detectAndEnableI18n(
   if (hasI18n && options.i18n?.enabled !== true) {
     setup({ i18n: { enabled: true } })
   }
-}
+} /* v8 ignore stop */
 
 // ----------------------------------------------------------
 // HELPERS

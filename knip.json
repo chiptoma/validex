@@ -5,17 +5,15 @@
       "ignoreDependencies": [
         "@emnapi/core",
         "@emnapi/runtime",
-        "@nuxt/kit",
-        "fastify",
-        "fastify-plugin",
         "zod"
       ]
     },
     "packages/core": {
       "ignore": ["tests/smoke/**"]
     },
-    "packages/nuxt": {},
+    "packages/nuxt": {
+      "ignoreDependencies": ["nuxt"]
+    },
     "packages/fastify": {}
-  },
-  "ignoreDependencies": ["nuxt"]
+  }
 }
