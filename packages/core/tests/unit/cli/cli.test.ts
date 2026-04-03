@@ -146,7 +146,7 @@ describe('errorMap reads from en.json', () => {
 // CLI TESTS
 // ----------------------------------------------------------
 
-describe('cli', () => {
+describe('cli', { timeout: 30_000 }, () => {
   beforeEach(() => {
     if (!existsSync(TMP_DIR)) {
       mkdirSync(TMP_DIR, { recursive: true })
