@@ -14,6 +14,9 @@
     "url": "git+https://github.com/chiptoma/validex.git",
     "directory": "packages/nuxt"
   },
+  "bugs": {
+    "url": "https://github.com/chiptoma/validex/issues"
+  },
   "keywords": [
     "validex",
     "nuxt",
@@ -21,6 +24,7 @@
     "validation",
     "composable"
   ],
+  "sideEffects": false,
   "exports": {
     ".": {
       "import": {
