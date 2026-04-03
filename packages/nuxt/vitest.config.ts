@@ -1,14 +1,17 @@
-import { defineConfig } from 'vitest/config'
+// ==============================================================================
+// VITEST CONFIG — @validex/nuxt
+// Extends shared base with package-specific coverage settings.
+// ==============================================================================
 
-export default defineConfig({
+import { defineConfig, mergeConfig } from 'vitest/config'
+
+import baseConfig from '../../vitest.config.base'
+
+export default mergeConfig(baseConfig, defineConfig({
   test: {
-    globals: true,
-    passWithNoTests: true,
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'lcov', 'html'],
       include: ['src/**/*.ts'],
       exclude: ['src/**/index.ts'],
     },
   },
-})
+}))
