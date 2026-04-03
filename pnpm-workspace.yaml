@@ -1,6 +1,6 @@
 packages:
   - 'packages/*'
-  - 'packages/nuxt/tests/fixtures/nuxt-app'
+  - 'packages/nuxt/tests/_support/fixtures/nuxt-app'
 
 peerDependencyRules:
   ignoreMissing:

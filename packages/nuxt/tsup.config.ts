@@ -6,5 +6,5 @@ export default defineConfig({
   dts: true,
   clean: true,
   sourcemap: false,
-  external: ['@validex/core', '@nuxt/kit', 'nuxt'],
+  external: ['@validex/core', '@nuxt/kit', '@nuxt/schema', 'nuxt'],
 })
