@@ -209,10 +209,6 @@ function applyDisposableCheck(schema: z.ZodType, label?: string): z.ZodType {
           return !isDisposableEmailDomain(domain)
         }
         catch {
-          // Graceful degradation: if the disposable domain package
-          // fails to load, allow the email rather than blocking
-          // legitimate users. The preload path (getDisposableDomains)
-          // is the primary check; this fallback rarely executes.
           return true
         }
         /* v8 ignore stop */
