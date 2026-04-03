@@ -5,6 +5,7 @@
   "private": true,
   "packageManager": "pnpm@10.33.0",
   "description": "Type-safe validation rules built on Zod — monorepo workspace",
+  "author": "Ciprian Toma",
   "license": "MIT",
   "engines": {
     "node": ">=22"
@@ -27,7 +28,6 @@
     "check:full": "pnpm check && pnpm -r build && pnpm -r exec publint && pnpm knip && pnpm test:bundle-size",
     "knip": "knip",
     "changeset": "changeset",
-    "release": "changeset version && pnpm install --lockfile-only && changeset publish",
     "prepare": "simple-git-hooks"
   },
   "devDependencies": {

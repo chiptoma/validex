@@ -1096,7 +1096,7 @@ Every rule must have tests covering:
 
 Already built in Phase 1. Verify it matches §11.1-11.2 exactly.
 
-### 5.2 Nuxt Adapter (`src/adapters/nuxt/`)
+### 5.2 Nuxt Adapter (`packages/nuxt/src/`)
 
 **~75 lines of code.** Three files:
 
@@ -1116,7 +1116,7 @@ Already built in Phase 1. Verify it matches §11.1-11.2 exactly.
 
 **Ref:** SPEC.md §12.1-12.5
 
-### 5.3 Fastify Adapter (`src/adapters/fastify/`)
+### 5.3 Fastify Adapter (`packages/fastify/src/`)
 
 **~60 lines of code.** Three files:
 

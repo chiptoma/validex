@@ -1104,12 +1104,12 @@ Parameters available in message templates:
 
 ```typescript
 // i18n disabled (default) — English messages
-import { Email } from "validex";
+import { Email } from "@validex/core";
 const result = Email({ blockDisposable: true }).safeParse("bad@mailinator.com");
 // result.error.issues[0].message → "Disposable email addresses are not allowed"
 
 // i18n enabled with t() function — fully translated automatically
-import { setup } from "validex";
+import { setup } from "@validex/core";
 import i18next from "i18next";
 
 setup({
