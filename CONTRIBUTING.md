@@ -24,25 +24,29 @@ Requires **Node.js 22+** and **pnpm 10+**.
 
 ## Project Structure
 
-The codebase is organized around rules, checks, utilities, and adapters. For a detailed architecture walkthrough, see [`docs/BUILD.md`](./docs/BUILD.md).
-
 ```
 packages/
 ├── core/             # @validex/core — main validation library
 │   ├── src/
 │   │   ├── rules/        # 25 validation rule factories
-│   │   ├── checks/       # 23 pure check functions
-│   │   ├── utilities/    # validate(), setup(), createRule(), schema helpers
-│   │   ├── data/         # Bundled data files (loaded on demand)
-│   │   └── locales/      # i18n message templates
+│   │   ├── checks/       # 22 pure check functions
+│   │   ├── core/         # validate(), createRule(), getParams(), errorMap
+│   │   ├── config/       # setup(), configure(), getConfig(), resetConfig()
+│   │   ├── utilities/    # sameAs(), requiredWhen()
+│   │   ├── augmentation/ # Zod type augmentation (22 chainable methods)
+│   │   ├── internal/     # Shared helpers (not exported)
+│   │   ├── data/         # Bundled JSON data files (loaded on demand)
+│   │   ├── loaders/      # Thin lazy-loading wrappers for data/
+│   │   ├── locales/      # i18n message templates (en.json)
+│   │   └── cli/          # CLI for generating locale files
 │   └── tests/
 │       ├── unit/         # Unit tests per module
 │       ├── integration/  # Cross-rule and schema composition tests
 │       ├── e2e/          # End-to-end consumer tests
 │       ├── property/     # Property-based tests (fast-check)
 │       └── fuzz/         # Fuzz tests
-├── nuxt/             # @validex/nuxt — Nuxt 4 module adapter
-└── fastify/          # @validex/fastify — Fastify 5 plugin adapter
+├── nuxt/             # @validex/nuxt — Nuxt module adapter
+└── fastify/          # @validex/fastify — Fastify plugin adapter
 ```
 
 ## Branching
@@ -73,38 +77,60 @@ chore: bump dependencies
 
 Valid prefixes: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `perf`, `ci`, `build`, `style`, `revert`.
 
+## Changesets
+
+This monorepo uses [changesets](https://github.com/changesets/changesets) for versioning.
+
+1. Make your changes on a feature branch.
+2. Run `pnpm changeset` and follow the prompts to describe the change and select affected packages.
+3. Commit the generated changeset file along with your code changes.
+4. Open a PR. The changeset is consumed during the release process:
+
+```bash
+pnpm changeset        # create a changeset
+pnpm changeset:version # bump versions (maintainers only)
+pnpm release          # publish to npm (maintainers only)
+```
+
 ## Adding a New Rule
 
-1. **Use `createRule()`** — every rule is a factory built with the `createRule` helper.
-2. **Follow an existing rule as a template** — start from a similar rule (e.g., `packages/core/src/rules/email.ts` for simple rules, `packages/core/src/rules/password.ts` for rules with data loading).
-3. **Define an options interface** — export `YourRuleOptions` alongside the factory.
-4. **Add tests** — create `packages/core/tests/unit/rules/yourRule.test.ts`. Include `testRuleContract()` to verify the rule satisfies the standard contract (valid inputs pass, invalid inputs fail, options override behavior).
-5. **Export from barrel** — add your rule to `packages/core/src/rules/index.ts`.
-6. **Update documentation** — add the rule to the rules table in `README.md`.
+1. **Create the rule file** — `packages/core/src/rules/yourRule.ts`. Use `createRule()` and follow an existing rule as a template (e.g., `email.ts` for simple rules, `password.ts` for rules with data loading).
 
-### Rule contract test
+2. **Define the options interface** — export `YourRuleOptions` extending `BaseRuleOptions` (or `FormatRuleOptions` if the rule supports regex override).
 
-Every rule test file should include the shared contract:
+3. **Add error messages** — add entries to `packages/core/src/locales/en.json` under a new namespace matching your rule's `name`.
+
+4. **Export from barrel files:**
+   - Add the rule factory to `packages/core/src/rules/index.ts`
+   - Add the options type to `packages/core/src/types.ts` (RuleDefaults)
+   - Add re-exports to `packages/core/src/index.ts`
+
+5. **Add defaults** — if the rule has non-trivial defaults, add them to `packages/core/src/config/defaults.ts`.
+
+6. **Write tests** — create `packages/core/tests/unit/rules/yourRule.test.ts`. Include `testRuleContract()` to verify the standard contract:
 
 ```ts
 import { testRuleContract } from '../helpers/ruleContract'
-import { myRule } from '../../src/rules/myRule'
+import { YourRule } from '../../../src/rules/yourRule'
 
-testRuleContract(myRule, {
+testRuleContract(YourRule, {
   valid: ['good-input-1', 'good-input-2'],
   invalid: ['bad-input-1', 'bad-input-2'],
 })
 ```
 
+7. **Update documentation** — add the rule to the rules table in `README.md` and `docs/API.md`.
+
 ## Running Tests
 
 | Command | Scope |
-| --- | --- |
+|---------|-------|
 | `pnpm test` | All tests across all packages |
 | `pnpm test:unit` | Unit tests only |
 | `pnpm test:integration` | Integration tests only |
 | `pnpm test:e2e` | End-to-end tests only |
-| `pnpm test:property` | Property-based tests only |
+| `pnpm test:property` | Property-based tests (fast-check) |
+| `pnpm test:fuzz` | Fuzz tests |
 | `pnpm test:smoke` | Consumer smoke test (npm pack + install) |
 | `pnpm test:bundle-size` | Bundle size regression test |
 | `pnpm test:coverage` | All tests with coverage report |
@@ -123,9 +149,11 @@ testRuleContract(myRule, {
 
 Before opening a PR, verify:
 
-- [ ] `pnpm lint` passes with no warnings
-- [ ] `pnpm typecheck` passes
-- [ ] `pnpm test` passes (all tests green)
+- [ ] `pnpm check:full` passes
+- [ ] `pnpm test:bundle-size` passes
+- [ ] `pnpm test:smoke` passes
+- [ ] Changeset added (if user-facing change): `pnpm changeset`
 - [ ] New code has tests
 - [ ] Exports have JSDoc comments
 - [ ] Commit messages follow Conventional Commits
+- [ ] Docs updated if needed (README, API.md, I18N.md)

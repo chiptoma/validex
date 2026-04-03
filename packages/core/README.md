@@ -1,9 +1,9 @@
-# validex
+# @validex/core
 
-[![npm version](https://img.shields.io/npm/v/validex)](https://www.npmjs.com/package/validex)
+[![npm version](https://img.shields.io/npm/v/@validex/core)](https://www.npmjs.com/package/@validex/core)
 [![build](https://img.shields.io/github/actions/workflow/status/chiptoma/validex/ci.yml)](https://github.com/chiptoma/validex/actions)
 [![TypeScript 5.0+](https://img.shields.io/badge/TypeScript-5.0%2B-blue)](https://www.typescriptlang.org/)
-[![license MIT](https://img.shields.io/npm/l/validex)](./LICENSE)
+[![license MIT](https://img.shields.io/npm/l/@validex/core)](https://github.com/chiptoma/validex/blob/main/LICENSE)
 
 **Type-safe validation rules built on Zod** — tree-shakeable, so you only ship what you use.
 
@@ -11,10 +11,6 @@
 
 ```bash
 pnpm add @validex/core zod
-
-# Optional framework adapters
-pnpm add @validex/nuxt    # for Nuxt projects
-pnpm add @validex/fastify # for Fastify projects
 ```
 
 ## Quick Start
@@ -37,6 +33,7 @@ import { Password } from '@validex/core'
 const schema = Password({
   length: { min: 10 },
   uppercase: { min: 2 },
+  blockCommon: 'basic',
 })
 
 schema.parse('ABcdefgh1!') // OK — 10+ chars, 2 uppercase, 1 digit, 1 special
@@ -61,64 +58,84 @@ const result = await validate(schema, {
 if (result.success) {
   console.log(result.data) // typed as { email: string; password: string }
 } else {
-  console.log(result.errors)      // Record<string, string[]>
-  console.log(result.firstErrors) // Record<string, string>
+  console.log(result.errors)      // { email: ['...'], password: ['...'] }
+  console.log(result.firstErrors) // { email: '...', password: '...' }
 }
 ```
 
-## Tree-Shaking
-
-Import only what you use. Bundlers (Vite, Rollup, esbuild, webpack 5) eliminate unused rules at build time. Every rule factory is annotated with `/*#__PURE__*/` so dead-code elimination works out of the box.
-
-```ts
-// Only Email lands in your bundle
-import { Email } from '@validex/core'
-```
-
-## Why validex?
-
-- **One config system** — `setup()` applies defaults globally, per-rule, or per-call. Options merge in three tiers: built-in defaults < `setup()` config < per-call options.
-- **One error surface** — every rule returns standard Zod errors; `validate()` wraps them into a structured `ValidationResult` with `errors`, `firstErrors`, `nestedErrors`, and `issues`.
-- **25 rules** — covering identity, auth, networking, finance, and general text.
-- **i18n-ready** — swap error messages via key mode, `t()` function, or label transforms. Keys follow `validation.messages.{namespace}.{code}`.
-- **Tree-shakeable** — import 2 rules and ship under 25 kB. Import all 25 and ship under 40 kB (uncompressed, excluding zod).
-- **Framework adapters** — first-class Nuxt and Fastify integrations.
-
 ## Rules
 
-| Rule | Import | Description |
-| --- | --- | --- |
-| Email | `Email` | Email address with domain filtering, plus-alias blocking, and disposable detection |
-| Password | `Password` | Strength rules: length, casing, digits, specials, consecutive limits, common-password ban |
-| PasswordConfirmation | `PasswordConfirmation` | Confirms two password fields match |
-| PersonName | `PersonName` | Human name with unicode support, word count, and boundary rules |
-| BusinessName | `BusinessName` | Company/organization name with boundary and consecutive limits |
-| Phone | `Phone` | International phone via libphonenumber-js |
-| Website | `Website` | URL restricted to http/https with optional www and domain filtering |
-| URL | `Url` | General URL with protocol, TLD, and domain validation |
-| Username | `Username` | Alphanumeric with configurable separators and reserved-word ban |
-| Slug | `Slug` | URL-safe slug (lowercase, hyphens, length limits) |
-| PostalCode | `PostalCode` | Country-aware postal/ZIP code |
-| LicenseKey | `LicenseKey` | Software license key format (segments, separators, charset) |
-| UUID | `Uuid` | UUID v1-v7 validation |
-| JWT | `Jwt` | JSON Web Token structure with optional expiry checks |
-| DateTime | `DateTime` | Date/time string with format and range constraints |
-| Token | `Token` | Generic token validation (hex, base64, nanoid, etc.) |
-| Text | `Text` | Free text with length, word count, content detection, and regex override |
-| Country | `Country` | ISO 3166 country code (alpha-2, alpha-3, numeric) |
-| Currency | `Currency` | ISO 4217 currency code |
-| Color | `Color` | Hex, RGB, HSL, and named CSS color formats |
-| CreditCard | `CreditCard` | Card number with Luhn check and issuer detection |
-| IBAN | `Iban` | International Bank Account Number with country patterns |
-| VatNumber | `VatNumber` | EU VAT identification number |
-| MacAddress | `MacAddress` | MAC address (colon, hyphen, and dot notations) |
-| IpAddress | `IpAddress` | IPv4 and IPv6 with optional CIDR notation |
+| Rule | Description |
+|------|-------------|
+| Email | Email address with domain filtering, plus-alias blocking, and disposable detection |
+| Password | Strength rules: length, casing, digits, specials, consecutive limits, common-password ban |
+| PasswordConfirmation | Confirms two password fields match |
+| PersonName | Human name with unicode support, word count, and boundary rules |
+| BusinessName | Company/organization name with boundary and consecutive limits |
+| Phone | International phone via libphonenumber-js |
+| Website | URL restricted to http/https with optional www and domain filtering |
+| Url | General URL with protocol, TLD, and domain validation |
+| Username | Alphanumeric with configurable separators and reserved-word ban |
+| Slug | URL-safe slug (lowercase, hyphens, length limits) |
+| PostalCode | Country-aware postal/ZIP code |
+| LicenseKey | Software license key format (segments, separators, charset) |
+| Uuid | UUID v1-v7 validation |
+| Jwt | JSON Web Token structure with optional expiry checks |
+| DateTime | Date/time string with format and range constraints |
+| Token | Generic token validation (hex, base64, nanoid, etc.) |
+| Text | Free text with length, word count, content detection, and regex override |
+| Country | ISO 3166 country code (alpha-2, alpha-3, numeric) |
+| Currency | ISO 4217 currency code |
+| Color | Hex, RGB, HSL, and named CSS color formats |
+| CreditCard | Card number with Luhn check and issuer detection |
+| Iban | International Bank Account Number with country patterns |
+| VatNumber | EU VAT identification number |
+| MacAddress | MAC address (colon, hyphen, and dot notations) |
+| IpAddress | IPv4 and IPv6 with optional CIDR notation |
 
-For complete API documentation with all options, defaults, and error codes, see [API Reference](./docs/API.md).
+## Bundle Size
+
+Every rule shares a ~5 kB core (Brotli). Each additional rule adds 0.1-0.8 kB. Measured with esbuild `--splitting` + Brotli, excluding `zod` peer dependency.
+
+| Rule | Initial (Brotli) | On-demand data | Trigger |
+|------|-----------------|----------------|---------|
+| Email | 5.7 kB | — | — |
+| Password | 5.6 kB | +0.5 kB / +3.8 kB / +35.5 kB | `blockCommon: 'basic'` / `'moderate'` / `'strict'` |
+| PasswordConfirmation | 5.7 kB | — | — |
+| PersonName | 5.7 kB | — | — |
+| BusinessName | 5.7 kB | — | — |
+| Phone | 5.7 kB | external | libphonenumber-js peer dep |
+| Website | 5.7 kB | — | — |
+| Url | 5.6 kB | — | — |
+| Username | 5.9 kB | +0.8 kB | `blockReserved: true` |
+| Slug | 5.5 kB | — | — |
+| PostalCode | 5.4 kB | external | postcode-validator peer dep |
+| LicenseKey | 5.5 kB | — | — |
+| Uuid | 5.3 kB | — | — |
+| Jwt | 5.6 kB | — | — |
+| DateTime | 5.6 kB | — | — |
+| Token | 5.5 kB | — | — |
+| Text | 5.5 kB | — | — |
+| Country | 5.4 kB | +2.4 kB | First use |
+| Currency | 5.4 kB | +0.3 kB | First use |
+| Color | 5.5 kB | — | — |
+| CreditCard | 5.6 kB | +0.3 kB | First use |
+| Iban | 5.5 kB | +0.7 kB | First use |
+| VatNumber | 5.5 kB | +0.3 kB | First use |
+| MacAddress | 5.3 kB | — | — |
+| IpAddress | 5.6 kB | — | — |
+
+| Combination | Initial (Brotli) |
+|-------------|-----------------|
+| Email + Password | 6.0 kB |
+| Form (Email + Password + PersonName + Phone) | 6.9 kB |
+| All 25 rules | 13.0 kB |
+
+"On-demand data" loads asynchronously on first use or when the listed option is enabled. Not included in the initial bundle.
 
 ## Configuration
 
-Use `setup()` to apply defaults globally or per-rule. Rule keys are the camelCase namespace names (not PascalCase factory names):
+### Global defaults with `setup()`
 
 ```ts
 import { setup, Email, Password } from '@validex/core'
@@ -139,11 +156,280 @@ const emailSchema = Email()
 const passwordSchema = Password()
 ```
 
-Options merge in three tiers: **built-in defaults** < **setup() config** < **per-call options**.
+### Three-tier merge
+
+```
+built-in defaults  <  setup() config  <  per-call options
+```
+
+Per-call options override `setup()` config, which overrides built-in defaults. Passing `undefined` for a per-call option removes the global setting for that field.
+
+```ts
+import { setup, Email } from '@validex/core'
+
+setup({ rules: { email: { blockDisposable: true } } })
+
+Email()                              // blockDisposable: true (from setup)
+Email({ blockPlusAlias: true })      // blockDisposable: true + blockPlusAlias: true
+Email({ blockDisposable: undefined }) // blockDisposable removed for this call
+```
+
+### `resetConfig()`
+
+```ts
+import { resetConfig } from '@validex/core'
+
+resetConfig() // resets to built-in defaults
+```
+
+### `preloadData()`
+
+Preload async data files at startup so first validation has no delay:
+
+```ts
+import { preloadData } from '@validex/core'
+
+await preloadData({
+  disposable: true,
+  passwords: 'moderate',
+  reserved: true,
+  phone: 'mobile',
+  countryCodes: true,
+  currencyCodes: true,
+  ibanPatterns: true,
+  vatPatterns: true,
+  creditCardPrefixes: true,
+  postalCodes: true,
+})
+```
+
+## Cross-Field Validation
+
+### `sameAs`
+
+Creates a `superRefine` callback that verifies two fields hold the same value:
+
+```ts
+import { z } from 'zod'
+import { Password, sameAs } from '@validex/core'
+
+const schema = z.object({
+  password: Password(),
+  confirmPassword: z.string(),
+}).superRefine(sameAs('confirmPassword', 'password', {
+  message: 'Passwords do not match',
+}))
+```
+
+`PasswordConfirmation` auto-wires this — it registers a `sameAs: 'password'` constraint automatically:
+
+```ts
+import { z } from 'zod'
+import { Password, PasswordConfirmation, validate } from '@validex/core'
+
+const schema = z.object({
+  password: Password(),
+  confirmPassword: PasswordConfirmation(),
+})
+
+const result = await validate(schema, {
+  password: 'Str0ng!Pass',
+  confirmPassword: 'different',
+})
+// result.firstErrors.confirmPassword → "Password Confirmation must match Password"
+```
+
+### `requiredWhen`
+
+Creates a `superRefine` callback that marks a field as required when a condition is met:
+
+```ts
+import { z } from 'zod'
+import { requiredWhen } from '@validex/core'
+
+const schema = z.object({
+  accountType: z.string(),
+  companyName: z.string().optional(),
+}).superRefine(requiredWhen(
+  'companyName',
+  (data) => data['accountType'] === 'business',
+  { message: 'Company name is required for business accounts' },
+))
+```
+
+### `validate()` resolves cross-field
+
+`schema.safeParse()` only runs field-level validation. `validate()` adds cross-field checks (`sameAs`, `requiredWhen`) after Zod parsing:
+
+```ts
+// safeParse — field-level only, no cross-field
+const zodResult = schema.safeParse(data)
+
+// validate — runs field-level + cross-field
+const result = await validate(schema, data)
+```
+
+## Chainable Methods
+
+Import `@validex/core` and all Zod string schemas get these methods:
+
+### Checks (return same type, add refinement)
+
+| Method | Options | Description |
+|--------|---------|-------------|
+| `.hasUppercase(opts?)` | `min?, max?` | Requires uppercase letters |
+| `.hasLowercase(opts?)` | `min?, max?` | Requires lowercase letters |
+| `.hasDigits(opts?)` | `min?, max?` | Requires digits |
+| `.hasSpecial(opts?)` | `min?, max?` | Requires special characters |
+| `.noEmails(opts?)` | — | Blocks email addresses |
+| `.noUrls(opts?)` | — | Blocks URLs |
+| `.noHtml(opts?)` | — | Blocks HTML tags |
+| `.noPhoneNumbers(opts?)` | — | Blocks phone numbers |
+| `.noSpaces(opts?)` | — | Blocks whitespace |
+| `.onlyAlpha(opts?)` | — | Letters only |
+| `.onlyNumeric(opts?)` | — | Digits only |
+| `.onlyAlphanumeric(opts?)` | — | Letters + digits |
+| `.onlyAlphaSpaceHyphen(opts?)` | — | Letters, spaces, hyphens |
+| `.onlyAlphanumericSpaceHyphen(opts?)` | — | Letters, digits, spaces, hyphens |
+| `.maxWords(opts)` | `max` | Maximum word count |
+| `.minWords(opts)` | `min` | Minimum word count |
+| `.maxConsecutive(opts)` | `max` | Max consecutive identical chars |
+
+### Transforms (return ZodPipe)
+
+| Method | Description |
+|--------|-------------|
+| `.toTitleCase()` | Converts to Title Case |
+| `.toSlug()` | Converts to url-safe-slug |
+| `.stripHtml()` | Removes HTML tags |
+| `.collapseWhitespace()` | Collapses multiple spaces to single |
+| `.emptyToUndefined()` | Converts `""` to `undefined` |
+
+```ts
+import { z } from 'zod'
+import '@validex/core'
+
+const schema = z.string().hasUppercase({ min: 2 }).noSpaces().toSlug()
+```
+
+## Check Functions
+
+Pure functions, no Zod dependency. Import from `@validex/core/checks`.
+
+### Composition
+
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `hasUppercase` | `(value: string, min: number, max?: number) => boolean` | Uppercase letter count within `[min, max]` |
+| `hasLowercase` | `(value: string, min: number, max?: number) => boolean` | Lowercase letter count within `[min, max]` |
+| `hasDigits` | `(value: string, min: number, max?: number) => boolean` | Digit count within `[min, max]` |
+| `hasSpecial` | `(value: string, min: number, max?: number) => boolean` | Special character count within `[min, max]` |
+
+### Detection
+
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `containsEmail` | `(value: string) => boolean` | Detects email-like patterns |
+| `containsUrl` | `(value: string) => boolean` | Detects URL-like patterns |
+| `containsHtml` | `(value: string) => boolean` | Detects HTML tags |
+| `containsPhoneNumber` | `(value: string) => Promise<boolean>` | Detects phone numbers (async, uses libphonenumber-js) |
+
+### Restriction
+
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `onlyAlpha` | `(value: string) => boolean` | Every character is a unicode letter |
+| `onlyNumeric` | `(value: string) => boolean` | Every character is a digit |
+| `onlyAlphanumeric` | `(value: string) => boolean` | Every character is a letter or digit |
+| `onlyAlphaSpaceHyphen` | `(value: string) => boolean` | Letters, spaces, hyphens only |
+| `onlyAlphanumericSpaceHyphen` | `(value: string) => boolean` | Letters, digits, spaces, hyphens only |
+
+### Limits
+
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `maxWords` | `(value: string, max: number) => boolean` | At most `max` words |
+| `minWords` | `(value: string, min: number) => boolean` | At least `min` words |
+| `maxConsecutive` | `(value: string, max: number) => boolean` | No character repeats more than `max` times |
+| `noSpaces` | `(value: string) => boolean` | No whitespace characters |
+
+### Transforms
+
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `emptyToUndefined` | `(value: unknown) => unknown` | `""` and `null` to `undefined` |
+| `toTitleCase` | `(value: string) => string` | Title Case with hyphen/apostrophe handling |
+| `toSlug` | `(value: string) => string` | URL-safe slug |
+| `stripHtml` | `(value: string) => string` | Removes HTML tags |
+| `collapseWhitespace` | `(value: string) => string` | Collapses whitespace, trims |
+
+```ts
+import { hasUppercase, containsEmail, toSlug } from '@validex/core/checks'
+
+hasUppercase('Hello', 1)    // true
+containsEmail('hi@test.com') // true
+toSlug('Hello World!')       // 'hello-world'
+```
+
+## Error Handling
+
+### Error structure
+
+Every validex error carries structured metadata via Zod's custom error params:
+
+```ts
+ctx.addIssue({
+  code: 'custom',
+  params: {
+    code: 'disposableBlocked',
+    namespace: 'email',
+    label: 'Email',
+    domain: 'tempmail.com',
+  },
+})
+```
+
+### `getParams(issue)`
+
+Extract structured metadata from any Zod issue:
+
+```ts
+import { Email, getParams } from '@validex/core'
+
+const schema = Email()
+const result = schema.safeParse('user@tempmail.com')
+
+if (!result.success) {
+  const params = getParams(result.error.issues[0])
+  // { code: 'disposableBlocked', namespace: 'email', label: 'Email',
+  //   key: 'validation.messages.email.disposableBlocked', path: [], ... }
+}
+```
+
+### Error code pattern
+
+Keys follow: `validation.messages.{namespace}.{code}`
+
+- `validation.messages.email.disposableBlocked`
+- `validation.messages.password.commonBlocked`
+- `validation.messages.username.reservedBlocked`
+
+### `validate()` result
+
+```ts
+interface ValidationResult<T> {
+  success: boolean
+  data?: T                                    // typed parsed data (when success)
+  errors: Record<string, readonly string[]>   // dot-path to all messages
+  firstErrors: Record<string, string>         // dot-path to first message
+  nestedErrors: NestedErrors                  // nested object matching schema shape
+  issues: ReadonlyArray<unknown>              // raw Zod issues (escape hatch)
+}
+```
 
 ## i18n
 
-Pass a `t()` function to `setup()` and all error messages become translation keys:
+### Setup
 
 ```ts
 import { setup } from '@validex/core'
@@ -152,65 +438,43 @@ setup({
   i18n: {
     enabled: true,
     prefix: 'validation',    // default
-    separator: '.',           // default
+    separator: '.',          // default
     t: (key, params) => i18next.t(key, params),
   },
 })
 ```
 
-Keys follow the pattern `validation.messages.{namespace}.{code}`:
+### Key pattern
 
-- `validation.messages.email.invalid`
-- `validation.messages.password.tooShort`
-- `validation.messages.username.reserved`
+`validation.messages.{namespace}.{code}`
 
-Generate translation templates with the CLI:
+When `i18n.enabled` is `true` and `t()` is provided, validex calls `t()` automatically for every error message and field label.
+
+### Label transforms
+
+```ts
+setup({
+  label: {
+    fallback: 'derived',  // 'derived' | 'generic' | 'none'
+    transform: ({ path, fieldName, defaultLabel }) => {
+      return myLabelLookup(fieldName) ?? defaultLabel
+    },
+  },
+})
+```
+
+### CLI
 
 ```bash
-npx validex fr de es --output ./locales
+npx validex fr de --output ./locales
 npx validex ja --empty --output ./locales
 ```
 
-Use `getParams()` to extract structured error metadata from Zod issues:
-
-```ts
-import { getParams } from '@validex/core'
-
-// Returns { code, namespace, label, key, path, ... }
-const params = getParams(zodIssue)
-```
-
-For the complete translation guide with all 88 error codes and a ready-to-copy template, see [Translation Guide](./docs/I18N.md).
-
-## Framework Adapters
-
-### Nuxt
-
-```bash
-pnpm add @validex/nuxt
-```
-
-```ts
-import { useValidation } from '@validex/nuxt'
-```
-
-See [@validex/nuxt README](./packages/nuxt/README.md) for full setup guide.
-
-### Fastify
-
-```bash
-pnpm add @validex/fastify
-```
-
-```ts
-import { validexPlugin } from '@validex/fastify'
-```
-
-See [@validex/fastify README](./packages/fastify/README.md) for full setup guide.
+Full guide with all 141 error codes: [Translation Guide](https://github.com/chiptoma/validex/blob/main/docs/I18N.md)
 
 ## Custom Rules
 
-Build your own rule with `createRule()`:
+### `createRule()`
 
 ```ts
 import { createRule } from '@validex/core'
@@ -242,9 +506,7 @@ const schema = HexColor({ allowAlpha: true })
 schema.parse('#ff00aacc') // OK
 ```
 
-## Custom Validation
-
-### Custom function (`customFn`)
+### `customFn`
 
 Every rule accepts a `customFn` that runs after built-in checks. Return `true` to pass or a string to fail:
 
@@ -259,9 +521,9 @@ schema.parse('info@example.org')  // OK
 schema.parse('info@example.com')  // throws — "Must be a .org domain"
 ```
 
-### Custom regex override
+### Custom regex
 
-Rules that extend `FormatRuleOptions` (like `Text`) accept a `regex` property as a `RegExp`:
+Rules that extend `FormatRuleOptions` (like `Text`) accept a `regex` property:
 
 ```ts
 import { Text } from '@validex/core'
@@ -271,21 +533,13 @@ const schema = Text({
 })
 ```
 
-## Bundle Sizes
+Full reference: [API Reference](https://github.com/chiptoma/validex/blob/main/docs/API.md)
 
-Measured with esbuild + Brotli compression, excluding `zod` peer dependency and on-demand data files:
+## Framework Adapters
 
-| Import | Raw (minified) | Brotli | Gzip |
-| --- | --- | --- | --- |
-| Core only (setup + validate) | 6.6 kB | 1.6 kB | 1.9 kB |
-| Email + Password | 13.7 kB | 3.4 kB | 3.9 kB |
-| Form (Email+Password+PersonName+Phone) | 16.9 kB | 4.3 kB | 4.8 kB |
-| All 25 rules | 43.7 kB | 10.5 kB | 11.7 kB |
-
-Data files (common passwords, disposable domains, country codes, IBAN patterns) are loaded on demand and not included in the base bundle.
-
-Run `pnpm size:detail` for per-rule measurements.
+- [@validex/nuxt](https://github.com/chiptoma/validex/tree/main/packages/nuxt) — Nuxt module with auto-imports and `useValidation` composable
+- [@validex/fastify](https://github.com/chiptoma/validex/tree/main/packages/fastify) — Fastify plugin with request validation decorators
 
 ## License
 
-[MIT](./LICENSE)
+[MIT](https://github.com/chiptoma/validex/blob/main/LICENSE)
