@@ -15,8 +15,6 @@ import { applyLengthCheck } from '@internal/lengthCheck'
 import { resolveRange } from '@internal/resolveRange'
 import { getCommonPasswords, loadCommonPasswords } from '@loaders/commonPasswords'
 
-import '../augmentation'
-
 // ----------------------------------------------------------
 // TYPES
 // ----------------------------------------------------------
