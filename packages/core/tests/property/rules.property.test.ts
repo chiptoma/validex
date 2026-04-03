@@ -7,19 +7,21 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import * as fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
-import { CreditCard } from '../../src/rules/creditCard'
-import { Email } from '../../src/rules/email'
-import { Iban } from '../../src/rules/iban'
-import { Password } from '../../src/rules/password'
-import { PersonName } from '../../src/rules/personName'
-import { Phone } from '../../src/rules/phone'
-import { Slug } from '../../src/rules/slug'
-import { Url } from '../../src/rules/url'
-import { Username } from '../../src/rules/username'
-import { Uuid } from '../../src/rules/uuid'
-import { Website } from '../../src/rules/website'
+
+import { CreditCard } from '@rules/creditCard'
+import { Email } from '@rules/email'
+import { Iban } from '@rules/iban'
+import { Password } from '@rules/password'
+import { PersonName } from '@rules/personName'
+import { Phone } from '@rules/phone'
+import { Slug } from '@rules/slug'
+import { Url } from '@rules/url'
+import { Username } from '@rules/username'
+import { Uuid } from '@rules/uuid'
+import { Website } from '@rules/website'
 
 // ----------------------------------------------------------
 // CONSTANTS

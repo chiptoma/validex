@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { checkAsciiBoundary, checkUnicodeBoundary } from '../../../src/internal/boundary'
-import { resolveBoundary } from '../../../src/internal/resolveBoundary'
+
+import { checkAsciiBoundary, checkUnicodeBoundary } from '@internal/boundary'
+import { resolveBoundary } from '@internal/resolveBoundary'
 
 describe('resolveBoundary', () => {
   it('should return undefined for undefined input', () => {

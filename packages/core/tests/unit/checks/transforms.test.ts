@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest'
+
 import {
   collapseWhitespace,
   emptyToUndefined,
   stripHtml,
   toSlug,
   toTitleCase,
-} from '../../../src/checks/transforms'
+} from '@checks/transforms'
 
 describe('emptyToUndefined', () => {
   it('should convert empty string to undefined', () => {

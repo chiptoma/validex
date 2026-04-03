@@ -5,17 +5,19 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { afterEach, describe, expect, it } from 'vitest'
 import { z as zod } from 'zod'
-import { resetConfig, setup } from '../../src/config'
-import { registerCustomError } from '../../src/core/customError'
-import { getParams } from '../../src/core/getParams'
-import { validate } from '../../src/core/validate'
-import { Email } from '../../src/rules/email'
-import { Password } from '../../src/rules/password'
-import { PersonName } from '../../src/rules/personName'
-import { PostalCode } from '../../src/rules/postalCode'
-import { Slug } from '../../src/rules/slug'
+
+import { resetConfig, setup } from '@config'
+import { registerCustomError } from '@core/customError'
+import { getParams } from '@core/getParams'
+import { validate } from '@core/validate'
+import { Email } from '@rules/email'
+import { Password } from '@rules/password'
+import { PersonName } from '@rules/personName'
+import { PostalCode } from '@rules/postalCode'
+import { Slug } from '@rules/slug'
 
 // ----------------------------------------------------------
 // CONSTANTS

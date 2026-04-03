@@ -5,8 +5,10 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { describe, expect, it } from 'vitest'
-import { Jwt } from '../../../src/rules/jwt'
+
+import { Jwt } from '@rules/jwt'
 
 // ----------------------------------------------------------
 // HELPERS

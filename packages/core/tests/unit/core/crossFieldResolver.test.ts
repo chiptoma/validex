@@ -5,11 +5,12 @@
 
 import { beforeEach, describe, expect, it } from 'vitest'
 import { z } from 'zod'
-import { setup } from '../../../src/config/index'
-import { resetConfig } from '../../../src/config/store'
-import { registerCrossField } from '../../../src/core/crossFieldRegistry'
-import { resolveCrossFieldConstraints } from '../../../src/core/crossFieldResolver'
-import { _resetCustomErrorFlag, registerCustomError } from '../../../src/core/customError'
+
+import { setup } from '@config/index'
+import { resetConfig } from '@config/store'
+import { registerCrossField } from '@core/crossFieldRegistry'
+import { resolveCrossFieldConstraints } from '@core/crossFieldResolver'
+import { _resetCustomErrorFlag, registerCustomError } from '@core/customError'
 
 beforeEach(() => {
   resetConfig()

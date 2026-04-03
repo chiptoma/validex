@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest'
+
 import {
   hasDigits,
   hasLowercase,
   hasSpecial,
   hasUppercase,
-} from '../../../src/checks/composition'
+} from '@checks/composition'
 
 describe('hasUppercase', () => {
   it('should return true when ASCII uppercase count meets min', () => {

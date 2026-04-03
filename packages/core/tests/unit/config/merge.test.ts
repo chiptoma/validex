@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { deepMergeTwo, mergeThreeTiers } from '../../../src/config/merge'
+
+import { deepMergeTwo, mergeThreeTiers } from '@config/merge'
 
 describe('deepMergeTwo', () => {
   it('should return base when override is empty', () => {

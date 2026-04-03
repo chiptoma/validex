@@ -4,8 +4,11 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { describe, expect, it } from 'vitest'
-import { Slug } from '../../../src/rules/slug'
+
+import { Slug } from '@rules/slug'
+
 import { testRuleContract } from '../../_support/helpers/testRule'
 
 // ----------------------------------------------------------

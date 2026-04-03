@@ -8,8 +8,10 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { describe, expect, it } from 'vitest'
-import { Email } from '../../src/rules/email'
+
+import { Email } from '@rules/email'
 
 // ----------------------------------------------------------
 // HELPERS

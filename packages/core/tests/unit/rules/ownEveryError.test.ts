@@ -6,20 +6,22 @@
 // ==============================================================================
 
 import type { z as zType } from 'zod'
+
 import { afterEach, describe, expect, it } from 'vitest'
 import { z } from 'zod'
-import { resetConfig } from '../../../src/config'
-import { setup } from '../../../src/config/index'
-import { getParams } from '../../../src/core/getParams'
-import { validate } from '../../../src/core/validate'
-import { DateTime } from '../../../src/rules/dateTime'
-import { Email } from '../../../src/rules/email'
-import { IpAddress } from '../../../src/rules/ipAddress'
-import { LicenseKey } from '../../../src/rules/licenseKey'
-import { Password } from '../../../src/rules/password'
-import { PersonName } from '../../../src/rules/personName'
-import { Url } from '../../../src/rules/url'
-import { Uuid } from '../../../src/rules/uuid'
+
+import { resetConfig } from '@config'
+import { setup } from '@config/index'
+import { getParams } from '@core/getParams'
+import { validate } from '@core/validate'
+import { DateTime } from '@rules/dateTime'
+import { Email } from '@rules/email'
+import { IpAddress } from '@rules/ipAddress'
+import { LicenseKey } from '@rules/licenseKey'
+import { Password } from '@rules/password'
+import { PersonName } from '@rules/personName'
+import { Url } from '@rules/url'
+import { Uuid } from '@rules/uuid'
 
 // ----------------------------------------------------------
 // HELPERS

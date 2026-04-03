@@ -1,39 +1,40 @@
 import { describe, expect, it } from 'vitest'
+
 import {
   clearCommonPasswordsCache,
   getCommonPasswords,
   loadCommonPasswords,
-} from '../../../src/loaders/commonPasswords'
+} from '@loaders/commonPasswords'
 import {
   clearCountryCodesCache,
   getCountryCodes,
   loadCountryCodes,
-} from '../../../src/loaders/countryCodes'
+} from '@loaders/countryCodes'
 import {
   clearCreditCardPrefixesCache,
   getCreditCardPrefixes,
   loadCreditCardPrefixes,
-} from '../../../src/loaders/creditCardPrefixes'
+} from '@loaders/creditCardPrefixes'
 import {
   clearCurrencyCodesCache,
   getCurrencyCodes,
   loadCurrencyCodes,
-} from '../../../src/loaders/currencyCodes'
+} from '@loaders/currencyCodes'
 import {
   clearIbanPatternsCache,
   getIbanPatterns,
   loadIbanPatterns,
-} from '../../../src/loaders/ibanPatterns'
+} from '@loaders/ibanPatterns'
 import {
   getReservedUsernames,
   loadReservedUsernames,
   resetReservedUsernamesCache,
-} from '../../../src/loaders/reservedUsernames'
+} from '@loaders/reservedUsernames'
 import {
   clearVatPatternsCache,
   getVatPatterns,
   loadVatPatterns,
-} from '../../../src/loaders/vatPatterns'
+} from '@loaders/vatPatterns'
 
 describe('commonPasswords', () => {
   it('should load tier1 (basic) with 99 entries from SecLists top 100', async () => {

@@ -5,8 +5,11 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { describe, expect, it } from 'vitest'
-import { Iban } from '../../../src/rules/iban'
+
+import { Iban } from '@rules/iban'
+
 import { testRuleContract } from '../../_support/helpers/testRule'
 
 // ----------------------------------------------------------

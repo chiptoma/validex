@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest'
+
 import {
   containsEmail,
   containsHtml,
   containsUrl,
-} from '../../../src/checks/detection'
-import { containsPhoneNumber } from '../../../src/checks/phoneDetection'
+} from '@checks/detection'
+import { containsPhoneNumber } from '@checks/phoneDetection'
 
 describe('containsEmail', () => {
   it('should detect a standard email in surrounding text', () => {

@@ -3,6 +3,6 @@
 // Ensures Zod prototype augmentation is applied before any test runs.
 // ==============================================================================
 
-import { initAugmentation } from '../../src/augmentation'
+import { initAugmentation } from '@augmentation'
 
 initAugmentation()

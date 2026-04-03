@@ -1,9 +1,11 @@
-import type { BaseRuleOptions } from '../../../src/types'
+import type { BaseRuleOptions } from '@validex-types'
+
 import { afterEach, describe, expect, it } from 'vitest'
 import { z } from 'zod'
-import { resetConfig, setup } from '../../../src/config'
-import { createRule } from '../../../src/core/createRule'
-import { registerCustomError } from '../../../src/core/customError'
+
+import { resetConfig, setup } from '@config'
+import { createRule } from '@core/createRule'
+import { registerCustomError } from '@core/customError'
 
 interface CustomOpts extends BaseRuleOptions {
   maxLength?: number | undefined

@@ -4,9 +4,11 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { beforeEach, describe, expect, it } from 'vitest'
-import { resetReservedUsernamesCache } from '../../../src/loaders/reservedUsernames'
-import { Username } from '../../../src/rules/username'
+
+import { resetReservedUsernamesCache } from '@loaders/reservedUsernames'
+import { Username } from '@rules/username'
 
 // ----------------------------------------------------------
 // HELPERS

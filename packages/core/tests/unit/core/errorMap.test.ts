@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { buildMessageKey, getErrorMessage, registerMessages } from '../../../src/core/errorMap'
+
+import { buildMessageKey, getErrorMessage, registerMessages } from '@core/errorMap'
 
 describe('getErrorMessage', () => {
   it('should return base.required message with label interpolation', () => {

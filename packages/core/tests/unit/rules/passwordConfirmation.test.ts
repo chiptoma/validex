@@ -7,9 +7,10 @@
 
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
-import { validate } from '../../../src/core/validate'
-import { Password } from '../../../src/rules/password'
-import { PasswordConfirmation } from '../../../src/rules/passwordConfirmation'
+
+import { validate } from '@core/validate'
+import { Password } from '@rules/password'
+import { PasswordConfirmation } from '@rules/passwordConfirmation'
 
 // ----------------------------------------------------------
 // HELPERS

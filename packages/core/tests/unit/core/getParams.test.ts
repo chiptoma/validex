@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { resetConfig, setup } from '../../../src/config'
-import { getParams } from '../../../src/core/getParams'
+
+import { resetConfig, setup } from '@config'
+import { getParams } from '@core/getParams'
 
 describe('getParams', () => {
   afterEach(() => {

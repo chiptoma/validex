@@ -7,18 +7,20 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { describe, expect, it } from 'vitest'
-import { getParams } from '../../../src/core/getParams'
-import { Country } from '../../../src/rules/country'
-import { CreditCard } from '../../../src/rules/creditCard'
-import { Currency } from '../../../src/rules/currency'
-import { Email } from '../../../src/rules/email'
-import { Iban } from '../../../src/rules/iban'
-import { Jwt } from '../../../src/rules/jwt'
-import { Phone } from '../../../src/rules/phone'
-import { Url } from '../../../src/rules/url'
-import { Username } from '../../../src/rules/username'
-import { Website } from '../../../src/rules/website'
+
+import { getParams } from '@core/getParams'
+import { Country } from '@rules/country'
+import { CreditCard } from '@rules/creditCard'
+import { Currency } from '@rules/currency'
+import { Email } from '@rules/email'
+import { Iban } from '@rules/iban'
+import { Jwt } from '@rules/jwt'
+import { Phone } from '@rules/phone'
+import { Url } from '@rules/url'
+import { Username } from '@rules/username'
+import { Website } from '@rules/website'
 
 // ----------------------------------------------------------
 // HELPERS

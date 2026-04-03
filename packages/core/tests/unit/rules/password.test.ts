@@ -4,9 +4,12 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { describe, expect, it } from 'vitest'
-import { getParams } from '../../../src/core/getParams'
-import { Password } from '../../../src/rules/password'
+
+import { getParams } from '@core/getParams'
+import { Password } from '@rules/password'
+
 import { testRuleContract } from '../../_support/helpers/testRule'
 
 // ----------------------------------------------------------

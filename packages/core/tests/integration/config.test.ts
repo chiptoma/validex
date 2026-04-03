@@ -5,12 +5,14 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { afterEach, describe, expect, it } from 'vitest'
-import { getConfig, resetConfig, setup } from '../../src/config'
-import { registerCustomError } from '../../src/core/customError'
-import { getParams } from '../../src/core/getParams'
-import { Email } from '../../src/rules/email'
-import { Password } from '../../src/rules/password'
+
+import { getConfig, resetConfig, setup } from '@config'
+import { registerCustomError } from '@core/customError'
+import { getParams } from '@core/getParams'
+import { Email } from '@rules/email'
+import { Password } from '@rules/password'
 
 // ----------------------------------------------------------
 // HELPERS

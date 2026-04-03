@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
-import { requiredWhen, sameAs } from '../../../src/utilities'
+
+import { requiredWhen, sameAs } from '@utilities'
 
 // ----------------------------------------------------------
 // sameAs
