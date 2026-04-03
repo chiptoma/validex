@@ -7,9 +7,11 @@
 // ==============================================================================
 
 import type { FormatRuleOptions } from '../types'
+
 import { z } from 'zod'
-import { createRule } from '../core/createRule'
-import { getPostalCodes, loadPostalCodes } from '../loaders/postalCodes'
+
+import { createRule } from '@core/createRule'
+import { getPostalCodes, loadPostalCodes } from '@loaders/postalCodes'
 
 // ----------------------------------------------------------
 // TYPES

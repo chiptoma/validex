@@ -7,8 +7,10 @@
 // ==============================================================================
 
 import type { BaseRuleOptions } from '../types'
+
 import { z } from 'zod'
-import { createRule } from '../core/createRule'
+
+import { createRule } from '@core/createRule'
 
 // ----------------------------------------------------------
 // TYPES

@@ -7,9 +7,11 @@
 // ==============================================================================
 
 import type { BaseRuleOptions } from '../types'
+
 import { z } from 'zod'
-import { createRule } from '../core/createRule'
-import { getIbanPatterns, loadIbanPatterns } from '../loaders/ibanPatterns'
+
+import { createRule } from '@core/createRule'
+import { getIbanPatterns, loadIbanPatterns } from '@loaders/ibanPatterns'
 
 // ----------------------------------------------------------
 // TYPES

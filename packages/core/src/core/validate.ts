@@ -8,7 +8,8 @@ import type { NestedErrors, ValidationResult } from '../types'
 import type { IssueRecord } from './crossFieldResolver'
 
 import { z } from 'zod'
-import { initAugmentation } from '../augmentation'
+
+import { initAugmentation } from '@augmentation'
 
 import { resolveCrossFieldConstraints } from './crossFieldResolver'
 

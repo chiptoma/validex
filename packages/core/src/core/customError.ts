@@ -4,7 +4,9 @@
 // ==============================================================================
 
 import { z } from 'zod'
-import { getConfig } from '../config/store'
+
+import { getConfig } from '@config/store'
+
 import { getErrorMessage } from './errorMap'
 import { getParams } from './getParams'
 

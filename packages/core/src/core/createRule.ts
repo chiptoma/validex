@@ -4,11 +4,14 @@
 // ==============================================================================
 
 import type { BaseRuleOptions, CreateRuleOptions, RuleFactory } from '../types'
+
 import { z } from 'zod'
-import { initAugmentation } from '../augmentation'
-import { RULE_DEFAULTS } from '../config/defaults'
-import { getConfig } from '../config/index'
-import { mergeThreeTiers } from '../config/merge'
+
+import { initAugmentation } from '@augmentation'
+import { RULE_DEFAULTS } from '@config/defaults'
+import { getConfig } from '@config/index'
+import { mergeThreeTiers } from '@config/merge'
+
 import { registerCrossField } from './crossFieldRegistry'
 import { registerMessages } from './errorMap'
 

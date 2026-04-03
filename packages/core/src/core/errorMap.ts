@@ -6,6 +6,7 @@
 // ==============================================================================
 
 import type { ErrorParams, PathTransform } from '../types'
+
 import enLocale from '../locales/en.json'
 
 // ----------------------------------------------------------

@@ -7,9 +7,11 @@
 // ==============================================================================
 
 import type { BaseRuleOptions } from '../types'
+
 import { z } from 'zod'
-import { createRule } from '../core/createRule'
-import { getVatPatterns, loadVatPatterns } from '../loaders/vatPatterns'
+
+import { createRule } from '@core/createRule'
+import { getVatPatterns, loadVatPatterns } from '@loaders/vatPatterns'
 
 // ----------------------------------------------------------
 // TYPES

@@ -4,7 +4,9 @@
 // ==============================================================================
 
 import type { GlobalConfig, PreloadOptions } from '../types'
-import { initAugmentation } from '../augmentation'
+
+import { initAugmentation } from '@augmentation'
+
 import { deepMergeTwo } from './merge'
 import { getConfig as getStoreConfig, isInitialized, setConfig } from './store'
 

@@ -5,13 +5,16 @@
 // Context: normalize trims whitespace but never changes case.
 // ==============================================================================
 
-import type { ResolvedRange } from '../internal/resolveRange'
 import type { BaseRuleOptions, Range } from '../types'
+import type { ResolvedRange } from '@internal/resolveRange'
+
 import { z } from 'zod'
-import { createRule } from '../core/createRule'
-import { applyLengthCheck } from '../internal/lengthCheck'
-import { resolveRange } from '../internal/resolveRange'
-import { getCommonPasswords, loadCommonPasswords } from '../loaders/commonPasswords'
+
+import { createRule } from '@core/createRule'
+import { applyLengthCheck } from '@internal/lengthCheck'
+import { resolveRange } from '@internal/resolveRange'
+import { getCommonPasswords, loadCommonPasswords } from '@loaders/commonPasswords'
+
 import '../augmentation'
 
 // ----------------------------------------------------------

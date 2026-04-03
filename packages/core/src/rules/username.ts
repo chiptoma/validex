@@ -4,13 +4,16 @@
 // ==============================================================================
 
 import type { Boundary, FormatRuleOptions, Range } from '../types'
+
 import { z } from 'zod'
-import { createRule } from '../core/createRule'
-import { checkAsciiBoundary } from '../internal/boundary'
-import { escapeRegexChars } from '../internal/escapeRegex'
-import { resolveBoundary } from '../internal/resolveBoundary'
-import { resolveRange } from '../internal/resolveRange'
-import { getReservedUsernames, loadReservedUsernames } from '../loaders/reservedUsernames'
+
+import { createRule } from '@core/createRule'
+import { checkAsciiBoundary } from '@internal/boundary'
+import { escapeRegexChars } from '@internal/escapeRegex'
+import { resolveBoundary } from '@internal/resolveBoundary'
+import { resolveRange } from '@internal/resolveRange'
+import { getReservedUsernames, loadReservedUsernames } from '@loaders/reservedUsernames'
+
 import '../augmentation'
 
 // ----------------------------------------------------------
