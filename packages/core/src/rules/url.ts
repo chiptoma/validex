@@ -57,7 +57,7 @@ function parseUrlSafely(value: string): URL | undefined {
   try {
     return new URL(value)
   }
-  /* c8 ignore next 3 -- defensive catch; URL constructor throws only for truly malformed input already rejected by Zod format check */
+  /* v8 ignore next 3 -- defensive catch; URL constructor throws only for truly malformed input already rejected by Zod format check */
   catch {
     return undefined
   }
@@ -127,10 +127,10 @@ export const Url = /* @__PURE__ */ createRule<URLOptions>({
   messages: {},
   build: (opts: URLOptions): unknown => {
     const range = resolveRange(opts.length)
-    /* c8 ignore start -- defensive fallback; defaults always provide length/protocols */
+    /* v8 ignore start -- defensive fallback; defaults always provide length/protocols */
     const max = range?.max ?? 2048
     const protocols = opts.protocols ?? ['http', 'https']
-    /* c8 ignore stop */
+    /* v8 ignore stop */
     const min = range?.min
 
     const base = opts.normalize !== false
@@ -150,7 +150,7 @@ export const Url = /* @__PURE__ */ createRule<URLOptions>({
       }
 
       const parsed = parseUrlSafely(v)
-      /* c8 ignore next -- defensive guard; URL already passed z.url() validation */
+      /* v8 ignore next -- defensive guard; URL already passed z.url() validation */
       if (parsed === undefined)
         return
 

@@ -60,10 +60,10 @@ function applyLength(
   range: ResolvedRange | undefined,
   label?: string,
 ): z.ZodType {
-  /* c8 ignore start -- defensive guard; defaults always provide length range */
+  /* v8 ignore start -- defensive guard; defaults always provide length range */
   if (range === undefined)
     return schema
-  /* c8 ignore stop */
+  /* v8 ignore stop */
   const min = range.min
   const max = range.max
   return schema.superRefine((v: string, ctx): void => {
@@ -90,10 +90,10 @@ function applyBlockCommon(
     : blockCommon
   return schema.refine(
     async (v: unknown): Promise<boolean> => {
-      /* c8 ignore start -- defensive type guard; schema is z.string() so v is always string */
+      /* v8 ignore start -- defensive type guard; schema is z.string() so v is always string */
       if (typeof v !== 'string')
         return true
-      /* c8 ignore stop */
+      /* v8 ignore stop */
       try {
         const passwords = getCommonPasswords(tier)
         return !passwords.has(v.toLowerCase())

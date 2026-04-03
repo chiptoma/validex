@@ -73,7 +73,7 @@ function buildUsernamePattern(
   extraChars?: string,
   disallowChars?: string,
 ): RegExp {
-  /* c8 ignore next -- defensive fallback; pattern is constrained by TypeScript to known keys */
+  /* v8 ignore next -- defensive fallback; pattern is constrained by TypeScript to known keys */
   let charClass = PATTERN_MAP[pattern] ?? 'a-z0-9_'
 
   if (extraChars !== undefined && extraChars.length > 0) {
@@ -106,10 +106,10 @@ function applyReservedRefine(
   label?: string,
 ): z.ZodType {
   return schema.superRefine(async (v: unknown, ctx): Promise<void> => {
-    /* c8 ignore start -- defensive type guard; schema is z.string() so v is always string */
+    /* v8 ignore start -- defensive type guard; schema is z.string() so v is always string */
     if (typeof v !== 'string')
       return
-    /* c8 ignore stop */
+    /* v8 ignore stop */
     const normalized = ignoreCase ? v.toLowerCase() : v
     if (customReserved.length > 0) {
       const customSet = customReserved.map(w => ignoreCase ? w.toLowerCase() : w)
@@ -153,13 +153,13 @@ export const Username = /* @__PURE__ */ createRule<UsernameOptions>({
     const range = resolveRange(opts.length)
     const consecutiveRange = resolveRange(opts.consecutive)
     const boundary = resolveBoundary(opts.boundary)
-    /* c8 ignore start -- defensive fallback; defaults always provide length range and pattern */
+    /* v8 ignore start -- defensive fallback; defaults always provide length range and pattern */
     const min = range?.min ?? 3
     const max = range?.max ?? 20
 
     const pattern = opts.regex ?? buildUsernamePattern(
       opts.pattern ?? 'alphanumeric-underscore',
-      /* c8 ignore stop */
+      /* v8 ignore stop */
       opts.extraChars,
       opts.disallowChars,
     )

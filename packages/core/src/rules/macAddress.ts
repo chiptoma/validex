@@ -48,7 +48,7 @@ const PATTERNS: Readonly<Record<string, RegExp>> = {
  * @returns The corresponding regex pattern.
  */
 function getPattern(delimiter: string): RegExp {
-  /* c8 ignore next -- defensive fallback; delimiter is constrained by TypeScript to known keys */
+  /* v8 ignore next -- defensive fallback; delimiter is constrained by TypeScript to known keys */
   return PATTERNS[delimiter] ?? COLON_PATTERN
 }
 
@@ -69,7 +69,7 @@ export const MacAddress = /* @__PURE__ */ createRule<MacAddressOptions>({
   defaults: {},
   messages: {},
   build: (opts: MacAddressOptions): unknown => {
-    /* c8 ignore next -- defensive fallback; defaults always provide delimiter */
+    /* v8 ignore next -- defensive fallback; defaults always provide delimiter */
     const delimiter = opts.delimiter ?? ':'
     const pattern = getPattern(delimiter)
 

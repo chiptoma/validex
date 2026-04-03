@@ -91,11 +91,11 @@ export const Country = /* @__PURE__ */ createRule<CountryOptions>({
   defaults: {},
   messages: {},
   build: (opts: CountryOptions): z.ZodType => {
-    /* c8 ignore start -- defensive fallback; defaults always provide format/allow/block */
+    /* v8 ignore start -- defensive fallback; defaults always provide format/allow/block */
     const format = opts.format ?? 'alpha2'
     const allow = opts.allowCountries ?? []
     const block = opts.blockCountries ?? []
-    /* c8 ignore stop */
+    /* v8 ignore stop */
 
     let schema: z.ZodType = opts.normalize !== false
       ? z.string().transform((v: string): string => v.trim().toUpperCase())

@@ -133,10 +133,10 @@ function validatePhoneConstraints(
   }
 
   const parsedCountry = parsed.country
-  /* c8 ignore start -- defensive fallback; defaults always provide allow/block arrays */
+  /* v8 ignore start -- defensive fallback; defaults always provide allow/block arrays */
   const allow = opts.allowCountries ?? []
   const block = opts.blockCountries ?? []
-  /* c8 ignore stop */
+  /* v8 ignore stop */
 
   if (allow.length > 0 && (!parsedCountry || !allow.includes(parsedCountry))) {
     addPhoneIssue(ctx, 'countryNotAllowed', lbl, { country: parsedCountry ?? 'unknown' })
@@ -178,7 +178,7 @@ export const Phone = /* @__PURE__ */ createRule<PhoneOptions>({
       throw new Error('validex: Phone metadata "custom" requires customMetadataPath')
     }
 
-    /* c8 ignore next -- defensive fallback; defaults always provide format */
+    /* v8 ignore next -- defensive fallback; defaults always provide format */
     const fmt = opts.format ?? 'e164'
     const base = opts.normalize !== false ? z.string().trim() : z.string()
 
@@ -206,10 +206,10 @@ export const Phone = /* @__PURE__ */ createRule<PhoneOptions>({
     ).transform(async (value: string): Promise<string> => {
       if (opts.normalize === false)
         return value
-      /* c8 ignore start -- defensive guard; parse already succeeded in superRefine so cachedParsed is always set here */
+      /* v8 ignore start -- defensive guard; parse already succeeded in superRefine so cachedParsed is always set here */
       if (cachedParsed === undefined)
         return value
-      /* c8 ignore stop */
+      /* v8 ignore stop */
       return formatPhoneNumber(cachedParsed, fmt)
     })
   },
