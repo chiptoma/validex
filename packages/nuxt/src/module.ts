@@ -43,14 +43,14 @@ export interface ValidexNuxtOptions {
 // ----------------------------------------------------------
 
 // SAFETY: explicit type avoids TS2742 — inferred NuxtModule type references @nuxt/schema via .pnpm path
-const validexModule: NuxtModule<ValidexNuxtOptions> = /* v8 ignore next -- Nuxt module setup runs inside Nuxt runtime; covered by E2E test via @nuxt/test-utils */ defineNuxtModule<ValidexNuxtOptions>({
+// SAFETY: explicit type avoids TS2742 — inferred NuxtModule type references @nuxt/schema via .pnpm path
+const validexModule: NuxtModule<ValidexNuxtOptions> = defineNuxtModule<ValidexNuxtOptions>({
   meta: {
     name: 'validex',
     configKey: 'validex',
     compatibility: { nuxt: '>=3.0.0' },
   },
   defaults: {},
-  /* v8 ignore start -- Nuxt module setup callback requires running Nuxt instance */
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
@@ -65,7 +65,6 @@ const validexModule: NuxtModule<ValidexNuxtOptions> = /* v8 ignore next -- Nuxt 
       await preloadData(options.preload)
     }
   },
-  /* v8 ignore stop */
 })
 export default validexModule
 
@@ -80,7 +79,7 @@ export default validexModule
  *
  * @param resolver - The Nuxt module resolver instance.
  */
-function registerAutoImports(resolver: Resolver): void { /* v8 ignore start -- requires Nuxt runtime */
+function registerAutoImports(resolver: Resolver): void {
   const core = '@validex/core'
 
   addImports([
@@ -113,7 +112,7 @@ function registerAutoImports(resolver: Resolver): void { /* v8 ignore start -- r
     { name: 'setup', as: 'validexSetup', from: core },
     { name: 'useValidation', from: resolver.resolve('./composables') },
   ])
-} /* v8 ignore stop */
+}
 
 // ----------------------------------------------------------
 // I18N DETECTION
@@ -127,7 +126,7 @@ function registerAutoImports(resolver: Resolver): void { /* v8 ignore start -- r
  * @param modules - The raw modules array from nuxt.options.modules.
  * @param options - The validex module options.
  */
-function detectAndEnableI18n(/* v8 ignore start -- internal to Nuxt module setup */
+function detectAndEnableI18n(
   modules: readonly unknown[],
   options: ValidexNuxtOptions,
 ): void {
@@ -144,7 +143,7 @@ function detectAndEnableI18n(/* v8 ignore start -- internal to Nuxt module setup
   if (hasI18n && options.i18n?.enabled !== true) {
     setup({ i18n: { enabled: true } })
   }
-} /* v8 ignore stop */
+}
 
 // ----------------------------------------------------------
 // HELPERS
