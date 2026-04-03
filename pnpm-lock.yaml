@@ -26,15 +26,6 @@ importers:
       '@emnapi/runtime':
         specifier: ^1.9.2
         version: 1.9.2
-      '@faker-js/faker':
-        specifier: ^10.4.0
-        version: 10.4.0
-      '@nuxt/kit':
-        specifier: ^4.4.2
-        version: 4.4.2(magicast@0.5.2)
-      '@nuxt/test-utils':
-        specifier: ^4.0.0
-        version: 4.0.0(magicast@0.5.2)(typescript@5.9.3)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.5.0)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.46.1)(yaml@2.8.3))(vitest@4.1.2(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.5.0)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.46.1)(yaml@2.8.3))
       '@types/node':
         specifier: ^25.5.0
         version: 25.5.0
@@ -44,30 +35,15 @@ importers:
       eslint:
         specifier: ^10.1.0
         version: 10.1.0(jiti@2.6.1)
-      eslint-plugin-regexp:
-        specifier: ^3.1.0
-        version: 3.1.0(eslint@10.1.0(jiti@2.6.1))
       eslint-plugin-sonarjs:
         specifier: ^4.0.2
         version: 4.0.2(eslint@10.1.0(jiti@2.6.1))
-      fast-check:
-        specifier: ^4.6.0
-        version: 4.6.0
-      fastify:
-        specifier: ^5.8.4
-        version: 5.8.4
-      fastify-plugin:
-        specifier: ^5.1.0
-        version: 5.1.0
       knip:
         specifier: ^6.2.0
         version: 6.2.0(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
       lint-staged:
         specifier: ^16.4.0
         version: 16.4.0
-      nuxt:
-        specifier: ^4.4.2
-        version: 4.4.2(@babel/core@7.29.0)(@babel/plugin-syntax-jsx@7.28.6(@babel/core@7.29.0))(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@parcel/watcher@2.5.6)(@types/node@25.5.0)(@vue/compiler-sfc@3.5.31)(cac@6.7.14)(db0@0.3.4)(eslint@10.1.0(jiti@2.6.1))(ioredis@5.10.1)(lightningcss@1.32.0)(magicast@0.5.2)(optionator@0.9.4)(rolldown@1.0.0-rc.12(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2))(rollup-plugin-visualizer@7.0.1(rolldown@1.0.0-rc.12(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2))(rollup@4.60.1))(rollup@4.60.1)(terser@5.46.1)(typescript@5.9.3)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.5.0)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.46.1)(yaml@2.8.3))(yaml@2.8.3)
       publint:
         specifier: ^0.3.18
         version: 0.3.18
@@ -98,6 +74,13 @@ importers:
       postcode-validator:
         specifier: ^3.10.15
         version: 3.10.15
+    devDependencies:
+      '@faker-js/faker':
+        specifier: ^10.4.0
+        version: 10.4.0
+      fast-check:
+        specifier: ^4.6.0
+        version: 4.6.0
 
   packages/fastify:
     devDependencies:
@@ -119,6 +102,12 @@ importers:
       '@nuxt/kit':
         specifier: ^4.4.2
         version: 4.4.2(magicast@0.5.2)
+      '@nuxt/schema':
+        specifier: ^4.4.2
+        version: 4.4.2
+      '@nuxt/test-utils':
+        specifier: ^4.0.0
+        version: 4.0.0(magicast@0.5.2)(typescript@5.9.3)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.5.0)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.46.1)(yaml@2.8.3))(vitest@4.1.2(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.5.0)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.46.1)(yaml@2.8.3))
       '@validex/core':
         specifier: workspace:^
         version: link:../core
@@ -129,14 +118,14 @@ importers:
         specifier: ^4.3.6
         version: 4.3.6
 
-  packages/nuxt/tests/fixtures/nuxt-app:
+  packages/nuxt/tests/_support/fixtures/nuxt-app:
     dependencies:
       '@validex/core':
         specifier: workspace:^
-        version: link:../../../../core
+        version: link:../../../../../core
       '@validex/nuxt':
         specifier: workspace:^
-        version: link:../../..
+        version: link:../../../..
       nuxt:
         specifier: ^4.4.2
         version: 4.4.2(@babel/core@7.29.0)(@babel/plugin-syntax-jsx@7.28.6(@babel/core@7.29.0))(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@parcel/watcher@2.5.6)(@types/node@25.5.0)(@vue/compiler-sfc@3.5.31)(cac@6.7.14)(db0@0.3.4)(eslint@10.1.0(jiti@2.6.1))(ioredis@5.10.1)(lightningcss@1.32.0)(magicast@0.5.2)(optionator@0.9.4)(rolldown@1.0.0-rc.12(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2))(rollup-plugin-visualizer@7.0.1(rolldown@1.0.0-rc.12(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2))(rollup@4.60.1))(rollup@4.60.1)(terser@5.46.1)(typescript@5.9.3)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.5.0)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.46.1)(yaml@2.8.3))(yaml@2.8.3)
@@ -6928,7 +6917,7 @@ snapshots:
   '@nuxt/schema@4.4.2':
     dependencies:
       '@vue/shared': 3.5.31
-      defu: 6.1.4
+      defu: 6.1.6
       pathe: 2.0.3
       pkg-types: 2.3.0
       std-env: 4.0.0
