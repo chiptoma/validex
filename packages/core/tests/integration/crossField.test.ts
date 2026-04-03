@@ -5,16 +5,17 @@
 
 import { beforeEach, describe, expect, it } from 'vitest'
 import { z } from 'zod'
-import { setup } from '../../src/config/index'
-import { resetConfig } from '../../src/config/store'
-import { _resetCustomErrorFlag, registerCustomError } from '../../src/core/customError'
-import { validate } from '../../src/core/validate'
-import { Email } from '../../src/rules/email'
-import { Password } from '../../src/rules/password'
-import { PasswordConfirmation } from '../../src/rules/passwordConfirmation'
-import { Username } from '../../src/rules/username'
-import { requiredWhen } from '../../src/utilities/requiredWhen'
-import { sameAs } from '../../src/utilities/sameAs'
+
+import { setup } from '@config/index'
+import { resetConfig } from '@config/store'
+import { _resetCustomErrorFlag, registerCustomError } from '@core/customError'
+import { validate } from '@core/validate'
+import { Email } from '@rules/email'
+import { Password } from '@rules/password'
+import { PasswordConfirmation } from '@rules/passwordConfirmation'
+import { Username } from '@rules/username'
+import { requiredWhen } from '@utilities/requiredWhen'
+import { sameAs } from '@utilities/sameAs'
 
 beforeEach(() => {
   resetConfig()

@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest'
+
 import {
   onlyAlpha,
   onlyAlphanumeric,
   onlyAlphanumericSpaceHyphen,
   onlyAlphaSpaceHyphen,
   onlyNumeric,
-} from '../../../src/checks/restriction'
+} from '@checks/restriction'
 
 describe('onlyAlpha', () => {
   it('should accept ASCII letters', () => {

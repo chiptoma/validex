@@ -4,8 +4,11 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { describe, expect, it } from 'vitest'
-import { LicenseKey } from '../../../src/rules/licenseKey'
+
+import { LicenseKey } from '@rules/licenseKey'
+
 import { testRuleContract } from '../../_support/helpers/testRule'
 
 // ----------------------------------------------------------

@@ -6,8 +6,10 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { describe, expect, it } from 'vitest'
-import { getParams } from '../../../src/core/getParams'
+
+import { getParams } from '@core/getParams'
 
 // ----------------------------------------------------------
 // CAMEL CASE PATTERN

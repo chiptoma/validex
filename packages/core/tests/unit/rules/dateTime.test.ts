@@ -4,8 +4,11 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { describe, expect, it } from 'vitest'
-import { DateTime } from '../../../src/rules/dateTime'
+
+import { DateTime } from '@rules/dateTime'
+
 import { testRuleContract } from '../../_support/helpers/testRule'
 
 // ----------------------------------------------------------

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { resolveRange } from '../../../src/internal/resolveRange'
+
+import { resolveRange } from '@internal/resolveRange'
 
 describe('resolveRange', () => {
   it('should return undefined for undefined input', () => {

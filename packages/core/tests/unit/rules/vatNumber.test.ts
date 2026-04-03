@@ -5,8 +5,10 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { describe, expect, it } from 'vitest'
-import { VatNumber } from '../../../src/rules/vatNumber'
+
+import { VatNumber } from '@rules/vatNumber'
 
 // ----------------------------------------------------------
 // HELPERS

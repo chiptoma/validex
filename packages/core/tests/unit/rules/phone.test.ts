@@ -5,9 +5,11 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { describe, expect, it } from 'vitest'
-import { getParams } from '../../../src/core/getParams'
-import { Phone } from '../../../src/rules/phone'
+
+import { getParams } from '@core/getParams'
+import { Phone } from '@rules/phone'
 
 // ----------------------------------------------------------
 // HELPERS

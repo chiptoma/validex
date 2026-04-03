@@ -6,6 +6,7 @@
 
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
+
 import {
   containsEmail,
   containsPhoneNumber,
@@ -16,8 +17,8 @@ import {
   noSpaces,
   toSlug,
   toTitleCase,
-} from '../../src/checks'
-import { Email } from '../../src/rules/email'
+} from '@checks'
+import { Email } from '@rules/email'
 
 // ----------------------------------------------------------
 // STANDALONE USAGE

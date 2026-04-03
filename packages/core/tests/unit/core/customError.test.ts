@@ -1,7 +1,8 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { z } from 'zod'
-import { resetConfig, setup } from '../../../src/config'
-import { registerCustomError } from '../../../src/core/customError'
+
+import { resetConfig, setup } from '@config'
+import { registerCustomError } from '@core/customError'
 
 describe('customError handler', () => {
   afterEach(() => {

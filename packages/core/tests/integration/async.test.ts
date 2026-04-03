@@ -5,22 +5,24 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { beforeEach, describe, expect, it } from 'vitest'
-import { preloadData } from '../../src/config'
-import { validate } from '../../src/core/validate'
-import { clearCommonPasswordsCache, getCommonPasswords } from '../../src/loaders/commonPasswords'
-import { clearCountryCodesCache, getCountryCodes } from '../../src/loaders/countryCodes'
-import { clearCreditCardPrefixesCache, getCreditCardPrefixes } from '../../src/loaders/creditCardPrefixes'
-import { clearCurrencyCodesCache, getCurrencyCodes } from '../../src/loaders/currencyCodes'
-import { clearDisposableDomainsCache, getDisposableDomains } from '../../src/loaders/disposableDomains'
-import { clearIbanPatternsCache, getIbanPatterns } from '../../src/loaders/ibanPatterns'
-import { clearPhoneParserCache, getPhoneParser } from '../../src/loaders/phoneParser'
-import { clearPostalCodesCache, getPostalCodes } from '../../src/loaders/postalCodes'
-import { getReservedUsernames, resetReservedUsernamesCache } from '../../src/loaders/reservedUsernames'
-import { clearVatPatternsCache, getVatPatterns } from '../../src/loaders/vatPatterns'
-import { Email } from '../../src/rules/email'
-import { Password } from '../../src/rules/password'
-import { Username } from '../../src/rules/username'
+
+import { preloadData } from '@config'
+import { validate } from '@core/validate'
+import { clearCommonPasswordsCache, getCommonPasswords } from '@loaders/commonPasswords'
+import { clearCountryCodesCache, getCountryCodes } from '@loaders/countryCodes'
+import { clearCreditCardPrefixesCache, getCreditCardPrefixes } from '@loaders/creditCardPrefixes'
+import { clearCurrencyCodesCache, getCurrencyCodes } from '@loaders/currencyCodes'
+import { clearDisposableDomainsCache, getDisposableDomains } from '@loaders/disposableDomains'
+import { clearIbanPatternsCache, getIbanPatterns } from '@loaders/ibanPatterns'
+import { clearPhoneParserCache, getPhoneParser } from '@loaders/phoneParser'
+import { clearPostalCodesCache, getPostalCodes } from '@loaders/postalCodes'
+import { getReservedUsernames, resetReservedUsernamesCache } from '@loaders/reservedUsernames'
+import { clearVatPatternsCache, getVatPatterns } from '@loaders/vatPatterns'
+import { Email } from '@rules/email'
+import { Password } from '@rules/password'
+import { Username } from '@rules/username'
 
 // ----------------------------------------------------------
 // HELPERS

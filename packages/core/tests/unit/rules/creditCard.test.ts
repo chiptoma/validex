@@ -5,8 +5,11 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { describe, expect, it } from 'vitest'
-import { CreditCard } from '../../../src/rules/creditCard'
+
+import { CreditCard } from '@rules/creditCard'
+
 import { testRuleContract } from '../../_support/helpers/testRule'
 
 // ----------------------------------------------------------

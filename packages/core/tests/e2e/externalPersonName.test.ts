@@ -5,8 +5,11 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { describe, expect, it } from 'vitest'
-import { PersonName } from '../../src/rules/personName'
+
+import { PersonName } from '@rules/personName'
+
 import names from '../_support/fixtures/personNamesExtended.json'
 
 // ----------------------------------------------------------

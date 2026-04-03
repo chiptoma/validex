@@ -5,8 +5,10 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { describe, expect, it } from 'vitest'
-import { Currency } from '../../../src/rules/currency'
+
+import { Currency } from '@rules/currency'
 
 // ----------------------------------------------------------
 // HELPERS

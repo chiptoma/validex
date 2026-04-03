@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { maxConsecutive, maxWords, noSpaces } from '../../../src/checks/limits'
+
+import { maxConsecutive, maxWords, noSpaces } from '@checks/limits'
 
 describe('maxWords', () => {
   it('should return true when word count equals max', () => {

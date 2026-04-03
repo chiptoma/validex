@@ -5,8 +5,10 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { describe, expect, it } from 'vitest'
-import { PostalCode } from '../../../src/rules/postalCode'
+
+import { PostalCode } from '@rules/postalCode'
 
 // ----------------------------------------------------------
 // HELPERS

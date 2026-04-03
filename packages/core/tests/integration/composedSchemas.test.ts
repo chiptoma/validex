@@ -8,18 +8,19 @@
 
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
-import { validate } from '../../src/core/validate'
-import { Country } from '../../src/rules/country'
-import { CreditCard } from '../../src/rules/creditCard'
-import { Email } from '../../src/rules/email'
-import { Jwt } from '../../src/rules/jwt'
-import { Password } from '../../src/rules/password'
-import { PersonName } from '../../src/rules/personName'
-import { Phone } from '../../src/rules/phone'
-import { PostalCode } from '../../src/rules/postalCode'
-import { Text } from '../../src/rules/text'
-import { Username } from '../../src/rules/username'
-import { Website } from '../../src/rules/website'
+
+import { validate } from '@core/validate'
+import { Country } from '@rules/country'
+import { CreditCard } from '@rules/creditCard'
+import { Email } from '@rules/email'
+import { Jwt } from '@rules/jwt'
+import { Password } from '@rules/password'
+import { PersonName } from '@rules/personName'
+import { Phone } from '@rules/phone'
+import { PostalCode } from '@rules/postalCode'
+import { Text } from '@rules/text'
+import { Username } from '@rules/username'
+import { Website } from '@rules/website'
 
 // ----------------------------------------------------------
 // HELPERS

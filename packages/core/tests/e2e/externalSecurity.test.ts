@@ -10,14 +10,17 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { describe, expect, it } from 'vitest'
-import { BusinessName } from '../../src/rules/businessName'
-import { Email } from '../../src/rules/email'
-import { LicenseKey } from '../../src/rules/licenseKey'
-import { PersonName } from '../../src/rules/personName'
-import { Slug } from '../../src/rules/slug'
-import { Text } from '../../src/rules/text'
-import { Username } from '../../src/rules/username'
+
+import { BusinessName } from '@rules/businessName'
+import { Email } from '@rules/email'
+import { LicenseKey } from '@rules/licenseKey'
+import { PersonName } from '@rules/personName'
+import { Slug } from '@rules/slug'
+import { Text } from '@rules/text'
+import { Username } from '@rules/username'
+
 import injectionPayloads from '../_support/fixtures/security.injection.json'
 import xssPayloads from '../_support/fixtures/security.xss.json'
 

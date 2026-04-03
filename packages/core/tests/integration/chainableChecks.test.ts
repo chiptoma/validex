@@ -4,13 +4,14 @@
 // chained after rules, and with i18n mode.
 // ==============================================================================
 
-import type { ValidationResult } from '../../src/types'
+import type { ValidationResult } from '@validex-types'
+
 import { afterEach, describe, expect, it } from 'vitest'
 import { z } from 'zod'
-import { resetConfig, setup } from '../../src/config'
 
-import { validate } from '../../src/core'
-import { Email, Password, PersonName } from '../../src/rules'
+import { resetConfig, setup } from '@config'
+import { validate } from '@core'
+import { Email, Password, PersonName } from '@rules'
 
 // ----------------------------------------------------------
 // HELPERS

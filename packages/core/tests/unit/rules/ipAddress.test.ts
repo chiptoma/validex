@@ -4,8 +4,11 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { describe, expect, it } from 'vitest'
-import { IpAddress } from '../../../src/rules/ipAddress'
+
+import { IpAddress } from '@rules/ipAddress'
+
 import { testRuleContract } from '../../_support/helpers/testRule'
 
 // ----------------------------------------------------------

@@ -1,10 +1,13 @@
 import type { z } from 'zod'
+
 import { describe, expect, it } from 'vitest'
-import { BusinessName } from '../../src/rules/businessName'
-import { Color } from '../../src/rules/color'
-import { Email } from '../../src/rules/email'
-import { PersonName } from '../../src/rules/personName'
-import { Uuid } from '../../src/rules/uuid'
+
+import { BusinessName } from '@rules/businessName'
+import { Color } from '@rules/color'
+import { Email } from '@rules/email'
+import { PersonName } from '@rules/personName'
+import { Uuid } from '@rules/uuid'
+
 import {
   generateColors,
   generateCompanyNames,

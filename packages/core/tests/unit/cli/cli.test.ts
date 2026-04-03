@@ -6,10 +6,12 @@
 import { execSync } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
+
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { RULE_DEFAULTS } from '../../../src/config/defaults'
-import { MESSAGE_MAP } from '../../../src/core/errorMap'
-import enLocale from '../../../src/locales/en.json'
+
+import { RULE_DEFAULTS } from '@config/defaults'
+import { MESSAGE_MAP } from '@core/errorMap'
+import enLocale from '@locales/en.json'
 
 // ----------------------------------------------------------
 // TYPES

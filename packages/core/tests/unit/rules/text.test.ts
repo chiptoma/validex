@@ -5,9 +5,12 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import { describe, expect, it } from 'vitest'
-import { getParams } from '../../../src/core/getParams'
-import { Text } from '../../../src/rules/text'
+
+import { getParams } from '@core/getParams'
+import { Text } from '@rules/text'
+
 import { testRuleContract } from '../../_support/helpers/testRule'
 
 // ----------------------------------------------------------

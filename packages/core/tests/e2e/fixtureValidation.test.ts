@@ -1,7 +1,10 @@
 import type { z } from 'zod'
+
 import { describe, expect, it } from 'vitest'
-import { BusinessName } from '../../src/rules/businessName'
-import { PostalCode } from '../../src/rules/postalCode'
+
+import { BusinessName } from '@rules/businessName'
+import { PostalCode } from '@rules/postalCode'
+
 import businessInvalid from '../_support/fixtures/businessNames.invalid.json'
 import postalInvalid from '../_support/fixtures/postalCodes.invalid.json'
 

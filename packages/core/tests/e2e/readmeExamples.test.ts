@@ -5,6 +5,10 @@
 
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
+
+import { resetConfig } from '@config/store'
+import { registerCustomError } from '@core/customError'
+
 import {
   createRule,
   Email,
@@ -14,8 +18,6 @@ import {
   Text,
   validate,
 } from '../../src'
-import { resetConfig } from '../../src/config/store'
-import { registerCustomError } from '../../src/core/customError'
 
 // ----------------------------------------------------------
 // QUICK START EXAMPLES
