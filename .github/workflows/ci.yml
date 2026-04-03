@@ -3,7 +3,6 @@ name: CI
 on:
   push:
     branches: [dev, main]
-    tags: ['v*']
   pull_request:
     branches: [main, dev]
 
@@ -24,6 +23,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+
+      - name: Security audit (production deps)
+        run: pnpm audit --prod
 
       # Quality gates
       - name: Lint
@@ -49,24 +51,3 @@ jobs:
         run: pnpm test:smoke
       - name: Bundle size check
         run: pnpm test:bundle-size
-
-  publish:
-    needs: quality
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-          registry-url: 'https://registry.npmjs.org'
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm -r build
-      # pnpm -r publish respects topological sort —
-      # @validex/core publishes first, then adapters
-      - name: Publish
-        run: pnpm -r publish --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
