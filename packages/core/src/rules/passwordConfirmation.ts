@@ -12,13 +12,16 @@
 // ==============================================================================
 
 import type { z } from 'zod'
+
 import type { BaseRuleOptions } from '../types'
 import type { PasswordOptions } from './password'
-import { initAugmentation } from '../augmentation'
-import { RULE_DEFAULTS } from '../config/defaults'
-import { getConfig } from '../config/index'
-import { mergeThreeTiers } from '../config/merge'
-import { registerCrossField } from '../core/crossFieldRegistry'
+
+import { initAugmentation } from '@augmentation'
+import { RULE_DEFAULTS } from '@config/defaults'
+import { getConfig } from '@config/index'
+import { mergeThreeTiers } from '@config/merge'
+import { registerCrossField } from '@core/crossFieldRegistry'
+
 import { Password } from './password'
 
 // ----------------------------------------------------------

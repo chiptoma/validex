@@ -6,11 +6,14 @@
 // ==============================================================================
 
 import type { CountryCode, PhoneNumber } from 'libphonenumber-js'
-import type { PhoneParser } from '../loaders/phoneParser'
+
 import type { BaseRuleOptions } from '../types'
+import type { PhoneParser } from '@loaders/phoneParser'
+
 import { z } from 'zod'
-import { createRule } from '../core/createRule'
-import { loadPhoneParser } from '../loaders/phoneParser'
+
+import { createRule } from '@core/createRule'
+import { loadPhoneParser } from '@loaders/phoneParser'
 
 // ----------------------------------------------------------
 // TYPES

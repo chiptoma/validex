@@ -4,13 +4,16 @@
 // ==============================================================================
 
 import type { z as zType } from 'zod'
+
 import type { BaseRuleOptions, Range } from '../types'
+
 import { z } from 'zod'
-import { createRule } from '../core/createRule'
-import { matchesDomainList } from '../internal/domainMatch'
-import { URL_FORMAT_CHECK } from '../internal/formatChecks'
-import { applyLengthCheck } from '../internal/lengthCheck'
-import { resolveRange } from '../internal/resolveRange'
+
+import { createRule } from '@core/createRule'
+import { matchesDomainList } from '@internal/domainMatch'
+import { URL_FORMAT_CHECK } from '@internal/formatChecks'
+import { applyLengthCheck } from '@internal/lengthCheck'
+import { resolveRange } from '@internal/resolveRange'
 
 // ----------------------------------------------------------
 // TYPES

@@ -4,10 +4,13 @@
 // ==============================================================================
 
 import type { FormatRuleOptions, Range } from '../types'
+
 import { z } from 'zod'
-import { createRule } from '../core/createRule'
-import { applyLengthCheck } from '../internal/lengthCheck'
-import { resolveRange } from '../internal/resolveRange'
+
+import { createRule } from '@core/createRule'
+import { applyLengthCheck } from '@internal/lengthCheck'
+import { resolveRange } from '@internal/resolveRange'
+
 import '../augmentation'
 
 // ----------------------------------------------------------

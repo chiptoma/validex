@@ -5,8 +5,9 @@
 
 import { z } from 'zod'
 
-import { getConfig } from '../config/store'
-import { fieldNameToLabel } from '../internal/fieldLabel'
+import { getConfig } from '@config/store'
+import { fieldNameToLabel } from '@internal/fieldLabel'
+
 import { getCrossField } from './crossFieldRegistry'
 import { getErrorMessage } from './errorMap'
 

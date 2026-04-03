@@ -4,8 +4,10 @@
 // ==============================================================================
 
 import type { ErrorParams } from '../types'
-import { getConfig } from '../config/store'
-import { fieldNameToLabel } from '../internal/fieldLabel'
+
+import { getConfig } from '@config/store'
+import { fieldNameToLabel } from '@internal/fieldLabel'
+
 import { buildMessageKey } from './errorMap'
 
 // ----------------------------------------------------------

@@ -7,6 +7,7 @@
 // ==============================================================================
 
 import type { RefinementCtx } from 'zod'
+
 import type {
   CheckMethodOptions,
   CompositionMethodOptions,
@@ -14,20 +15,21 @@ import type {
   MaxWordsOptions,
   MinWordsOptions,
 } from './types'
+
 import { ZodType } from 'zod'
-import { hasDigits, hasLowercase, hasSpecial, hasUppercase } from '../checks/composition'
-import { containsEmail, containsHtml, containsUrl } from '../checks/detection'
-import { maxConsecutive, maxWords, minWords, noSpaces } from '../checks/limits'
+
+import { hasDigits, hasLowercase, hasSpecial, hasUppercase } from '@checks/composition'
+import { containsEmail, containsHtml, containsUrl } from '@checks/detection'
+import { maxConsecutive, maxWords, minWords, noSpaces } from '@checks/limits'
 import {
   onlyAlpha,
   onlyAlphanumeric,
   onlyAlphanumericSpaceHyphen,
   onlyAlphaSpaceHyphen,
   onlyNumeric,
-} from '../checks/restriction'
-import { collapseWhitespace, stripHtml, toSlug, toTitleCase } from '../checks/transforms'
-
-import { ensureCustomError } from '../core/customError'
+} from '@checks/restriction'
+import { collapseWhitespace, stripHtml, toSlug, toTitleCase } from '@checks/transforms'
+import { ensureCustomError } from '@core/customError'
 
 // ----------------------------------------------------------
 // PROTOTYPE PATCHING
@@ -43,7 +45,7 @@ import { ensureCustomError } from '../core/customError'
 
 let _initialized = false
 
-/* eslint-disable ts/no-unsafe-member-access, ts/no-unsafe-return, ts/no-unsafe-call */
+/* eslint-disable ts/no-unsafe-member-access, ts/no-unsafe-return, ts/no-unsafe-call -- prototype patching requires unsafe any access; type safety provided by module augmentation in types.ts */
 
 /**
  * Registers the custom error handler and patches ZodType.prototype

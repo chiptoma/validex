@@ -5,12 +5,14 @@
 // ==============================================================================
 
 import type { BaseRuleOptions, Range } from '../types'
+
 import { z } from 'zod'
-import { createRule } from '../core/createRule'
-import { matchesDomainList } from '../internal/domainMatch'
-import { applyLengthCheck } from '../internal/lengthCheck'
-import { resolveRange } from '../internal/resolveRange'
-import { getDisposableDomains } from '../loaders/disposableDomains'
+
+import { createRule } from '@core/createRule'
+import { matchesDomainList } from '@internal/domainMatch'
+import { applyLengthCheck } from '@internal/lengthCheck'
+import { resolveRange } from '@internal/resolveRange'
+import { getDisposableDomains } from '@loaders/disposableDomains'
 
 // ----------------------------------------------------------
 // TYPES

@@ -4,9 +4,11 @@
 // ==============================================================================
 
 import type { FormatRuleOptions } from '../types'
+
 import { z } from 'zod'
-import { createRule } from '../core/createRule'
-import { escapeRegexChars } from '../internal/escapeRegex'
+
+import { createRule } from '@core/createRule'
+import { escapeRegexChars } from '@internal/escapeRegex'
 
 // ----------------------------------------------------------
 // TYPES

@@ -4,7 +4,8 @@
 // ==============================================================================
 
 import type { GlobalConfig } from '../types'
-import { _resetCustomErrorFlag } from '../core/customError'
+
+import { _resetCustomErrorFlag } from '@core/customError'
 
 /**
  * Default i18n configuration.
