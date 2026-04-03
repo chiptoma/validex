@@ -6,6 +6,5 @@ export default defineConfig({
   dts: true,
   clean: true,
   sourcemap: false,
-  splitting: true,
   external: ['@validex/core', 'fastify', 'fastify-plugin'],
 })
