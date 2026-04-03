@@ -14,6 +14,9 @@
     "url": "git+https://github.com/chiptoma/validex.git",
     "directory": "packages/fastify"
   },
+  "bugs": {
+    "url": "https://github.com/chiptoma/validex/issues"
+  },
   "keywords": [
     "validex",
     "fastify",
@@ -21,6 +24,7 @@
     "validation",
     "plugin"
   ],
+  "sideEffects": false,
   "exports": {
     ".": {
       "import": {
