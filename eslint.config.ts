@@ -11,6 +11,7 @@ export default antfu(
         projectService: {
           allowDefaultProject: [
             '*.config.ts',
+            '*.config.base.ts',
             'scripts/*.ts',
             'packages/*/tsup.config.ts',
             'packages/*/vitest.config.ts',
