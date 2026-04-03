@@ -20,7 +20,6 @@ export default antfu(
             'scripts/*.ts',
             'packages/*/tsup.config.ts',
             'packages/*/vitest.config.ts',
-            'packages/*/scripts/*.ts',
           ],
         },
       },
@@ -142,18 +141,6 @@ export default antfu(
     },
   },
 
-  // -- SCRIPTS: Relaxed for build/tooling scripts that don't ship.
-  {
-    files: ['packages/*/scripts/**/*.ts'],
-    rules: {
-      'no-console': 'off',
-      'ts/explicit-function-return-type': 'off',
-      'max-lines-per-function': 'off',
-      'jsdoc/require-jsdoc': 'off',
-      'sonarjs/no-duplicate-string': 'off',
-    },
-  },
-
   // -- TESTS: Relaxed limits (large describe blocks), no JSDoc, no
   // -- duplicate string (assertion messages repeat). Enforces vitest
   // -- best practices.
@@ -174,7 +161,7 @@ export default antfu(
   // -- CONFIG FILES: Not in tsconfig project scope. Disable type-aware
   // -- rules that require type information to avoid parser errors.
   {
-    files: ['**/*.config.ts', '**/*.config.base.ts', 'packages/*/scripts/**/*.ts'],
+    files: ['**/*.config.ts', '**/*.config.base.ts'],
     rules: {
       'ts/strict-boolean-expressions': 'off',
       'ts/no-unsafe-argument': 'off',
