@@ -1,6 +1,9 @@
 # @validex/nuxt
 
 [![npm version](https://img.shields.io/npm/v/@validex/nuxt)](https://www.npmjs.com/package/@validex/nuxt)
+[![npm downloads](https://img.shields.io/npm/dm/@validex/nuxt)](https://www.npmjs.com/package/@validex/nuxt)
+[![build](https://img.shields.io/github/actions/workflow/status/chiptoma/validex/ci.yml)](https://github.com/chiptoma/validex/actions)
+[![TypeScript 5.0+](https://img.shields.io/badge/TypeScript-5.0%2B-blue)](https://www.typescriptlang.org/)
 [![license MIT](https://img.shields.io/npm/l/@validex/nuxt)](https://github.com/chiptoma/validex/blob/main/LICENSE)
 
 Nuxt module for [validex](https://github.com/chiptoma/validex) — auto-imports all 25 validation rules and the `useValidation` composable.

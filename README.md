@@ -1,6 +1,8 @@
 # validex
 
 [![npm version](https://img.shields.io/npm/v/@validex/core)](https://www.npmjs.com/package/@validex/core)
+[![npm downloads](https://img.shields.io/npm/dm/@validex/core)](https://www.npmjs.com/package/@validex/core)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/@validex/core)](https://bundlephobia.com/package/@validex/core)
 [![build](https://img.shields.io/github/actions/workflow/status/chiptoma/validex/ci.yml)](https://github.com/chiptoma/validex/actions)
 [![TypeScript 5.0+](https://img.shields.io/badge/TypeScript-5.0%2B-blue)](https://www.typescriptlang.org/)
 [![license MIT](https://img.shields.io/npm/l/@validex/core)](./LICENSE)
@@ -86,12 +88,21 @@ if (result.success) {
 
 ## Why validex?
 
-- One config system — `setup()` applies defaults globally, per-rule, or per-call. Three-tier merge: built-in defaults < `setup()` config < per-call options.
-- One error surface — `validate()` returns `{ success, data, errors, firstErrors, nestedErrors, issues }`.
-- 25 rules — identity, auth, networking, finance, and text.
-- Tree-shakeable — 5.7 kB Brotli per rule. All 25 = 13 kB. Data loads on demand.
-- i18n-ready — key mode, `t()` function, label/message transforms. CLI generates locale templates.
-- Framework adapters — Nuxt and Fastify, first-class.
+I built validex because I was **fed up** writing the same validation rules over and over again in every project.
+
+Different teams, different defaults, forgetting what I had configured last time, and ending up with inconsistent behavior across the codebase. Sound familiar?
+
+Validex was created to solve that pain once and for all:
+
+- **One config system** — `setup()` lets you define your defaults globally, per-rule, or per-call. Three-tier merge (built-in defaults → global config → per-call options) so you never repeat yourself again.
+- **One consistent error surface** — `validate()` always returns the same clean shape — flat errors, nested errors, first-per-field, raw issues. One function, one result, every time.
+- **Every error is validex-owned** — no raw Zod messages leak to your users. Every error carries a namespace, code, and label for precise routing.
+- **25 production-ready rules** covering the fields you actually use: identity, auth, networking, finance, and text.
+- **Tree-shakeable & lightweight** — 5–6 kB Brotli per rule (shared core included). All 25 rules together = 13 kB. Heavy data loads on demand.
+- **i18n-ready out of the box** — key mode, `t()` function support, label/message transforms, and a CLI that generates ready-to-translate locale files.
+- **First-class framework adapters** — Nuxt and Fastify integrations that feel native.
+
+Stop copy-pasting rules. Get consistent, maintainable validation with sensible defaults — and only ship what you actually use.
 
 ## Rules
 
