@@ -7,6 +7,23 @@
 
 **Type-safe validation rules built on Zod** — tree-shakeable, so you only ship what you use.
 
+---
+
+- [Install](#install)
+- [Quick Start](#quick-start)
+- [Rules](#rules) — all 25 rules
+- [Bundle Size](#bundle-size)
+- [Configuration](#configuration) — global defaults, three-tier merge, preloading
+- [Cross-Field Validation](#cross-field-validation) — sameAs, requiredWhen
+- [Chainable Methods](#chainable-methods) — checks and transforms
+- [Check Functions](#check-functions) — standalone pure functions
+- [Error Handling](#error-handling) — structured errors, getParams
+- [i18n](#i18n) — translations, CLI
+- [Custom Rules](#custom-rules) — createRule, customFn
+- [Framework Adapters](#framework-adapters) — Nuxt, Fastify
+
+---
+
 ## Install
 
 ```bash
@@ -84,7 +101,7 @@ if (result.success) {
 | DateTime | Date/time string with format and range constraints |
 | Token | Generic token validation (hex, base64, nanoid, etc.) |
 | Text | Free text with length, word count, content detection, and regex override |
-| Country | ISO 3166 country code (alpha-2, alpha-3, numeric) |
+| Country | ISO 3166 country code (alpha-2, alpha-3) |
 | Currency | ISO 4217 currency code |
 | Color | Hex, RGB, HSL, and named CSS color formats |
 | CreditCard | Card number with Luhn check and issuer detection |

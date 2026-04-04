@@ -8,9 +8,11 @@ Complete reference for the validex public API. Every option, default value, and 
 
 - [Configuration](#configuration)
   - [`setup(config?)`](#setupconfig)
+  - [`configure(config)`](#configureconfig)
+  - [`getConfig()`](#getconfig)
+  - [`resetConfig()`](#resetconfig)
   - [`validate(schema, data)`](#validateschema-data)
   - [`preloadData(options)`](#preloaddataoptions)
-  - [`getConfig()`](#getconfig)
   - [`getParams(issue)`](#getparamsissue)
   - [`createRule(config)`](#createruleconfig)
 - [Rules](#rules)
@@ -691,11 +693,11 @@ schema.parse('2024-01-15T10:30:00Z') // OK if not in the future
 | Code | Message | Params |
 | --- | --- | --- |
 | `email.invalid` | `{{label}} is not a valid email address` | `label` |
-| `email.disposableBlocked` | `Disposable email addresses are not allowed` | -- |
-| `email.plusAliasBlocked` | `Plus alias email addresses are not allowed` | -- |
-| `email.domainBlocked` | `Email domain '{{domain}}' is not allowed` | `domain` |
-| `email.domainNotAllowed` | `Email domain '{{domain}}' is not in the allowed list` | `domain` |
-| `email.subdomainNotAllowed` | `Subdomain email addresses are not allowed` | -- |
+| `email.disposableBlocked` | `{{label}} must not use a disposable email provider` | `label` |
+| `email.plusAliasBlocked` | `{{label}} must not use plus aliases` | `label` |
+| `email.domainBlocked` | `Email domain '{{domain}}' is not allowed` | `label`, `domain` |
+| `email.domainNotAllowed` | `Email domain '{{domain}}' is not in the allowed list` | `label`, `domain` |
+| `email.subdomainNotAllowed` | `Subdomain email addresses are not allowed` | `label` |
 
 **Example:**
 
@@ -806,10 +808,11 @@ schema.parse('8.8.8.8') // OK
 | Code | Message | Params |
 | --- | --- | --- |
 | `jwt.invalid` | `{{label}} is not a valid JWT` | `label` |
-| `jwt.expired` | `This token has expired` | -- |
-| `jwt.notYetValid` | `This token is not yet valid` | -- |
-| `jwt.missingClaim` | `Required claim '{{claim}}' is missing` | `claim` |
-| `jwt.algorithmNotAllowed` | `Algorithm '{{algorithm}}' is not allowed` | `algorithm` |
+| `jwt.expiryRequired` | `{{label}} must have an expiration claim` | `label` |
+| `jwt.expired` | `{{label}} has expired` | `label` |
+| `jwt.notYetValid` | `{{label}} is not yet valid` | `label` |
+| `jwt.missingClaim` | `Required claim '{{claim}}' is missing` | `label`, `claim` |
+| `jwt.algorithmNotAllowed` | `Algorithm '{{algorithm}}' is not allowed` | `label`, `algorithm` |
 
 **Example:**
 
@@ -925,7 +928,7 @@ Password lists sourced from [SecLists](https://github.com/danielmiessler/SecList
 | `password.minSpecial` | `{{label}} must have at least {{minimum}} special characters` | `label`, `minimum` |
 | `password.maxUppercase` | `{{label}} must have at most {{maximum}} uppercase characters` | `label`, `maximum` |
 | `password.maxConsecutive` | `{{label}} must not have more than {{maximum}} consecutive identical characters` | `label`, `maximum` |
-| `password.commonBlocked` | `This password is too common` | -- |
+| `password.commonBlocked` | `{{label}} is too common` | `label` |
 
 **Example:**
 
@@ -960,7 +963,8 @@ schema.parse('ABcdefgh1!') // OK
 
 | Code | Message | Params |
 | --- | --- | --- |
-| `confirmation.mismatch` | `Passwords must match` | -- |
+| `confirmation.mismatch` | `{{label}} must match {{targetLabel}}` | `label`, `targetLabel` |
+| `confirmation.custom` | `{{label}} failed custom validation` | `label` |
 
 **Example:**
 
@@ -1761,30 +1765,6 @@ if (!isValid.value) {
 }
 ```
 
-#### `createNuxtModule()`
-
-Returns a plain module definition object compatible with Nuxt's `defineNuxtModule()`.
-
-**Signature:**
-
-```ts
-function createNuxtModule(): NuxtModuleDefinition
-```
-
-**`NuxtModuleDefinition` interface:**
-
-```ts
-interface NuxtModuleDefinition {
-  readonly meta: {
-    readonly name: 'validex'
-    readonly configKey: 'validex'
-    readonly compatibility: { readonly nuxt: '>=3.0.0' }
-  }
-  readonly defaults: ValidexNuxtOptions
-  readonly setup: (options: ValidexNuxtOptions) => Promise<void>
-}
-```
-
 #### `detectNuxtI18n(installedModules)`
 
 Checks whether `@nuxtjs/i18n` is present in the installed modules list.
@@ -1973,7 +1953,6 @@ import type { ValidationResult, GlobalConfig, ErrorParams } from '@validex/core'
 | --- | --- | --- |
 | `ValidexNuxtOptions` | `@validex/nuxt` | Nuxt module options. |
 | `ValidexNuxtI18nOptions` | `@validex/nuxt` | Nuxt i18n options. |
-| `NuxtModuleDefinition` | `@validex/nuxt` | Nuxt module definition shape. |
 | `ValidationState<T>` | `@validex/nuxt` | Validation state container. |
 | `ValidexFastifyOptions` | `@validex/fastify` | Fastify plugin options. |
 | `ValidateSource` | `@validex/fastify` | `'body' \| 'params' \| 'query'` |
@@ -1982,7 +1961,7 @@ import type { ValidationResult, GlobalConfig, ErrorParams } from '@validex/core'
 
 ## Bundle Sizes
 
-Measured with esbuild + Brotli compression, excluding `zod` peer dependency and on-demand data files (common passwords, disposable domains, country codes, IBAN patterns, etc.).
+Measured per-import with esbuild `--minify`, excluding `zod` and on-demand data files. Each row includes the shared core (~6.6 kB raw). The root README uses esbuild `--splitting` which deduplicates shared code across imports — sizes there are lower because the core is counted once, not per-rule.
 
 | Import | Raw (minified) | Brotli | Gzip |
 | --- | --- | --- | --- |
@@ -2027,48 +2006,35 @@ Complete list of all error namespaces and codes. Every rule also supports a `{na
 | Namespace | Codes |
 | --- | --- |
 | `base` | `required`, `min`, `max`, `type`, `format` |
-| `email` | `invalid`, `plusAliasBlocked`, `disposableBlocked`, `domainBlocked`, `domainNotAllowed`, `subdomainNotAllowed` |
-| `personName` | `invalid`, `maxWords`, `boundary`, `maxConsecutive` |
-| `businessName` | `invalid`, `boundary`, `maxConsecutive` |
-| `password` | `minUppercase`, `minLowercase`, `minDigits`, `minSpecial`, `maxUppercase`, `maxLowercase`, `maxDigits`, `maxSpecial`, `maxConsecutive`, `commonBlocked` |
-| `confirmation` | `mismatch` |
-| `phone` | `invalid`, `requireMobile`, `countryCodeRequired`, `countryBlocked`, `countryNotAllowed` |
-| `website` | `invalid`, `httpsRequired`, `wwwRequired`, `pathNotAllowed`, `queryNotAllowed`, `domainBlocked`, `domainNotAllowed`, `subdomainNotAllowed` |
-| `url` | `invalid`, `protocolNotAllowed`, `tldRequired`, `queryNotAllowed`, `authNotAllowed`, `domainBlocked`, `domainNotAllowed` |
-| `username` | `invalid`, `reservedBlocked`, `boundary`, `maxConsecutive` |
-| `slug` | `invalid` |
-| `postalCode` | `invalid` |
-| `licenseKey` | `invalid` |
-| `uuid` | `invalid` |
-| `jwt` | `invalid`, `expiryRequired`, `expired`, `notYetValid`, `missingClaim`, `algorithmNotAllowed` |
-| `dateTime` | `invalid`, `tooEarly`, `tooLate`, `noFuture`, `noPast` |
-| `token` | `invalid` |
-| `text` | `noEmails`, `noUrls`, `noPhoneNumbers`, `noHtml`, `minWords`, `maxWords`, `maxConsecutive` |
-| `country` | `invalid`, `blocked`, `notAllowed` |
-| `currency` | `invalid`, `blocked`, `notAllowed` |
-| `color` | `invalid` |
-| `creditCard` | `invalid`, `issuerNotAllowed`, `issuerBlocked` |
-| `iban` | `invalid`, `countryBlocked`, `countryNotAllowed` |
-| `vatNumber` | `invalid` |
-| `macAddress` | `invalid` |
-| `ipAddress` | `invalid`, `privateNotAllowed` |
+| `email` | `invalid`, `plusAliasBlocked`, `disposableBlocked`, `domainBlocked`, `domainNotAllowed`, `subdomainNotAllowed`, `custom` |
+| `personName` | `invalid`, `maxWords`, `boundary`, `maxConsecutive`, `custom` |
+| `businessName` | `invalid`, `boundary`, `maxConsecutive`, `custom` |
+| `password` | `minUppercase`, `minLowercase`, `minDigits`, `minSpecial`, `maxUppercase`, `maxLowercase`, `maxDigits`, `maxSpecial`, `maxConsecutive`, `commonBlocked`, `custom` |
+| `confirmation` | `mismatch`, `custom` |
+| `phone` | `invalid`, `requireMobile`, `countryCodeRequired`, `countryBlocked`, `countryNotAllowed`, `custom` |
+| `website` | `invalid`, `httpsRequired`, `wwwRequired`, `pathNotAllowed`, `queryNotAllowed`, `domainBlocked`, `domainNotAllowed`, `subdomainNotAllowed`, `custom` |
+| `url` | `invalid`, `protocolNotAllowed`, `tldRequired`, `queryNotAllowed`, `authNotAllowed`, `domainBlocked`, `domainNotAllowed`, `custom` |
+| `username` | `invalid`, `reservedBlocked`, `boundary`, `maxConsecutive`, `custom` |
+| `slug` | `invalid`, `custom` |
+| `postalCode` | `invalid`, `custom` |
+| `licenseKey` | `invalid`, `custom` |
+| `uuid` | `invalid`, `custom` |
+| `jwt` | `invalid`, `expiryRequired`, `expired`, `notYetValid`, `missingClaim`, `algorithmNotAllowed`, `custom` |
+| `dateTime` | `invalid`, `tooEarly`, `tooLate`, `noFuture`, `noPast`, `custom` |
+| `token` | `invalid`, `custom` |
+| `text` | `invalid`, `noEmails`, `noUrls`, `noPhoneNumbers`, `noHtml`, `minWords`, `maxWords`, `maxConsecutive`, `custom` |
+| `country` | `invalid`, `blocked`, `notAllowed`, `custom` |
+| `currency` | `invalid`, `blocked`, `notAllowed`, `custom` |
+| `color` | `invalid`, `custom` |
+| `creditCard` | `invalid`, `issuerNotAllowed`, `issuerBlocked`, `custom` |
+| `iban` | `invalid`, `countryBlocked`, `countryNotAllowed`, `custom` |
+| `vatNumber` | `invalid`, `custom` |
+| `macAddress` | `invalid`, `custom` |
+| `ipAddress` | `invalid`, `privateNotAllowed`, `custom` |
+| `string` | `minUppercase`, `maxUppercase`, `minLowercase`, `maxLowercase`, `minDigits`, `maxDigits`, `minSpecial`, `maxSpecial`, `noEmails`, `noUrls`, `noPhoneNumbers`, `noHtml`, `noSpaces`, `onlyAlpha`, `onlyNumeric`, `onlyAlphanumeric`, `onlyAlphaSpaceHyphen`, `onlyAlphanumericSpaceHyphen`, `minWords`, `maxWords`, `maxConsecutive`, `custom` |
 
 ### Message Interpolation
 
-Error messages support `{{param}}` interpolation. Common parameters:
+Error messages support `{{param}}` interpolation. Each error code's available parameters are listed in the per-rule tables above.
 
-| Parameter | Description |
-| --- | --- |
-| `{{label}}` | Field label (derived or explicit). |
-| `{{minimum}}` | Minimum value from the constraint. |
-| `{{maximum}}` | Maximum value from the constraint. |
-| `{{expected}}` | Expected type (for type errors). |
-| `{{domain}}` | Domain name (for domain filtering errors). |
-| `{{country}}` | Country code (for country filtering errors). |
-| `{{protocol}}` | Protocol name (for URL protocol errors). |
-| `{{currency}}` | Currency code (for currency filtering errors). |
-| `{{issuer}}` | Card issuer name (for credit card errors). |
-| `{{claim}}` | JWT claim name. |
-| `{{algorithm}}` | JWT algorithm name. |
-| `{{value}}` | The input value (for reserved word errors). |
-| `{{type}}` | Token type (for token errors). |
+For the complete glossary of all 14 interpolation variables with types, descriptions, and which rules use them, see the [Translation Guide — Parameters Glossary](https://github.com/chiptoma/validex/blob/main/docs/I18N.md#parameters-glossary).

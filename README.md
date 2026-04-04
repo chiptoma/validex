@@ -5,16 +5,33 @@
 [![TypeScript 5.0+](https://img.shields.io/badge/TypeScript-5.0%2B-blue)](https://www.typescriptlang.org/)
 [![license MIT](https://img.shields.io/npm/l/@validex/core)](./LICENSE)
 
-**Type-safe validation rules built on Zod** — tree-shakeable, so you only ship what you use.
+**Type-safe validation rules built on Zod** — tree-shakeable, so you only ship what you use. The main package is `@validex/core` with optional adapters `@validex/nuxt` and `@validex/fastify`.
+
+---
+
+- [Install](#install)
+- [Quick Start](#quick-start)
+- [Why validex?](#why-validex)
+- [Rules](#rules) — all 25 rules at a glance
+- [Bundle Size](#bundle-size)
+- [Configuration](#configuration) — global defaults, three-tier merge, preloading
+- [Cross-Field Validation](#cross-field-validation) — sameAs, requiredWhen
+- [Chainable Methods](#chainable-methods) — checks and transforms on any Zod string
+- [Check Functions](#check-functions) — standalone pure functions
+- [Error Handling](#error-handling) — structured errors, getParams, validate()
+- [i18n](#i18n) — translations, CLI, 141 error codes
+- [Custom Rules](#custom-rules) — createRule, customFn, custom regex
+- [Framework Adapters](#framework-adapters) — Nuxt, Fastify
+- [Documentation](#documentation)
+
+---
 
 ## Install
 
 ```bash
-pnpm add @validex/core zod
-
-# Optional framework adapters
-pnpm add @validex/nuxt    # for Nuxt projects
-pnpm add @validex/fastify # for Fastify projects
+pnpm add @validex/core zod   # core is required
+pnpm add @validex/nuxt       # optional — Nuxt adapter
+pnpm add @validex/fastify    # optional — Fastify adapter
 ```
 
 ## Quick Start
@@ -97,7 +114,7 @@ if (result.success) {
 | DateTime | Date/time string with format and range constraints |
 | Token | Generic token validation (hex, base64, nanoid, etc.) |
 | Text | Free text with length, word count, content detection, and regex override |
-| Country | ISO 3166 country code (alpha-2, alpha-3, numeric) |
+| Country | ISO 3166 country code (alpha-2, alpha-3) |
 | Currency | ISO 4217 currency code |
 | Color | Hex, RGB, HSL, and named CSS color formats |
 | CreditCard | Card number with Luhn check and issuer detection |
@@ -117,12 +134,12 @@ Every rule shares a ~5 kB core (Brotli). Each additional rule adds 0.1-0.8 kB. M
 | PasswordConfirmation | 5.7 kB | — | — |
 | PersonName | 5.7 kB | — | — |
 | BusinessName | 5.7 kB | — | — |
-| Phone | 5.7 kB | external | libphonenumber-js peer dep |
+| Phone | 5.7 kB | libphonenumber-js | peer dependency |
 | Website | 5.7 kB | — | — |
 | Url | 5.6 kB | — | — |
 | Username | 5.9 kB | +0.8 kB | `blockReserved: true` |
 | Slug | 5.5 kB | — | — |
-| PostalCode | 5.4 kB | external | postcode-validator peer dep |
+| PostalCode | 5.4 kB | postcode-validator | peer dependency |
 | LicenseKey | 5.5 kB | — | — |
 | Uuid | 5.3 kB | — | — |
 | Jwt | 5.6 kB | — | — |
@@ -313,7 +330,7 @@ Import `@validex/core` and all Zod string schemas get these methods:
 | Method | Description |
 |--------|-------------|
 | `.toTitleCase()` | Converts to Title Case |
-| `.toSlug()` | Converts to url-safe-slug |
+| `.toSlug()` | Converts to URL-safe slug |
 | `.stripHtml()` | Removes HTML tags |
 | `.collapseWhitespace()` | Collapses multiple spaces to single |
 | `.emptyToUndefined()` | Converts `""` to `undefined` |
@@ -483,7 +500,7 @@ npx validex fr de --output ./locales
 npx validex ja --empty --output ./locales
 ```
 
-Full guide with all 141 error codes: [Translation Guide](./docs/I18N.md)
+Full guide with all 141 error codes: [Translation Guide](https://github.com/chiptoma/validex/blob/main/docs/I18N.md)
 
 ## Custom Rules
 
@@ -546,7 +563,7 @@ const schema = Text({
 })
 ```
 
-Full reference: [API Reference](./docs/API.md)
+Full reference: [API Reference](https://github.com/chiptoma/validex/blob/main/docs/API.md)
 
 ## Framework Adapters
 
@@ -571,7 +588,7 @@ export default defineNuxtConfig({
 const { validate, errors, firstErrors, isValid } = useValidation(schema)
 ```
 
-Full guide: [@validex/nuxt README](./packages/nuxt/README.md)
+Full guide: [@validex/nuxt README](https://github.com/chiptoma/validex/tree/main/packages/nuxt#readme)
 
 ### Fastify
 
@@ -589,15 +606,15 @@ await app.register(validexPlugin, {
 })
 ```
 
-Full guide: [@validex/fastify README](./packages/fastify/README.md)
+Full guide: [@validex/fastify README](https://github.com/chiptoma/validex/tree/main/packages/fastify#readme)
 
 ## Documentation
 
 | Resource | Description |
 |----------|-------------|
-| [API Reference](./docs/API.md) | Every rule, option, default, error code |
-| [Translation Guide](./docs/I18N.md) | i18n setup, CLI, all 141 error codes |
-| [Contributing](./CONTRIBUTING.md) | Dev setup, conventions, PR workflow |
+| [API Reference](https://github.com/chiptoma/validex/blob/main/docs/API.md) | Every rule, option, default, error code |
+| [Translation Guide](https://github.com/chiptoma/validex/blob/main/docs/I18N.md) | i18n setup, CLI, all 141 error codes |
+| [Contributing](https://github.com/chiptoma/validex/blob/main/CONTRIBUTING.md) | Dev setup, conventions, PR workflow |
 
 ## License
 
