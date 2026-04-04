@@ -4,114 +4,74 @@
 // when used through the fastify plugin layer.
 // ==============================================================================
 
+import type { ErrorResponse } from '../_support/helpers/testApp'
+
 import { Email, getParams, Password, resetConfig } from '@validex/core'
-import Fastify from 'fastify'
 import { afterEach, describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
-import { validexPlugin } from '../../src'
+import { createApp, parseJson } from '../_support/helpers/testApp'
 
-interface ErrorResponse {
-  readonly statusCode: number
-  readonly error: string
-  readonly errors: Record<string, string>
-  readonly allErrors: Record<string, readonly string[]>
-}
-
-function parseJson(response: { json: () => unknown }): Record<string, unknown> {
-  return response.json() as Record<string, unknown>
-}
+afterEach(() => resetConfig())
 
 describe('validex rules through fastify plugin', () => {
-  afterEach(() => resetConfig())
-
-  it('pOST with Email validation rejects invalid email', async () => {
-    const app = Fastify()
-    await app.register(validexPlugin)
-
-    const schema = z.object({ email: Email() as z.ZodType })
+  it('rejects invalid email via POST', async () => {
+    const app = await createApp()
     app.post('/test', {
-      config: { validex: { body: schema } },
+      config: { validex: { body: z.object({ email: Email() as z.ZodType }) } },
       handler: async () => ({ ok: true }),
     })
 
-    const valid = await app.inject({
-      method: 'POST',
-      url: '/test',
-      payload: { email: 'alice@example.com' },
-    })
-    expect(valid.statusCode).toBe(200)
+    expect((await app.inject({ method: 'POST', url: '/test', payload: { email: 'alice@example.com' } })).statusCode).toBe(200)
+    expect((await app.inject({ method: 'POST', url: '/test', payload: { email: 'not-valid' } })).statusCode).toBe(400)
 
-    const invalid = await app.inject({
-      method: 'POST',
-      url: '/test',
-      payload: { email: 'not-valid' },
-    })
-    expect(invalid.statusCode).toBe(400)
+    await app.close()
   })
 
-  it('pOST with Email blockDisposable rejects disposable domains', async () => {
-    const app = Fastify()
-    await app.register(validexPlugin, {
-      preload: { disposable: true },
-    })
-
-    const schema = z.object({
-      email: Email({ blockDisposable: true }) as z.ZodType,
-    })
+  it('rejects disposable domains via POST', async () => {
+    const app = await createApp({ preload: { disposable: true } })
     app.post('/test', {
-      config: { validex: { body: schema } },
+      config: { validex: { body: z.object({ email: Email({ blockDisposable: true }) as z.ZodType }) } },
       handler: async () => ({ ok: true }),
     })
 
-    const response = await app.inject({
-      method: 'POST',
-      url: '/test',
-      payload: { email: 'user@mailinator.com' },
+    expect((await app.inject({ method: 'POST', url: '/test', payload: { email: 'user@mailinator.com' } })).statusCode).toBe(400)
+
+    await app.close()
+  })
+
+  it('rejects invalid data with combined Email + Password rules', async () => {
+    const app = await createApp()
+    app.post('/test', {
+      config: {
+        validex: {
+          body: z.object({
+            email: Email() as z.ZodType,
+            password: Password({ uppercase: { min: 1 }, digits: { min: 1 } }) as z.ZodType,
+          }),
+        },
+      },
+      handler: async () => ({ ok: true }),
     })
+
+    const response = await app.inject({ method: 'POST', url: '/test', payload: { email: 'bad', password: 'weak' } })
     expect(response.statusCode).toBe(400)
-  })
+    const body = parseJson<ErrorResponse>(response)
+    expect(body.errors['email']).toBeDefined()
+    expect(body.errors['password']).toBeDefined()
 
-  it('pOST with combined Email + Password rules', async () => {
-    const app = Fastify()
-    await app.register(validexPlugin)
-
-    const schema = z.object({
-      email: Email() as z.ZodType,
-      password: Password({ uppercase: { min: 1 }, digits: { min: 1 } }) as z.ZodType,
-    })
-    app.post('/test', {
-      config: { validex: { body: schema } },
-      handler: async () => ({ ok: true }),
-    })
-
-    const invalid = await app.inject({
-      method: 'POST',
-      url: '/test',
-      payload: { email: 'bad', password: 'weak' },
-    })
-    expect(invalid.statusCode).toBe(400)
-    const errBody = parseJson(invalid) as unknown as ErrorResponse
-    expect(errBody.errors['email']).toBeDefined()
-    expect(errBody.errors['password']).toBeDefined()
+    await app.close()
   })
 
   it('error response includes validex error codes, not raw Zod defaults', async () => {
-    const app = Fastify()
-    await app.register(validexPlugin)
-
-    const schema = z.object({ email: Email() as z.ZodType })
+    const app = await createApp()
     app.post('/test', {
-      config: { validex: { body: schema } },
+      config: { validex: { body: z.object({ email: Email() as z.ZodType }) } },
       handler: async () => ({ ok: true }),
     })
 
-    const response = await app.inject({
-      method: 'POST',
-      url: '/test',
-      payload: { email: '' },
-    })
-    const body = parseJson(response) as unknown as ErrorResponse
+    const response = await app.inject({ method: 'POST', url: '/test', payload: { email: '' } })
+    const body = parseJson<ErrorResponse>(response)
     expect(body.statusCode).toBe(400)
 
     const allErrors = body.allErrors['email'] ?? []
@@ -120,15 +80,14 @@ describe('validex rules through fastify plugin', () => {
       expect(msg).not.toBe('Invalid input')
       expect(msg).not.toBe('Expected string')
     }
+
+    await app.close()
   })
 
   it('getParams works on validation errors from request.validate', async () => {
-    const app = Fastify()
-    await app.register(validexPlugin)
-
-    const schema = z.object({ email: Email() as z.ZodType })
+    const app = await createApp()
     app.post('/test', async (request) => {
-      const result = await request.validate(schema)
+      const result = await request.validate(z.object({ email: Email() as z.ZodType }))
       if (!result.success) {
         // SAFETY: validate returned success=false so issues is non-empty
         const params = getParams(result.issues[0] as Parameters<typeof getParams>[0])
@@ -137,47 +96,28 @@ describe('validex rules through fastify plugin', () => {
       return { ok: true }
     })
 
-    const response = await app.inject({
-      method: 'POST',
-      url: '/test',
-      payload: { email: 'not-an-email' },
-    })
+    const response = await app.inject({ method: 'POST', url: '/test', payload: { email: 'not-an-email' } })
     const body = parseJson(response)
     expect(body['namespace']).toBe('email')
     expect(body['code']).toBe('invalid')
+
+    await app.close()
   })
 
   it('multiple routes with different schemas validate independently', async () => {
-    const app = Fastify()
-    await app.register(validexPlugin)
-
-    const emailSchema = z.object({ email: Email() as z.ZodType })
-    const passSchema = z.object({
-      password: Password({ digits: { min: 1 } }) as z.ZodType,
-    })
-
+    const app = await createApp()
     app.post('/email', {
-      config: { validex: { body: emailSchema } },
+      config: { validex: { body: z.object({ email: Email() as z.ZodType }) } },
       handler: async () => ({ route: 'email' }),
     })
     app.post('/password', {
-      config: { validex: { body: passSchema } },
+      config: { validex: { body: z.object({ password: Password({ digits: { min: 1 } }) as z.ZodType }) } },
       handler: async () => ({ route: 'password' }),
     })
 
-    // Valid email, invalid password
-    const r1 = await app.inject({
-      method: 'POST',
-      url: '/email',
-      payload: { email: 'a@b.com' },
-    })
-    expect(r1.statusCode).toBe(200)
+    expect((await app.inject({ method: 'POST', url: '/email', payload: { email: 'a@b.com' } })).statusCode).toBe(200)
+    expect((await app.inject({ method: 'POST', url: '/password', payload: { password: 'nope' } })).statusCode).toBe(400)
 
-    const r2 = await app.inject({
-      method: 'POST',
-      url: '/password',
-      payload: { password: 'nope' },
-    })
-    expect(r2.statusCode).toBe(400)
+    await app.close()
   })
 })
