@@ -1,3 +1,8 @@
+// ==============================================================================
+// CONFIG MERGE TESTS
+// Tests the three-tier config merge logic.
+// ==============================================================================
+
 import { describe, expect, it } from 'vitest'
 
 import { deepMergeTwo, mergeThreeTiers } from '@config/merge'

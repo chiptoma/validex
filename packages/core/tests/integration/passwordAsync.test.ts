@@ -3,23 +3,12 @@
 // Validates the blockCommon async wiring for common password rejection.
 // ==============================================================================
 
-import type { z } from 'zod'
-
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import { clearCommonPasswordsCache } from '@loaders/commonPasswords'
 import { Password } from '@rules/password'
 
-// ----------------------------------------------------------
-// HELPERS
-// ----------------------------------------------------------
-
-async function parseAsync(
-  schema: unknown,
-  value: unknown,
-): Promise<{ success: boolean }> {
-  return (schema as z.ZodType).safeParseAsync(value)
-}
+import { parseAsync } from '../_support/helpers/parse'
 
 // ----------------------------------------------------------
 // BLOCK COMMON — BASIC TIER

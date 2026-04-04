@@ -1,3 +1,8 @@
+// ==============================================================================
+// VALIDATE TESTS
+// Tests the validate function, error collection, and nested error building.
+// ==============================================================================
+
 import { afterEach, describe, expect, it } from 'vitest'
 import { z } from 'zod'
 

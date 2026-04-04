@@ -6,8 +6,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
-import { setup } from '@config/index'
-import { resetConfig } from '@config/store'
+import { resetConfig, setup } from '@config'
 import { registerCrossField } from '@core/crossFieldRegistry'
 import { resolveCrossFieldConstraints } from '@core/crossFieldResolver'
 import { _resetCustomErrorFlag, registerCustomError } from '@core/customError'

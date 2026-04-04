@@ -1,3 +1,8 @@
+// ==============================================================================
+// TRANSFORMS CHECK TESTS
+// Tests toTitleCase, toSlug, stripHtml, collapseWhitespace, emptyToUndefined.
+// ==============================================================================
+
 import { describe, expect, it } from 'vitest'
 
 import {

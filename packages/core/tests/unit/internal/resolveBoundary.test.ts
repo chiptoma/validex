@@ -1,3 +1,8 @@
+// ==============================================================================
+// RESOLVE BOUNDARY TESTS
+// Tests boundary string resolution to min/max numeric ranges.
+// ==============================================================================
+
 import { describe, expect, it } from 'vitest'
 
 import { checkAsciiBoundary, checkUnicodeBoundary } from '@internal/boundary'

@@ -8,51 +8,17 @@ import type { z } from 'zod'
 
 import { describe, expect, it } from 'vitest'
 
-import { getParams } from '@core/getParams'
 import { Text } from '@rules/text'
 
+import { getErrorCodes, parse } from '../../_support/helpers/parse'
 import { testRuleContract } from '../../_support/helpers/testRule'
-
-// ----------------------------------------------------------
-// HELPERS
-// ----------------------------------------------------------
-
-/**
- * Parse
- * Runs safeParse on the given schema and value.
- *
- * @param schema - The Zod schema (from rule factory).
- * @param value  - The value to parse.
- * @returns The safe parse result.
- */
-function parse(schema: unknown, value: unknown): { success: boolean, data?: unknown, error?: unknown } {
-  return (schema as z.ZodType).safeParse(value)
-}
-
-/**
- * Get Error Codes
- * Extracts all error codes from a failed parse result.
- *
- * @param schema - The Zod schema (from rule factory).
- * @param value  - The value to parse.
- * @returns Array of error code strings.
- */
-function getErrorCodes(schema: unknown, value: unknown): ReadonlyArray<string> {
-  const result = (schema as z.ZodType).safeParse(value)
-  if (result.success)
-    return []
-  return result.error.issues.map((issue) => {
-    const params = getParams(issue as Parameters<typeof getParams>[0])
-    return params.code
-  })
-}
 
 // ----------------------------------------------------------
 // CONTRACT
 // ----------------------------------------------------------
 
 testRuleContract(
-  'text',
+  'Text',
   Text as (opts?: Record<string, unknown>) => unknown,
   'text',
 )

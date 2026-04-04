@@ -1,3 +1,8 @@
+// ==============================================================================
+// DATA FILES TESTS
+// Tests lazy-loading of JSON data files via loader modules.
+// ==============================================================================
+
 import { describe, expect, it } from 'vitest'
 
 import {

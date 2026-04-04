@@ -10,8 +10,7 @@ import type { z as zType } from 'zod'
 import { afterEach, describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
-import { resetConfig } from '@config'
-import { setup } from '@config/index'
+import { resetConfig, setup } from '@config'
 import { getParams } from '@core/getParams'
 import { validate } from '@core/validate'
 import { DateTime } from '@rules/dateTime'
@@ -22,6 +21,8 @@ import { Password } from '@rules/password'
 import { PersonName } from '@rules/personName'
 import { Url } from '@rules/url'
 import { Uuid } from '@rules/uuid'
+
+import { firstParamsAsync } from '../_support/helpers/parse'
 
 // ----------------------------------------------------------
 // HELPERS
@@ -34,18 +35,7 @@ interface ParsedParams {
   key: string
 }
 
-async function firstParams(
-  schema: unknown,
-  value: unknown,
-): Promise<ParsedParams> {
-  const result = await (schema as zType.ZodType).safeParseAsync(value)
-  if (result.success)
-    throw new Error('Expected failure')
-  const p = getParams(result.error.issues[0] as Parameters<typeof getParams>[0])
-  return { label: p.label, namespace: p.namespace, code: p.code, key: p.key }
-}
-
-async function firstParamsFromValidate(
+async function firstParamsViaValidate(
   schema: zType.ZodType,
   data: Record<string, unknown>,
 ): Promise<ParsedParams> {
@@ -64,42 +54,42 @@ afterEach(() => resetConfig())
 
 describe('format errors carry correct label + namespace', () => {
   it('email format error', async () => {
-    const p = await firstParams(Email({ label: 'Correo' }), 'bad')
+    const p = await firstParamsAsync(Email({ label: 'Correo' }), 'bad')
     expect(p.label).toBe('Correo')
     expect(p.namespace).toBe('email')
     expect(p.code).toBe('invalid')
   })
 
   it('url format error', async () => {
-    const p = await firstParams(Url({ label: 'Enlace' }), 'bad')
+    const p = await firstParamsAsync(Url({ label: 'Enlace' }), 'bad')
     expect(p.label).toBe('Enlace')
     expect(p.namespace).toBe('url')
     expect(p.code).toBe('invalid')
   })
 
   it('uuid format error', async () => {
-    const p = await firstParams(Uuid({ label: 'ID' }), 'bad')
+    const p = await firstParamsAsync(Uuid({ label: 'ID' }), 'bad')
     expect(p.label).toBe('ID')
     expect(p.namespace).toBe('uuid')
     expect(p.code).toBe('invalid')
   })
 
   it('dateTime format error', async () => {
-    const p = await firstParams(DateTime({ label: 'Fecha' }), 'bad')
+    const p = await firstParamsAsync(DateTime({ label: 'Fecha' }), 'bad')
     expect(p.label).toBe('Fecha')
     expect(p.namespace).toBe('dateTime')
     expect(p.code).toBe('invalid')
   })
 
   it('ipAddress format error', async () => {
-    const p = await firstParams(IpAddress({ label: 'Dirección IP', version: 'v4' }), 'bad')
+    const p = await firstParamsAsync(IpAddress({ label: 'Dirección IP', version: 'v4' }), 'bad')
     expect(p.label).toBe('Dirección IP')
     expect(p.namespace).toBe('ipAddress')
     expect(p.code).toBe('invalid')
   })
 
   it('licenseKey uuid format error', async () => {
-    const p = await firstParams(LicenseKey({ label: 'Clave', type: 'uuid' }), 'bad')
+    const p = await firstParamsAsync(LicenseKey({ label: 'Clave', type: 'uuid' }), 'bad')
     expect(p.label).toBe('Clave')
     expect(p.namespace).toBe('licenseKey')
     expect(p.code).toBe('invalid')
@@ -112,19 +102,19 @@ describe('format errors carry correct label + namespace', () => {
 
 describe('length errors carry correct label', () => {
   it('email min length', async () => {
-    const p = await firstParams(Email({ label: 'Correo', length: { min: 20 } }), 'a@b.cc')
+    const p = await firstParamsAsync(Email({ label: 'Correo', length: { min: 20 } }), 'a@b.cc')
     expect(p.label).toBe('Correo')
     expect(p.code).toBe('min')
   })
 
   it('password min length', async () => {
-    const p = await firstParams(Password({ label: 'Clave' }), 'Ab1!')
+    const p = await firstParamsAsync(Password({ label: 'Clave' }), 'Ab1!')
     expect(p.label).toBe('Clave')
     expect(p.code).toBe('min')
   })
 
   it('personName min length', async () => {
-    const p = await firstParams(PersonName({ label: 'Nombre' }), 'A')
+    const p = await firstParamsAsync(PersonName({ label: 'Nombre' }), 'A')
     expect(p.label).toBe('Nombre')
     expect(p.code).toBe('min')
   })
@@ -136,13 +126,13 @@ describe('length errors carry correct label', () => {
 
 describe('emptyToUndefined carries label', () => {
   it('email empty string', async () => {
-    const p = await firstParams(Email({ label: 'Correo' }), '')
+    const p = await firstParamsAsync(Email({ label: 'Correo' }), '')
     expect(p.label).toBe('Correo')
     expect(p.code).toBe('required')
   })
 
   it('password empty string', async () => {
-    const p = await firstParams(Password({ label: 'Clave' }), '')
+    const p = await firstParamsAsync(Password({ label: 'Clave' }), '')
     expect(p.label).toBe('Clave')
     expect(p.code).toBe('required')
   })
@@ -155,7 +145,7 @@ describe('emptyToUndefined carries label', () => {
 describe('label survives z.object composition', () => {
   it('email format error in z.object', async () => {
     const schema = z.object({ email: Email({ label: 'Correo' }) as zType.ZodType })
-    const p = await firstParamsFromValidate(schema, { email: 'bad' })
+    const p = await firstParamsViaValidate(schema, { email: 'bad' })
     expect(p.label).toBe('Correo')
     expect(p.namespace).toBe('email')
     expect(p.code).toBe('invalid')
@@ -165,13 +155,13 @@ describe('label survives z.object composition', () => {
     const schema = z.object({
       profile: z.object({ email: Email({ label: 'Correo' }) as zType.ZodType }),
     })
-    const p = await firstParamsFromValidate(schema, { profile: { email: 'bad' } })
+    const p = await firstParamsViaValidate(schema, { profile: { email: 'bad' } })
     expect(p.label).toBe('Correo')
   })
 
   it('emptyToUndefined in z.object', async () => {
     const schema = z.object({ email: Email({ label: 'Correo' }) as zType.ZodType })
-    const p = await firstParamsFromValidate(schema, { email: '' })
+    const p = await firstParamsViaValidate(schema, { email: '' })
     expect(p.label).toBe('Correo')
     expect(p.code).toBe('required')
   })
@@ -180,7 +170,7 @@ describe('label survives z.object composition', () => {
     const schema = z.object({
       email: Email({ label: 'Correo', length: { min: 20 } }) as zType.ZodType,
     })
-    const p = await firstParamsFromValidate(schema, { email: 'a@b.cc' })
+    const p = await firstParamsViaValidate(schema, { email: 'a@b.cc' })
     expect(p.label).toBe('Correo')
     expect(p.code).toBe('min')
   })
@@ -193,13 +183,13 @@ describe('label survives z.object composition', () => {
 describe('i18n key mode produces correct keys', () => {
   it('email format error key', async () => {
     setup({ i18n: { enabled: true } })
-    const p = await firstParams(Email({ label: 'Correo' }), 'bad')
+    const p = await firstParamsAsync(Email({ label: 'Correo' }), 'bad')
     expect(p.key).toBe('validation.messages.email.invalid')
   })
 
   it('length error key', async () => {
     setup({ i18n: { enabled: true } })
-    const p = await firstParams(Email({ label: 'Correo', length: { min: 20 } }), 'a@b.cc')
+    const p = await firstParamsAsync(Email({ label: 'Correo', length: { min: 20 } }), 'a@b.cc')
     expect(p.key).toBe('validation.messages.base.min')
   })
 })

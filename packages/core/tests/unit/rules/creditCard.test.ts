@@ -10,33 +10,15 @@ import { describe, expect, it } from 'vitest'
 
 import { CreditCard } from '@rules/creditCard'
 
+import { parseAsync } from '../../_support/helpers/parse'
 import { testRuleContract } from '../../_support/helpers/testRule'
-
-// ----------------------------------------------------------
-// HELPERS
-// ----------------------------------------------------------
-
-/**
- * Parse Async
- * Runs safeParseAsync on the given schema and value.
- *
- * @param schema - The Zod schema (from rule factory).
- * @param value  - The value to parse.
- * @returns The safe parse result.
- */
-async function parseAsync(
-  schema: unknown,
-  value: unknown,
-): Promise<{ success: boolean, data?: unknown, error?: unknown }> {
-  return (schema as z.ZodType).safeParseAsync(value)
-}
 
 // ----------------------------------------------------------
 // CONTRACT
 // ----------------------------------------------------------
 
 testRuleContract(
-  'creditCard',
+  'CreditCard',
   CreditCard as (opts?: Record<string, unknown>) => unknown,
   'creditCard',
 )

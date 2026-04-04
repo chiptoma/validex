@@ -1,3 +1,8 @@
+// ==============================================================================
+// UTILITIES TESTS
+// Tests sameAs and requiredWhen cross-field validation utilities.
+// ==============================================================================
+
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
 

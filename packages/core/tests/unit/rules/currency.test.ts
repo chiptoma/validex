@@ -4,30 +4,11 @@
 // allow/block lists, normalization, and security vectors.
 // ==============================================================================
 
-import type { z } from 'zod'
-
 import { describe, expect, it } from 'vitest'
 
 import { Currency } from '@rules/currency'
 
-// ----------------------------------------------------------
-// HELPERS
-// ----------------------------------------------------------
-
-/**
- * Parse Async
- * Runs safeParseAsync on the given schema and value.
- *
- * @param schema - The Zod schema (from rule factory).
- * @param value  - The value to parse.
- * @returns The safe parse result.
- */
-async function parseAsync(
-  schema: unknown,
-  value: unknown,
-): Promise<{ success: boolean, data?: unknown, error?: unknown }> {
-  return (schema as z.ZodType).safeParseAsync(value)
-}
+import { parseAsync } from '../../_support/helpers/parse'
 
 // ----------------------------------------------------------
 // VALID CURRENCY CODES

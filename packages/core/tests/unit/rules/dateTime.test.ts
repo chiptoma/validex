@@ -15,7 +15,7 @@ import { testRuleContract } from '../../_support/helpers/testRule'
 // CONTRACT TESTS
 // ----------------------------------------------------------
 
-testRuleContract('dateTime', DateTime as (opts?: Record<string, unknown>) => unknown, 'dateTime')
+testRuleContract('DateTime', DateTime as (opts?: Record<string, unknown>) => unknown, 'dateTime')
 
 // ----------------------------------------------------------
 // VALID ISO DATETIMES

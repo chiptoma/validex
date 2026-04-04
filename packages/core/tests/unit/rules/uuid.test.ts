@@ -15,7 +15,7 @@ import { testRuleContract } from '../../_support/helpers/testRule'
 // CONTRACT TESTS
 // ----------------------------------------------------------
 
-testRuleContract('uuid', Uuid as (opts?: Record<string, unknown>) => unknown, 'uuid')
+testRuleContract('Uuid', Uuid as (opts?: Record<string, unknown>) => unknown, 'uuid')
 
 // ----------------------------------------------------------
 // VALID UUIDS

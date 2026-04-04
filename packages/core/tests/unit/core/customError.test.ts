@@ -1,3 +1,8 @@
+// ==============================================================================
+// CUSTOM ERROR TESTS
+// Tests the Zod custom error handler and error map integration.
+// ==============================================================================
+
 import { afterEach, describe, expect, it } from 'vitest'
 import { z } from 'zod'
 

@@ -7,28 +7,10 @@ import type { z } from 'zod'
 
 import { describe, expect, it } from 'vitest'
 
-import { getParams } from '@core/getParams'
 import { BusinessName } from '@rules/businessName'
 
+import { getErrorCodes, parse } from '../../_support/helpers/parse'
 import { testRuleContract } from '../../_support/helpers/testRule'
-
-// ----------------------------------------------------------
-// HELPERS
-// ----------------------------------------------------------
-
-function parse(schema: unknown, value: unknown): { success: boolean, data?: unknown } {
-  return (schema as z.ZodType).safeParse(value)
-}
-
-function getErrorCodes(schema: unknown, value: unknown): ReadonlyArray<string> {
-  const result = (schema as z.ZodType).safeParse(value)
-  if (result.success)
-    return []
-  return result.error.issues.map((issue) => {
-    const params = getParams(issue as Parameters<typeof getParams>[0])
-    return params.code
-  })
-}
 
 // ----------------------------------------------------------
 // CONTRACT

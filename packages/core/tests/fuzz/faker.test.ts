@@ -1,3 +1,8 @@
+// ==============================================================================
+// FUZZ TESTS
+// Generates random input via Faker across multiple locales to verify rules don't crash.
+// ==============================================================================
+
 import type { z } from 'zod'
 
 import { describe, expect, it } from 'vitest'

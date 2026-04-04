@@ -1,3 +1,8 @@
+// ==============================================================================
+// RESTRICTION CHECK TESTS
+// Tests onlyAlpha, onlyNumeric, onlyAlphanumeric and related functions.
+// ==============================================================================
+
 import { describe, expect, it } from 'vitest'
 
 import {

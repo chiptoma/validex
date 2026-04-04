@@ -8,30 +8,16 @@ import type { z } from 'zod'
 
 import { describe, expect, it } from 'vitest'
 
-import { getParams } from '@core/getParams'
 import { Website } from '@rules/website'
 
+import { getErrorCodes } from '../../_support/helpers/parse'
 import { testRuleContract } from '../../_support/helpers/testRule'
-
-// ----------------------------------------------------------
-// HELPERS
-// ----------------------------------------------------------
-
-function getErrorCodes(schema: z.ZodType, value: unknown): ReadonlyArray<string> {
-  const result = schema.safeParse(value)
-  if (result.success)
-    return []
-  return result.error.issues.map((issue) => {
-    const params = getParams(issue as Parameters<typeof getParams>[0])
-    return params.code
-  })
-}
 
 // ----------------------------------------------------------
 // CONTRACT TESTS
 // ----------------------------------------------------------
 
-testRuleContract('website', Website as (opts?: Record<string, unknown>) => unknown, 'website')
+testRuleContract('Website', Website as (opts?: Record<string, unknown>) => unknown, 'website')
 
 // ----------------------------------------------------------
 // VALID WEBSITES

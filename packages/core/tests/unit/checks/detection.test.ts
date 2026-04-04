@@ -1,3 +1,8 @@
+// ==============================================================================
+// DETECTION CHECK TESTS
+// Tests containsEmail, containsUrl, containsHtml, containsPhoneNumber functions.
+// ==============================================================================
+
 import { describe, expect, it } from 'vitest'
 
 import {

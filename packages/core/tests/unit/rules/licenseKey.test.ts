@@ -9,16 +9,8 @@ import { describe, expect, it } from 'vitest'
 
 import { LicenseKey } from '@rules/licenseKey'
 
+import { parse } from '../../_support/helpers/parse'
 import { testRuleContract } from '../../_support/helpers/testRule'
-
-// ----------------------------------------------------------
-// HELPERS
-// ----------------------------------------------------------
-
-function parse(schema: unknown, value: unknown): { success: boolean, data?: unknown } {
-  return (schema as z.ZodType).safeParse(value)
-}
-
 // ----------------------------------------------------------
 // CONTRACT
 // ----------------------------------------------------------
