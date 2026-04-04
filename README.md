@@ -568,7 +568,7 @@ export default defineNuxtConfig({
 
 ```ts
 // In a component — useValidation is auto-imported
-const { validate, getErrors, getFirstErrors } = useValidation(schema)
+const { validate, errors, firstErrors, isValid } = useValidation(schema)
 ```
 
 Full guide: [@validex/nuxt README](./packages/nuxt/README.md)

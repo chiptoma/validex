@@ -134,18 +134,12 @@
 - 12.3 [Composables](#123-composables)
 - 12.4 [i18n Integration](#124-i18n-integration)
 - 12.5 [SSR Considerations](#125-ssr-considerations)
-13. [Next.js Adapter](#13-nextjs-adapter-validexnext)
-- 13.1 [Configuration Utility](#131-configuration-utility)
-- 13.2 [React Hooks](#132-react-hooks)
-- 13.3 [Server/Client Boundary](#133-serverclient-boundary)
-- 13.4 [i18n Integration](#134-i18n-integration)
-- 13.5 [Server Actions Compatibility](#135-server-actions-compatibility)
-14. [Fastify Adapter](#14-fastify-adapter-validexfastify)
-- 14.1 [Plugin Registration](#141-plugin-registration)
-- 14.2 [Instance Decorator](#142-instance-decorator)
-- 14.3 [Request Decorator](#143-request-decorator)
-- 14.4 [Route-Level Schema Validation](#144-route-level-schema-validation)
-- 14.5 [Error Response Format](#145-error-response-format)
+13. [Fastify Adapter](#13-fastify-adapter-validexfastify)
+- 13.1 [Plugin Registration](#131-plugin-registration)
+- 13.2 [Instance Decorator](#132-instance-decorator)
+- 13.3 [Request Decorator](#133-request-decorator)
+- 13.4 [Route-Level Schema Validation](#134-route-level-schema-validation)
+- 13.5 [Error Response Format](#135-error-response-format)
 
 ### Appendices
 
@@ -199,7 +193,7 @@ validex is a TypeScript validation library built on Zod 4 that provides:
 
 |Excluded                                |Rationale                             |
 |----------------------------------------|--------------------------------------|
-|Async validation (MX lookup)            |Adds complexity, network dependency   |
+|Async validation (MX DNS lookup, external API calls)|No network calls at runtime. Lazy-loading via dynamic import() is used for data files but is not "async validation"|
 |UI components                           |Out of scope, use with any framework  |
 |Form state management                   |Use React Hook Form, VeeValidate, etc.|
 |Server-side only features               |Must work in browser                  |
@@ -207,8 +201,8 @@ validex is a TypeScript validation library built on Zod 4 that provides:
 |Database-aware validation (unique check)|Requires DB connection                |
 |Zod 3 compatibility                     |Clean break; Zod 4 is stable          |
 |`zod/mini` compatibility               |validex uses `.refine()` / `.superRefine()` method chains extensively. Zod Mini uses a functional API incompatible with this pattern. The audiences don't overlap — Zod Mini targets extreme bundle minimalism, validex targets comprehensive validation.|
-|Prototype patching / Zod extensions     |Fragile, import-order-dependent, unnecessary with Zod 4|
-|Separate adapter packages               |Single package with subpath exports; no `validex-nuxt` etc.|
+|Zod plugin registry / extension system  |Fragile, import-order-dependent. Controlled ZodType.prototype augmentation via initAugmentation() is used intentionally (see §6.1)|
+|Adapter monolith                        |Adapters are separate packages (@validex/nuxt, @validex/fastify) with peer dependency on @validex/core|
 |Schema auto-loading from file paths     |Project structure is consumer's concern; validex provides docs/guides|
 
 #### 1.5 Companion Documents
@@ -275,13 +269,12 @@ validex ships as a **single npm package** with subpath exports. Framework adapte
     ".":         "./dist/core/index.js",
     "./checks":  "./dist/checks/index.js",
     "./rules":   "./dist/rules/index.js",
-    "./schemas": "./dist/schemas/index.js",
     "./utilities": "./dist/utilities/index.js",
     "./nuxt":    "./dist/adapters/nuxt/index.js",
     "./next":    "./dist/adapters/next/index.js",
     "./fastify": "./dist/adapters/fastify/index.js"
   },
-  "sideEffects": ["./src/augmentation.ts", "./dist/index.js", "./dist/index.mjs", "./dist/index.cjs"],
+  "sideEffects": false,
   "peerDependencies": {
     "zod": "^3.25.0 || ^4.0.0"
   },
@@ -296,7 +289,7 @@ validex ships as a **single npm package** with subpath exports. Framework adapte
 
 **Rationale:** Single package avoids multi-package maintenance overhead. Framework dependencies are optional peers — only required when importing the corresponding subpath. Consumers who only use the core never install or bundle framework code.
 
-**Tree-shaking contract:** All exports are named. The main entry has side effects (Zod prototype augmentation via `src/augmentation.ts`), declared in the `"sideEffects"` array. Subpath exports (`validex/checks`, `validex/rules`) remain side-effect-free. If a consumer imports only `Email` from `validex`, only the Email rule, its checks, the augmentation, and the config system are bundled — no other rules, no adapter code.
+**Tree-shaking contract:** All exports are named. With `sideEffects: false`, bundlers can tree-shake unused rules. The augmentation side effect is preserved via `initAugmentation()` — a named function call in the entry point that bundlers never remove (only `/* @__PURE__ */` calls are removed). If a consumer imports only `Email` from `validex`, only the Email rule, its checks, the augmentation, and the config system are bundled — no other rules, no adapter code.
 
 **Import patterns:**
 
@@ -316,7 +309,7 @@ import { validexPlugin } from '@validex/fastify';             // Fastify plugin
 **Optional (peer, framework adapters):**
 
 - `nuxt` ^3.0.0 — Required only when importing `@validex/nuxt`
-- `fastify` ^4.0.0 — Required only when importing `@validex/fastify`
+- `fastify` ^5.0.0 — Required only when importing `@validex/fastify`
 
 Framework peer deps are declared with `"optional": true` in `peerDependenciesMeta`. Consumers who don't import adapter subpaths never need these installed.
 
@@ -1673,7 +1666,7 @@ interface PhoneOptions extends BaseRuleOptions {
 
 **Config validation:** If `requireMobile: true` is set with `metadata: 'min'`, validex throws a config error: `"requireMobile requires metadata: 'mobile' or 'max'"`. This is checked at schema creation time, not at parse time.
 
-**Error codes:** `phone.invalid`, `phone.requireMobile`, `phone.countryBlocked`, `phone.countryNotAllowed`
+**Error codes:** `phone.invalid`, `phone.requireMobile`, `phone.countryBlocked`, `phone.countryNotAllowed`, `phone.countryCodeRequired`
 
 #### 7.8 Website
 
@@ -2267,10 +2260,10 @@ const securityInputs = [
 |Constraint |Requirement|
 |-----------|-----------|
 |Zod version|^4.0.0     |
-|TypeScript |^5.0.0     |
-|Node       |≥18.0.0    |
+|TypeScript |^5.9.0     |
+|Node       |≥22.0.0    |
 |Deno       |≥1.37.0    |
-|ES version |ES2020+    |
+|ES version |ES2024     |
 
 #### 10.4 Security Invariants
 
@@ -2399,12 +2392,15 @@ The module:
 // Auto-imported by the module
 function useValidation<T extends z.ZodSchema>(schema: T): {
   validate: (data: unknown) => Promise<ValidationResult<z.infer<T>>>;
-  validateField: (field: string, value: unknown) => string | undefined;
-  errors: Ref<Record<string, string[]>>;
-  firstErrors: Ref<Record<string, string>>;
   clearErrors: () => void;
+  errors: Readonly<ShallowRef<Record<string, readonly string[]>>>;
+  firstErrors: Readonly<ShallowRef<Record<string, string>>>;
+  isValid: Readonly<ShallowRef<boolean>>;
+  data: Readonly<ShallowRef<z.infer<T> | undefined>>;
 };
 ```
+
+All state properties are Vue refs that trigger template re-renders automatically. `validateField` is planned for v1.1.
 
 **Usage:**
 

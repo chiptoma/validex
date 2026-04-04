@@ -66,6 +66,8 @@ await setupValidex({
 
 ## `useValidation` Composable
 
+Returns reactive Vue refs that automatically trigger template re-renders when validation state changes.
+
 ```ts
 import { useValidation } from '@validex/nuxt'
 import { Email, Password } from '@validex/core'
@@ -77,19 +79,53 @@ const schema = z.object({
 })
 
 const {
-  validate,       // (data: unknown) => Promise<ValidationResult<T>>
-  clearErrors,    // () => void — resets all errors
-  getErrors,      // () => Record<string, readonly string[]>
-  getFirstErrors, // () => Record<string, string>
-  getIsValid,     // () => boolean
-  getData,        // () => T | undefined
+  validate,    // (data: unknown) => Promise<ValidationResult<T>>
+  clearErrors, // () => void — resets all errors
+  errors,      // Ref<Record<string, readonly string[]>>
+  firstErrors, // Ref<Record<string, string>>
+  isValid,     // Ref<boolean>
+  data,        // Ref<T | undefined>
 } = useValidation(schema)
 
-const result = await validate({ email: 'user@example.com', password: 'Str0ng!Pass' })
+await validate({ email: 'user@example.com', password: 'Str0ng!Pass' })
+// errors, firstErrors, isValid are reactive refs
+// Templates re-render automatically when they change
+```
 
-if (!result.success) {
-  console.log(getFirstErrors()) // { email: '...', password: '...' }
+```vue
+<script setup lang="ts">
+import { useValidation } from '@validex/nuxt'
+import { Email, Password } from '@validex/core'
+import { z } from 'zod'
+
+const schema = z.object({
+  email: Email(),
+  password: Password(),
+})
+
+const { validate, errors, firstErrors, isValid } = useValidation(schema)
+
+async function onSubmit(formData: Record<string, unknown>) {
+  await validate(formData)
+  // isValid, errors, firstErrors update automatically
 }
+</script>
+
+<template>
+  <form @submit.prevent="onSubmit(formData)">
+    <input v-model="formData.email" />
+    <span v-if="firstErrors.email" class="error">
+      {{ firstErrors.email }}
+    </span>
+
+    <input v-model="formData.password" type="password" />
+    <span v-if="firstErrors.password" class="error">
+      {{ firstErrors.password }}
+    </span>
+
+    <button :disabled="!isValid">Submit</button>
+  </form>
+</template>
 ```
 
 ## Auto-Imports

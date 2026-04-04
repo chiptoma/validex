@@ -1719,7 +1719,7 @@ await setupValidex({
 
 #### `useValidation(schema)`
 
-Creates a validation state container bound to a Zod schema. Framework-agnostic -- manages errors, validity, and parsed data via closures.
+Creates a reactive validation state bound to a Zod schema. Returns Vue refs that automatically trigger template re-renders when validation state changes.
 
 **Signature:**
 
@@ -1733,10 +1733,10 @@ function useValidation<S extends z.ZodType>(schema: S): ValidationState<z.output
 interface ValidationState<T> {
   readonly validate: (data: unknown) => Promise<ValidationResult<T>>
   readonly clearErrors: () => void
-  readonly getErrors: () => Readonly<Record<string, readonly string[]>>
-  readonly getFirstErrors: () => Readonly<Record<string, string>>
-  readonly getIsValid: () => boolean
-  readonly getData: () => T | undefined
+  readonly errors: Readonly<ShallowRef<Record<string, readonly string[]>>>
+  readonly firstErrors: Readonly<ShallowRef<Record<string, string>>>
+  readonly isValid: Readonly<ShallowRef<boolean>>
+  readonly data: Readonly<ShallowRef<T | undefined>>
 }
 ```
 
@@ -1752,12 +1752,12 @@ const schema = z.object({
   password: Password(),
 })
 
-const { validate, clearErrors, getErrors, getFirstErrors, getIsValid } = useValidation(schema)
+const { validate, clearErrors, errors, firstErrors, isValid } = useValidation(schema)
 
-const result = await validate({ email: 'user@example.com', password: 'Str0ng!Pass' })
+await validate({ email: 'user@example.com', password: 'Str0ng!Pass' })
 
-if (!getIsValid()) {
-  console.log(getFirstErrors())
+if (!isValid.value) {
+  console.log(firstErrors.value)
 }
 ```
 
