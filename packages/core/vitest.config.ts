@@ -22,6 +22,7 @@ export default mergeConfig(baseConfig, defineConfig({
       '@loaders': dir('loaders'),
       '@utilities': dir('utilities'),
       '@augmentation': dir('augmentation'),
+      '@cli': dir('cli'),
       '@locales': dir('locales'),
       '@validex-types': dir('types.ts'),
     },

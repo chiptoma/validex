@@ -9,7 +9,8 @@
       ]
     },
     "packages/core": {
-      "ignore": ["tests/smoke/**"]
+      "ignore": ["tests/smoke/**"],
+      "ignoreDependencies": ["esbuild", "tsx"]
     },
     "packages/nuxt": {
       "ignoreDependencies": ["nuxt"]

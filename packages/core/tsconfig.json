@@ -19,6 +19,7 @@
       "@utilities/*": ["src/utilities/*"],
       "@augmentation": ["src/augmentation/index.ts"],
       "@augmentation/*": ["src/augmentation/*"],
+      "@cli/*": ["src/cli/*"],
       "@locales/*": ["src/locales/*"],
       "@validex-types": ["src/types.ts"]
     },

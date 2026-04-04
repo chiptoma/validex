@@ -28,6 +28,7 @@ export default defineConfig({
       '@loaders': dir('loaders'),
       '@utilities': dir('utilities'),
       '@augmentation': dir('augmentation'),
+      '@cli': dir('cli'),
       '@validex-types': dir('types.ts'),
     }
   },

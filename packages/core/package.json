@@ -126,6 +126,8 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^10.4.0",
-    "fast-check": "^4.6.0"
+    "esbuild": "^0.28.0",
+    "fast-check": "^4.6.0",
+    "tsx": "^4.21.0"
   }
 }
