@@ -5,14 +5,25 @@
 
 Fastify 5 plugin for [validex](https://github.com/chiptoma/validex) — request validation via decorators and hooks.
 
+---
+
+- [Prerequisites](#prerequisites)
+- [Install](#install)
+- [Plugin Registration](#plugin-registration) — app.register with options
+- [Request Validation](#request-validation) — route-level and handler-level
+- [Decorators](#decorators) — app.validate, request.validate
+- [Error Handling](#error-handling) — default response, custom handler
+
+---
+
 ## Prerequisites
 
-`@validex/core`, `zod`, and `fastify` must be installed.
+`@validex/core`, `zod`, `fastify`, and `fastify-plugin` must be installed.
 
 ## Install
 
 ```bash
-pnpm add @validex/core @validex/fastify zod
+pnpm add @validex/core @validex/fastify zod fastify fastify-plugin
 ```
 
 ## Plugin Registration
@@ -88,9 +99,9 @@ Automatically validate request body before the handler runs:
 
 ```ts
 app.post('/users', {
+  // Fastify preValidation hook — validates body before handler runs
   config: { validex: { body: userSchema } },
   handler: async (request) => {
-    // Body is already validated — handler only runs on success
     return { created: true }
   },
 })
@@ -107,6 +118,8 @@ Failed validation returns a 400 response with structured errors by default:
 }
 ```
 
+`errors` contains the first error message per field (for simple display). `allErrors` contains all messages per field (for detailed feedback).
+
 ## Decorators
 
 The plugin adds the following to the Fastify instance:
@@ -117,6 +130,21 @@ The plugin adds the following to the Fastify instance:
 | `request.validate` | Request | `(schema, opts?) => Promise<ValidationResult>` |
 
 `app.validate` validates arbitrary data. `request.validate` validates from request body (default), query, or params.
+
+### Standalone Functions
+
+The decorator implementations are also exported for use outside the request lifecycle (e.g., in tests, workers, or middleware):
+
+```ts
+import { validateData, validateRequest } from '@validex/fastify'
+
+const result = await validateData(schema, data)
+```
+
+| Function | Signature |
+|----------|-----------|
+| `validateData` | `(schema, data) => Promise<ValidationResult>` |
+| `validateRequest` | `(schema, sources, source?) => Promise<ValidationResult>` |
 
 ## Error Handling
 

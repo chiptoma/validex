@@ -5,6 +5,20 @@
 
 Nuxt module for [validex](https://github.com/chiptoma/validex) — auto-imports all 25 validation rules and the `useValidation` composable.
 
+---
+
+- [Prerequisites](#prerequisites)
+- [Install](#install)
+- [Nuxt Module Setup](#nuxt-module-setup) — nuxt.config.ts configuration
+- [Module Options](#module-options) — rules, i18n, preload
+- [Standalone Setup](#standalone-setup) — outside Nuxt context
+- [`useValidation` Composable](#usevalidation-composable) — reactive validation state
+- [Auto-Imports](#auto-imports) — all rules available without import
+- [Preloading Data](#preloading-data) — server-side data loading
+- [i18n Integration](#i18n-integration) — @nuxtjs/i18n auto-detection
+
+---
+
 ## Prerequisites
 
 `@validex/core` and `zod` must be installed as peer dependencies.
@@ -81,14 +95,14 @@ const schema = z.object({
 const {
   validate,    // (data: unknown) => Promise<ValidationResult<T>>
   clearErrors, // () => void — resets all errors
-  errors,      // Ref<Record<string, readonly string[]>>
-  firstErrors, // Ref<Record<string, string>>
-  isValid,     // Ref<boolean>
-  data,        // Ref<T | undefined>
+  errors,      // ShallowRef<Record<string, readonly string[]>>
+  firstErrors, // ShallowRef<Record<string, string>>
+  isValid,     // ShallowRef<boolean>
+  data,        // ShallowRef<T | undefined>
 } = useValidation(schema)
 
 await validate({ email: 'user@example.com', password: 'Str0ng!Pass' })
-// errors, firstErrors, isValid are reactive refs
+// errors, firstErrors, isValid, data are reactive shallow refs
 // Templates re-render automatically when they change
 ```
 
@@ -103,11 +117,12 @@ const schema = z.object({
   password: Password(),
 })
 
-const { validate, errors, firstErrors, isValid } = useValidation(schema)
+const { validate, clearErrors, firstErrors, isValid } = useValidation(schema)
 
 async function onSubmit(formData: Record<string, unknown>) {
+  clearErrors()
   await validate(formData)
-  // isValid, errors, firstErrors update automatically
+  // isValid and firstErrors refs update automatically
 }
 </script>
 
@@ -134,7 +149,7 @@ When used as a Nuxt module, the following are auto-imported (no explicit `import
 
 - **All 25 rules:** `Email`, `Password`, `PasswordConfirmation`, `PersonName`, `BusinessName`, `Phone`, `Website`, `Url`, `Username`, `Slug`, `PostalCode`, `LicenseKey`, `Uuid`, `Jwt`, `DateTime`, `Token`, `Text`, `Country`, `Currency`, `Color`, `CreditCard`, `Iban`, `VatNumber`, `MacAddress`, `IpAddress`
 - **`validate`** — core validation function
-- **`validexSetup`** — aliased `setup()` for configuration
+- **`validexSetup`** — `setup()` from `@validex/core`, aliased to avoid conflict with Nuxt's own `setup`
 - **`useValidation`** — composable for validation state management
 
 ## Preloading Data
