@@ -1,6 +1,9 @@
 # @validex/fastify
 
 [![npm version](https://img.shields.io/npm/v/@validex/fastify)](https://www.npmjs.com/package/@validex/fastify)
+[![npm downloads](https://img.shields.io/npm/dm/@validex/fastify)](https://www.npmjs.com/package/@validex/fastify)
+[![build](https://img.shields.io/github/actions/workflow/status/chiptoma/validex/ci.yml)](https://github.com/chiptoma/validex/actions)
+[![TypeScript 5.0+](https://img.shields.io/badge/TypeScript-5.0%2B-blue)](https://www.typescriptlang.org/)
 [![license MIT](https://img.shields.io/npm/l/@validex/fastify)](https://github.com/chiptoma/validex/blob/main/LICENSE)
 
 Fastify 5 plugin for [validex](https://github.com/chiptoma/validex) — request validation via decorators and hooks.
