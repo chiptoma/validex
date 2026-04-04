@@ -43,7 +43,6 @@ export interface ValidexNuxtOptions {
 // ----------------------------------------------------------
 
 // SAFETY: explicit type avoids TS2742 — inferred NuxtModule type references @nuxt/schema via .pnpm path
-// SAFETY: explicit type avoids TS2742 — inferred NuxtModule type references @nuxt/schema via .pnpm path
 const validexModule: NuxtModule<ValidexNuxtOptions> = defineNuxtModule<ValidexNuxtOptions>({
   meta: {
     name: 'validex',

@@ -1,15 +1,17 @@
 // ==============================================================================
 // NUXT COMPOSABLES
-// Framework-agnostic validation state container for use in Nuxt composables.
+// Reactive validation state for Nuxt/Vue components using Vue refs.
 // ------------------------------------------------------------------------------
-// NOTE: This module does not import Vue reactivity APIs. The state container
-//       pattern allows wrapping in Vue refs when used inside a Nuxt context.
+// NOTE: Returns Vue refs that trigger template re-renders automatically.
+//       Uses shallowRef to avoid deep unwrapping of Zod output types.
 // ==============================================================================
 
 import type { ValidationResult } from '@validex/core'
+import type { ShallowRef } from 'vue'
 import type { z } from 'zod'
 
-import { validate } from '@validex/core'
+import { validate as coreValidate } from '@validex/core'
+import { shallowRef } from 'vue'
 
 // ----------------------------------------------------------
 // TYPES
@@ -17,24 +19,26 @@ import { validate } from '@validex/core'
 
 /**
  * ValidationState
- * State container returned by useValidation. Provides getter methods
- * for current state, keeping the implementation framework-agnostic.
+ * Reactive validation state returned by useValidation.
+ * All state properties are Vue shallow refs that trigger re-renders
+ * when replaced. Uses shallowRef to preserve Zod output types without
+ * deep reactive unwrapping.
  *
  * @template T - The inferred output type of the Zod schema.
  */
 export interface ValidationState<T> {
-  /** Run validation against the schema and update internal state. */
+  /** Run validation against the schema and update reactive state. */
   readonly validate: (data: unknown) => Promise<ValidationResult<T>>
   /** Reset all errors and restore isValid to true. */
   readonly clearErrors: () => void
-  /** Get the current flat error map (dot-path to message arrays). */
-  readonly getErrors: () => Readonly<Record<string, readonly string[]>>
-  /** Get the current first-error map (dot-path to first message). */
-  readonly getFirstErrors: () => Readonly<Record<string, string>>
-  /** Get the current validity flag. */
-  readonly getIsValid: () => boolean
-  /** Get the last successful parse result, if any. */
-  readonly getData: () => T | undefined
+  /** Reactive flat error map (dot-path to message arrays). */
+  readonly errors: Readonly<ShallowRef<Record<string, readonly string[]>>>
+  /** Reactive first-error map (dot-path to first message). */
+  readonly firstErrors: Readonly<ShallowRef<Record<string, string>>>
+  /** Reactive validity flag. */
+  readonly isValid: Readonly<ShallowRef<boolean>>
+  /** Reactive last successful parse result, if any. */
+  readonly data: Readonly<ShallowRef<T | undefined>>
 }
 
 // ----------------------------------------------------------
@@ -43,24 +47,25 @@ export interface ValidationState<T> {
 
 /**
  * Use Validation
- * Creates a validation state container bound to a Zod schema.
- * Manages errors, first-errors, validity, and parsed data via closures.
+ * Creates a reactive validation state bound to a Zod schema.
+ * Returns Vue shallow refs that automatically trigger template
+ * re-renders when validation state changes.
  *
- * @template S - The Zod schema type.
  * @param schema - The Zod schema to validate against.
- * @returns A ValidationState instance with getter methods and actions.
+ * @returns Reactive validation state with refs and actions.
  */
 export function useValidation<S extends z.ZodType>(
   schema: S,
 ): ValidationState<z.output<S>> {
-  let errors: Record<string, readonly string[]> = {}
-  let firstErrors: Record<string, string> = {}
-  let isValid = true
-  let data: z.output<S> | undefined
+  const errors = shallowRef<Record<string, readonly string[]>>({})
+  const firstErrors = shallowRef<Record<string, string>>({})
+  const isValid = shallowRef(true)
+  // SAFETY: initial value is undefined, cast needed to avoid ShallowRef<undefined> narrowing
+  const data = shallowRef(undefined as z.output<S> | undefined)
 
   /**
    * Run Validation
-   * Validates input against the bound schema and updates internal state.
+   * Validates input against the bound schema and updates reactive state.
    *
    * @param input - The data to validate.
    * @returns The structured validation result.
@@ -68,12 +73,12 @@ export function useValidation<S extends z.ZodType>(
   async function runValidation(
     input: unknown,
   ): Promise<ValidationResult<z.output<S>>> {
-    const result = await validate(schema, input)
+    const result = await coreValidate(schema, input)
 
-    errors = result.errors
-    firstErrors = result.firstErrors
-    isValid = result.success
-    data = result.data
+    errors.value = result.errors
+    firstErrors.value = result.firstErrors
+    isValid.value = result.success
+    data.value = result.data
 
     return result
   }
@@ -83,18 +88,20 @@ export function useValidation<S extends z.ZodType>(
    * Resets all error state and restores validity to true.
    */
   function clearErrors(): void {
-    errors = {}
-    firstErrors = {}
-    isValid = true
-    data = undefined
+    errors.value = {}
+    firstErrors.value = {}
+    isValid.value = true
+    data.value = undefined
   }
 
+  // SAFETY: shallowRef types are structurally compatible with the interface
+  // but TypeScript cannot resolve the generic ShallowRef overloads correctly
   return {
     validate: runValidation,
     clearErrors,
-    getErrors: () => errors,
-    getFirstErrors: () => firstErrors,
-    getIsValid: () => isValid,
-    getData: () => data,
-  }
+    errors,
+    firstErrors,
+    isValid,
+    data,
+  } as ValidationState<z.output<S>>
 }

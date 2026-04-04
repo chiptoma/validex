@@ -61,6 +61,7 @@
   "peerDependencies": {
     "@nuxt/kit": "^4.4.2",
     "@validex/core": "^1.0.0",
+    "vue": "^3.5.0",
     "zod": "^3.25.0 || ^4.0.0"
   },
   "peerDependenciesMeta": {
@@ -74,6 +75,7 @@
     "@nuxt/test-utils": "^4.0.0",
     "@validex/core": "workspace:^",
     "nuxt": "^4.4.2",
+    "vue": "^3.5.0",
     "zod": "^4.3.6"
   }
 }
