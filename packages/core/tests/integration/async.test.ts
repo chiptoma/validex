@@ -7,6 +7,7 @@
 import type { z } from 'zod'
 
 import { beforeEach, describe, expect, it } from 'vitest'
+import { z as zod } from 'zod'
 
 import { preloadData } from '@config'
 import { validate } from '@core/validate'
@@ -22,6 +23,7 @@ import { getReservedUsernames, resetReservedUsernamesCache } from '@loaders/rese
 import { clearVatPatternsCache, getVatPatterns } from '@loaders/vatPatterns'
 import { Email } from '@rules/email'
 import { Password } from '@rules/password'
+import { PersonName } from '@rules/personName'
 import { Username } from '@rules/username'
 
 import { parseAsync } from '../_support/helpers/parse'
@@ -125,6 +127,32 @@ describe('full async flow', () => {
 
     const emOk = await validate(emailSchema as z.ZodType, 'user@gmail.com')
     expect(emOk.success).toBe(true)
+  })
+})
+
+// ----------------------------------------------------------
+// CONCURRENT VALIDATION
+// ----------------------------------------------------------
+
+describe('concurrent validation', () => {
+  it('concurrent validate() calls produce correct independent results', async () => {
+    const emailSchema = zod.object({ email: Email() as z.ZodType })
+    const nameSchema = zod.object({ name: PersonName() as z.ZodType })
+
+    const results = await Promise.all([
+      validate(emailSchema, { email: 'good@example.com' }),
+      validate(emailSchema, { email: 'bad' }),
+      validate(nameSchema, { name: 'Alice Smith' }),
+      validate(nameSchema, { name: '' }),
+      ...Array.from({ length: 46 }, async (_, i) =>
+        validate(emailSchema, { email: i % 2 === 0 ? `user${i}@test.com` : 'invalid' })),
+    ])
+
+    expect(results[0].success).toBe(true)
+    expect(results[1].success).toBe(false)
+    expect(results[2].success).toBe(true)
+    expect(results[3].success).toBe(false)
+    expect(results).toHaveLength(50)
   })
 })
 

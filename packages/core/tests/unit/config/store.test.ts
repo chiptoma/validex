@@ -5,7 +5,7 @@
 
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { getConfig, resetConfig, setup } from '@config'
+import { configure, getConfig, resetConfig, setup } from '@config'
 
 describe('config store', () => {
   afterEach(() => {
@@ -55,5 +55,31 @@ describe('config store', () => {
     const config = getConfig()
     expect(config.i18n.enabled).toBe(true)
     expect(config.i18n.prefix).toBe('validation')
+  })
+})
+
+describe('configure', () => {
+  afterEach(() => {
+    resetConfig()
+  })
+
+  it('merges into existing config', () => {
+    setup({ rules: { email: { blockPlusAlias: true } } })
+    configure({ rules: { email: { normalize: true } } })
+    const config = getConfig()
+    expect(config.rules?.email?.blockPlusAlias).toBe(true)
+    expect(config.rules?.email?.normalize).toBe(true)
+  })
+
+  it('works without prior setup', () => {
+    configure({ rules: { email: { blockPlusAlias: true } } })
+    expect(getConfig().rules?.email?.blockPlusAlias).toBe(true)
+  })
+
+  it('changes reflected in getConfig', () => {
+    configure({ i18n: { enabled: true, prefix: 'v' } })
+    const config = getConfig()
+    expect(config.i18n.enabled).toBe(true)
+    expect(config.i18n.prefix).toBe('v')
   })
 })

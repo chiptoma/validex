@@ -417,6 +417,31 @@ describe('rule-based requiredWhen via validate()', () => {
 })
 
 // ----------------------------------------------------------
+// SAME-AS WITH DIFFERENT RULE TYPES
+// ----------------------------------------------------------
+
+describe('sameAs with different rule types', () => {
+  it('sameAs works with Username rule', async () => {
+    const schema = z.object({
+      username: Username() as z.ZodType,
+      confirmUsername: Username({ sameAs: 'username' }) as z.ZodType,
+    })
+    const result = await validate(schema, { username: 'alice', confirmUsername: 'alice' })
+    expect(result.success).toBe(true)
+  })
+
+  it('sameAs detects mismatch with Username rule', async () => {
+    const schema = z.object({
+      username: Username() as z.ZodType,
+      confirmUsername: Username({ sameAs: 'username' }) as z.ZodType,
+    })
+    const result = await validate(schema, { username: 'alice', confirmUsername: 'bob' })
+    expect(result.success).toBe(false)
+    expect(result.firstErrors['confirmUsername']).toContain('must match')
+  })
+})
+
+// ----------------------------------------------------------
 // CROSS-FIELD EDGE CASES
 // ----------------------------------------------------------
 

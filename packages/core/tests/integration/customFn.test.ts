@@ -174,3 +174,42 @@ describe('customFn integration', () => {
     await assertCustomCode(IpAddress({ customFn: rejectAll }), '8.8.8.8', 'ipAddress')
   })
 })
+
+// ----------------------------------------------------------
+// ASYNC CUSTOM FN
+// ----------------------------------------------------------
+
+describe('customFn — async', () => {
+  it('async rejection produces correct error code', async () => {
+    const schema = Email({
+      customFn: async () => 'async rejection',
+    }) as z.ZodType
+    const result = await schema.safeParseAsync('test@example.com')
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      const customIssue = result.error.issues.find((i) => {
+        const p = getParams(i as Parameters<typeof getParams>[0])
+        return p.code === 'custom' && p.namespace === 'email'
+      })
+      expect(customIssue).toBeDefined()
+    }
+  })
+
+  it('async acceptance allows value through', async () => {
+    const schema = Email({
+      customFn: async () => true as const,
+    }) as z.ZodType
+    const result = await schema.safeParseAsync('test@example.com')
+    expect(result.success).toBe(true)
+  })
+
+  it('async rejection with Promise.resolve string', async () => {
+    const schema = PersonName({
+      customFn: async v => v.includes('bad') ? 'contains bad' : true,
+    }) as z.ZodType
+    const bad = await schema.safeParseAsync('bad name')
+    expect(bad.success).toBe(false)
+    const good = await schema.safeParseAsync('Good Name')
+    expect(good.success).toBe(true)
+  })
+})

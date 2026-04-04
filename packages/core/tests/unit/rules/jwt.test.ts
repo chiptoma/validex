@@ -11,7 +11,7 @@ import { describe, expect, it } from 'vitest'
 import { Jwt } from '@rules/jwt'
 
 import { makeJwt as createTestJwt, nowSeconds } from '../../_support/helpers/jwt'
-import { parseAsync } from '../../_support/helpers/parse'
+import { firstParamsAsync, parseAsync } from '../../_support/helpers/parse'
 
 // ----------------------------------------------------------
 // VALID JWT STRUCTURE
@@ -95,7 +95,7 @@ describe('jwt (checkExpiry)', () => {
 // ----------------------------------------------------------
 
 describe('jwt (checkNotBefore)', () => {
-  it('rejects token with nbf in future', async () => {
+  it('rejects token with nbf in future and returns notYetValid code', async () => {
     const schema = Jwt({ checkNotBefore: true })
     const token = createTestJwt(
       { alg: 'HS256' },
@@ -103,6 +103,9 @@ describe('jwt (checkNotBefore)', () => {
     )
     const result = await parseAsync(schema, token)
     expect(result.success).toBe(false)
+    const params = await firstParamsAsync(schema, token)
+    expect(params.code).toBe('notYetValid')
+    expect(params.namespace).toBe('jwt')
   })
 
   it('accepts token with nbf in past', async () => {
@@ -203,7 +206,7 @@ describe('jwt (requireClaims)', () => {
 // ----------------------------------------------------------
 
 describe('jwt (allowAlgorithms)', () => {
-  it('rejects token with disallowed algorithm', async () => {
+  it('rejects token with disallowed algorithm and returns algorithmNotAllowed code', async () => {
     const schema = Jwt({ allowAlgorithms: ['RS256'] })
     const token = createTestJwt(
       { alg: 'HS256', typ: 'JWT' },
@@ -211,6 +214,9 @@ describe('jwt (allowAlgorithms)', () => {
     )
     const result = await parseAsync(schema, token)
     expect(result.success).toBe(false)
+    const params = await firstParamsAsync(schema, token)
+    expect(params.code).toBe('algorithmNotAllowed')
+    expect(params.namespace).toBe('jwt')
   })
 
   it('accepts token with allowed algorithm', async () => {

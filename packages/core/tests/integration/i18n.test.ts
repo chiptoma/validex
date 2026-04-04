@@ -168,6 +168,23 @@ describe('i18n system', () => {
   })
 
   // ----------------------------------------------------------
+  // PATH MODE SEMANTIC (EXPLICIT)
+  // ----------------------------------------------------------
+
+  describe('i18n.pathMode semantic (explicit)', () => {
+    it('pathMode semantic produces standard key format', async () => {
+      setup({ i18n: { enabled: true, t: (key: string) => key, pathMode: 'semantic' } })
+      registerCustomError()
+
+      const schema = zod.object({ email: Email() as z.ZodType })
+      const result = await validate(schema, { email: '' })
+      expect(result.success).toBe(false)
+      // semantic mode: validation.messages.{namespace}.{code}
+      expect(result.firstErrors['email']).toMatch(/^validation\.messages\./)
+    })
+  })
+
+  // ----------------------------------------------------------
   // LABEL FALLBACK
   // ----------------------------------------------------------
 
