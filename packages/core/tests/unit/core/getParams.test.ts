@@ -1,3 +1,8 @@
+// ==============================================================================
+// GET PARAMS TESTS
+// Tests error parameter extraction from Zod issues.
+// ==============================================================================
+
 import { afterEach, describe, expect, it } from 'vitest'
 
 import { resetConfig, setup } from '@config'

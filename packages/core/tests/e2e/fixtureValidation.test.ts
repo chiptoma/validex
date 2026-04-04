@@ -1,3 +1,8 @@
+// ==============================================================================
+// FIXTURE VALIDATION TESTS
+// Validates postalCode and businessName rules against JSON fixture data.
+// ==============================================================================
+
 import type { z } from 'zod'
 
 import { describe, expect, it } from 'vitest'

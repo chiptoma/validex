@@ -12,14 +12,7 @@ import { validate } from '@core/validate'
 import { Password } from '@rules/password'
 import { PasswordConfirmation } from '@rules/passwordConfirmation'
 
-// ----------------------------------------------------------
-// HELPERS
-// ----------------------------------------------------------
-
-function parse(schema: unknown, value: unknown): { success: boolean } {
-  return (schema as z.ZodType).safeParse(value)
-}
-
+import { parse } from '../../_support/helpers/parse'
 // ----------------------------------------------------------
 // BASIC VALIDATION
 // ----------------------------------------------------------

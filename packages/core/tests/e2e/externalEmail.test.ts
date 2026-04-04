@@ -7,31 +7,11 @@
 //   whether the rule or the expectation needs updating, not both.
 // ==============================================================================
 
-import type { z } from 'zod'
-
 import { describe, expect, it } from 'vitest'
 
 import { Email } from '@rules/email'
 
-// ----------------------------------------------------------
-// HELPERS
-// ----------------------------------------------------------
-
-/**
- * Parse
- * Runs sync safeParse with default options (no blockDisposable).
- *
- * @param schema - The Zod schema from the email rule factory.
- * @param value  - The value to parse.
- * @returns The safe parse result.
- */
-function parse(
-  schema: unknown,
-  value: unknown,
-): { success: boolean, data?: unknown, error?: unknown } {
-  return (schema as z.ZodType).safeParse(value)
-}
-
+import { parse } from '../_support/helpers/parse'
 // ----------------------------------------------------------
 // VALID EMAILS (RFC 5322 / cjaoude corpus)
 // ----------------------------------------------------------

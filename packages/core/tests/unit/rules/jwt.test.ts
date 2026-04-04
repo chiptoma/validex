@@ -10,58 +10,8 @@ import { describe, expect, it } from 'vitest'
 
 import { Jwt } from '@rules/jwt'
 
-// ----------------------------------------------------------
-// HELPERS
-// ----------------------------------------------------------
-
-/**
- * Create Test JWT
- * Builds a JWT string from header and payload objects for testing.
- * Signature is a dummy value since we only validate structure.
- *
- * @param header  - The JWT header object.
- * @param payload - The JWT payload object.
- * @returns A base64url-encoded JWT string.
- */
-function createTestJwt(
-  header: Record<string, unknown>,
-  payload: Record<string, unknown>,
-): string {
-  const h = btoa(JSON.stringify(header))
-    .replace(/=/g, '')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-  const p = btoa(JSON.stringify(payload))
-    .replace(/=/g, '')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-  return `${h}.${p}.signature`
-}
-
-/**
- * Parse Async
- * Runs safeParseAsync on the given schema and value.
- *
- * @param schema - The Zod schema (from rule factory).
- * @param value  - The value to parse.
- * @returns The safe parse result.
- */
-async function parseAsync(
-  schema: unknown,
-  value: unknown,
-): Promise<{ success: boolean, data?: unknown, error?: unknown }> {
-  return (schema as z.ZodType).safeParseAsync(value)
-}
-
-/**
- * Now Seconds
- * Returns the current Unix timestamp in seconds.
- *
- * @returns Current time as integer seconds since epoch.
- */
-function nowSeconds(): number {
-  return Math.floor(Date.now() / 1000)
-}
+import { makeJwt as createTestJwt, nowSeconds } from '../../_support/helpers/jwt'
+import { parseAsync } from '../../_support/helpers/parse'
 
 // ----------------------------------------------------------
 // VALID JWT STRUCTURE

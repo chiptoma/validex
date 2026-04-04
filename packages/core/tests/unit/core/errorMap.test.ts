@@ -1,3 +1,8 @@
+// ==============================================================================
+// ERROR MAP TESTS
+// Tests message key generation, i18n path modes, and error formatting.
+// ==============================================================================
+
 import { describe, expect, it } from 'vitest'
 
 import { buildMessageKey, getErrorMessage, registerMessages } from '@core/errorMap'

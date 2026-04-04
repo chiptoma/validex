@@ -8,30 +8,15 @@
 //   whether the rule or the expectation needs updating, not both.
 // ==============================================================================
 
-import type { z } from 'zod'
-
 import { describe, expect, it } from 'vitest'
 
 import { Iban } from '@rules/iban'
 
+import { parseAsync } from '../_support/helpers/parse'
+
 // ----------------------------------------------------------
 // HELPERS
 // ----------------------------------------------------------
-
-/**
- * Parse Async
- * Runs async safeParse because the IBAN rule uses async refinements.
- *
- * @param schema - The Zod schema from the iban rule factory.
- * @param value  - The value to parse.
- * @returns The safe parse result promise.
- */
-async function parseAsync(
-  schema: unknown,
-  value: unknown,
-): Promise<{ success: boolean, data?: unknown, error?: unknown }> {
-  return (schema as z.ZodType).safeParseAsync(value)
-}
 
 /**
  * Corrupt Digit

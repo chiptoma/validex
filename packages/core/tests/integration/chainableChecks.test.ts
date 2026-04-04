@@ -10,21 +10,14 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
 import { resetConfig, setup } from '@config'
-import { validate } from '@core'
+import { validate } from '@core/validate'
 import { Email, Password, PersonName } from '@rules'
+
+import { firstParams, firstParamsAsync } from '../_support/helpers/parse'
 
 // ----------------------------------------------------------
 // HELPERS
 // ----------------------------------------------------------
-
-/** Extracts params from the first error issue. */
-function firstParams(r: { success: boolean, error?: z.ZodError }): Record<string, unknown> {
-  if (r.success || r.error === undefined)
-    throw new Error('Expected failure')
-  // SAFETY: validex issues always carry params; cast issue to access
-  const issue = r.error.issues[0] as unknown as Record<string, unknown>
-  return issue['params'] as Record<string, unknown>
-}
 
 /** Extracts all error codes from issues. */
 function errorCodes(r: { success: boolean, error?: z.ZodError }): string[] {
@@ -48,10 +41,11 @@ afterEach(() => {
 
 describe('chainable composition methods', () => {
   it('hasUppercase rejects lowercase-only string', () => {
-    const r = z.string().hasUppercase({ min: 1 }).safeParse('hello')
-    expect(r.success).toBe(false)
-    expect(firstParams(r)['code']).toBe('minUppercase')
-    expect(firstParams(r)['namespace']).toBe('string')
+    const schema = z.string().hasUppercase({ min: 1 })
+    expect(schema.safeParse('hello').success).toBe(false)
+    const p = firstParams(schema, 'hello')
+    expect(p.code).toBe('minUppercase')
+    expect(p.namespace).toBe('string')
   })
 
   it('hasUppercase accepts string with uppercase', () => {
@@ -59,8 +53,8 @@ describe('chainable composition methods', () => {
   })
 
   it('hasUppercase respects custom label', () => {
-    const r = z.string().hasUppercase({ min: 1, label: 'Code' }).safeParse('hello')
-    expect(firstParams(r)['label']).toBe('Code')
+    const p = firstParams(z.string().hasUppercase({ min: 1, label: 'Code' }), 'hello')
+    expect(p.label).toBe('Code')
   })
 
   it('hasUppercase + hasDigits chains report BOTH errors', () => {
@@ -101,9 +95,9 @@ describe('chainable composition methods', () => {
   })
 
   it('hasUppercase max constraint rejects excess', () => {
-    const r = z.string().hasUppercase({ min: 0, max: 2 }).safeParse('ABCDE')
-    expect(r.success).toBe(false)
-    expect(firstParams(r)['code']).toBe('maxUppercase')
+    const schema = z.string().hasUppercase({ min: 0, max: 2 })
+    expect(schema.safeParse('ABCDE').success).toBe(false)
+    expect(firstParams(schema, 'ABCDE').code).toBe('maxUppercase')
   })
 })
 
@@ -113,9 +107,9 @@ describe('chainable composition methods', () => {
 
 describe('chainable blocking methods', () => {
   it('noEmails rejects text containing email', () => {
-    const r = z.string().noEmails().safeParse('hi test@x.com')
-    expect(r.success).toBe(false)
-    expect(firstParams(r)['code']).toBe('noEmails')
+    const schema = z.string().noEmails()
+    expect(schema.safeParse('hi test@x.com').success).toBe(false)
+    expect(firstParams(schema, 'hi test@x.com').code).toBe('noEmails')
   })
 
   it('noEmails passes clean text', () => {
@@ -139,9 +133,10 @@ describe('chainable blocking methods', () => {
   })
 
   it('noPhoneNumbers rejects text with phone number (async)', async () => {
-    const r = await z.string().noPhoneNumbers().safeParseAsync('call +34612345678')
+    const schema = z.string().noPhoneNumbers()
+    const r = await schema.safeParseAsync('call +34612345678')
     expect(r.success).toBe(false)
-    expect(firstParams(r)['code']).toBe('noPhoneNumbers')
+    expect((await firstParamsAsync(schema, 'call +34612345678')).code).toBe('noPhoneNumbers')
   })
 
   it('noPhoneNumbers passes text without phone (async)', async () => {
@@ -210,9 +205,9 @@ describe('chainable restriction methods', () => {
 
 describe('chainable limit methods', () => {
   it('maxWords rejects excess words', () => {
-    const r = z.string().maxWords({ max: 3 }).safeParse('one two three four')
-    expect(r.success).toBe(false)
-    expect(firstParams(r)['code']).toBe('maxWords')
+    const schema = z.string().maxWords({ max: 3 })
+    expect(schema.safeParse('one two three four').success).toBe(false)
+    expect(firstParams(schema, 'one two three four').code).toBe('maxWords')
   })
 
   it('maxWords accepts within limit', () => {
@@ -220,9 +215,9 @@ describe('chainable limit methods', () => {
   })
 
   it('minWords rejects too few words', () => {
-    const r = z.string().minWords({ min: 2 }).safeParse('one')
-    expect(r.success).toBe(false)
-    expect(firstParams(r)['code']).toBe('minWords')
+    const schema = z.string().minWords({ min: 2 })
+    expect(schema.safeParse('one').success).toBe(false)
+    expect(firstParams(schema, 'one').code).toBe('minWords')
   })
 
   it('minWords accepts enough words', () => {
@@ -230,9 +225,9 @@ describe('chainable limit methods', () => {
   })
 
   it('maxConsecutive rejects too many repeated chars', () => {
-    const r = z.string().maxConsecutive({ max: 2 }).safeParse('aaa')
-    expect(r.success).toBe(false)
-    expect(firstParams(r)['code']).toBe('maxConsecutive')
+    const schema = z.string().maxConsecutive({ max: 2 })
+    expect(schema.safeParse('aaa').success).toBe(false)
+    expect(firstParams(schema, 'aaa').code).toBe('maxConsecutive')
   })
 
   it('maxConsecutive accepts within limit', () => {
@@ -276,13 +271,13 @@ describe('chainable transform methods', () => {
 
 describe('namespace override', () => {
   it('custom namespace flows through to error params', () => {
-    const r = z.string().hasUppercase({ min: 1, namespace: 'myRule' }).safeParse('hello')
-    expect(firstParams(r)['namespace']).toBe('myRule')
+    const p = firstParams(z.string().hasUppercase({ min: 1, namespace: 'myRule' }), 'hello')
+    expect(p.namespace).toBe('myRule')
   })
 
   it('default namespace is string', () => {
-    const r = z.string().noEmails().safeParse('test@x.com')
-    expect(firstParams(r)['namespace']).toBe('string')
+    const p = firstParams(z.string().noEmails(), 'test@x.com')
+    expect(p.namespace).toBe('string')
   })
 })
 

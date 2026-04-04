@@ -8,37 +8,9 @@ import type { z } from 'zod'
 
 import { describe, expect, it } from 'vitest'
 
-import { getParams } from '@core/getParams'
 import { Phone } from '@rules/phone'
 
-// ----------------------------------------------------------
-// HELPERS
-// ----------------------------------------------------------
-
-/**
- * Parse Async
- * Runs safeParseAsync on the given schema and value.
- *
- * @param schema - The Zod schema (from rule factory).
- * @param value  - The value to parse.
- * @returns The safe parse result.
- */
-async function parseAsync(
-  schema: unknown,
-  value: unknown,
-): Promise<{ success: boolean, data?: unknown, error?: unknown }> {
-  return (schema as z.ZodType).safeParseAsync(value)
-}
-
-async function getAsyncErrorCodes(schema: unknown, value: unknown): Promise<ReadonlyArray<string>> {
-  const result = await (schema as z.ZodType).safeParseAsync(value)
-  if (result.success)
-    return []
-  return result.error.issues.map((issue) => {
-    const params = getParams(issue as Parameters<typeof getParams>[0])
-    return params.code
-  })
-}
+import { getAsyncErrorCodes, parseAsync } from '../../_support/helpers/parse'
 
 // ----------------------------------------------------------
 // VALID PHONE NUMBERS

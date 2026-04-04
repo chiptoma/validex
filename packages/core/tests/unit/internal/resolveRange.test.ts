@@ -1,3 +1,8 @@
+// ==============================================================================
+// RESOLVE RANGE TESTS
+// Tests range resolution from number, object, and undefined inputs.
+// ==============================================================================
+
 import { describe, expect, it } from 'vitest'
 
 import { resolveRange } from '@internal/resolveRange'

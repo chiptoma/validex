@@ -15,7 +15,7 @@ import { testRuleContract } from '../../_support/helpers/testRule'
 // CONTRACT TESTS
 // ----------------------------------------------------------
 
-testRuleContract('ipAddress', IpAddress as (opts?: Record<string, unknown>) => unknown, 'ipAddress')
+testRuleContract('IpAddress', IpAddress as (opts?: Record<string, unknown>) => unknown, 'ipAddress')
 
 // ----------------------------------------------------------
 // VALID IPV4

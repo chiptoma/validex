@@ -16,7 +16,7 @@ import { testRuleContract } from '../../_support/helpers/testRule'
 // ----------------------------------------------------------
 
 testRuleContract(
-  'macAddress',
+  'MacAddress',
   MacAddress as (opts?: Record<string, unknown>) => unknown,
   'macAddress',
 )

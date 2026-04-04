@@ -1,3 +1,8 @@
+// ==============================================================================
+// CREATE RULE TESTS
+// Tests the createRule factory for custom rule definitions.
+// ==============================================================================
+
 import type { BaseRuleOptions } from '@validex-types'
 
 import { afterEach, describe, expect, it } from 'vitest'

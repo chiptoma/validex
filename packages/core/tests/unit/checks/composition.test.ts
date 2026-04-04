@@ -1,3 +1,8 @@
+// ==============================================================================
+// COMPOSITION CHECK TESTS
+// Tests hasUppercase, hasLowercase, hasDigits, hasSpecial check functions.
+// ==============================================================================
+
 import { describe, expect, it } from 'vitest'
 
 import {

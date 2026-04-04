@@ -22,40 +22,7 @@ import { Text } from '@rules/text'
 import { Username } from '@rules/username'
 import { Website } from '@rules/website'
 
-// ----------------------------------------------------------
-// HELPERS
-// ----------------------------------------------------------
-
-/**
- * Make JWT
- * Builds a JWT string from header and payload objects for testing.
- * Uses a dummy signature since we only validate structure.
- *
- * @param header  - The JWT header object.
- * @param payload - The JWT payload object.
- * @returns A base64url-encoded JWT string.
- */
-function makeJwt(header: object, payload: object): string {
-  const h = btoa(JSON.stringify(header))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '')
-  const p = btoa(JSON.stringify(payload))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '')
-  return `${h}.${p}.test-signature`
-}
-
-/**
- * Now Seconds
- * Returns the current Unix timestamp in seconds.
- *
- * @returns Current time as integer seconds since epoch.
- */
-function nowSeconds(): number {
-  return Math.floor(Date.now() / 1000)
-}
+import { makeJwt, nowSeconds } from '../_support/helpers/jwt'
 
 // ----------------------------------------------------------
 // 6.1 — REGISTER FORM

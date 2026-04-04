@@ -1,3 +1,8 @@
+// ==============================================================================
+// CONFIG STORE TESTS
+// Tests setup, getConfig, resetConfig, and configure functions.
+// ==============================================================================
+
 import { afterEach, describe, expect, it } from 'vitest'
 
 import { getConfig, resetConfig, setup } from '@config'

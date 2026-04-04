@@ -6,11 +6,11 @@
 //   test values from Stripe docs (https://docs.stripe.com/testing).
 // ==============================================================================
 
-import type { z } from 'zod'
-
 import { describe, expect, it } from 'vitest'
 
 import { CreditCard } from '@rules/creditCard'
+
+import { parseAsync } from '../_support/helpers/parse'
 
 // ----------------------------------------------------------
 // TYPES
@@ -25,21 +25,6 @@ interface TestCard {
 // ----------------------------------------------------------
 // HELPERS
 // ----------------------------------------------------------
-
-/**
- * Parse Async
- * Runs safeParseAsync on the given schema and value.
- *
- * @param schema - The Zod schema from the credit card rule factory.
- * @param value  - The value to parse.
- * @returns The safe parse result.
- */
-async function parseAsync(
-  schema: unknown,
-  value: unknown,
-): Promise<{ success: boolean, data?: unknown, error?: unknown }> {
-  return (schema as z.ZodType).safeParseAsync(value)
-}
 
 /**
  * Format With Spaces

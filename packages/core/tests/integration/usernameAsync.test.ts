@@ -3,23 +3,12 @@
 // Validates the blockReserved async wiring for reserved username rejection.
 // ==============================================================================
 
-import type { z } from 'zod'
-
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import { resetReservedUsernamesCache } from '@loaders/reservedUsernames'
 import { Username } from '@rules/username'
 
-// ----------------------------------------------------------
-// HELPERS
-// ----------------------------------------------------------
-
-async function parseAsync(
-  schema: unknown,
-  value: unknown,
-): Promise<{ success: boolean }> {
-  return (schema as z.ZodType).safeParseAsync(value)
-}
+import { parseAsync } from '../_support/helpers/parse'
 
 // ----------------------------------------------------------
 // BLOCK RESERVED

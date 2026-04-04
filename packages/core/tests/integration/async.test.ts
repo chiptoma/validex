@@ -24,16 +24,7 @@ import { Email } from '@rules/email'
 import { Password } from '@rules/password'
 import { Username } from '@rules/username'
 
-// ----------------------------------------------------------
-// HELPERS
-// ----------------------------------------------------------
-
-async function parseAsync(
-  schema: unknown,
-  value: unknown,
-): Promise<{ success: boolean }> {
-  return (schema as z.ZodType).safeParseAsync(value)
-}
+import { parseAsync } from '../_support/helpers/parse'
 
 // ----------------------------------------------------------
 // FULL ASYNC FLOW

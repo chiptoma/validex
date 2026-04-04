@@ -1,3 +1,8 @@
+// ==============================================================================
+// LIMITS CHECK TESTS
+// Tests maxConsecutive, minWords, maxWords, noSpaces check functions.
+// ==============================================================================
+
 import { describe, expect, it } from 'vitest'
 
 import { maxConsecutive, maxWords, noSpaces } from '@checks/limits'
