@@ -8,7 +8,14 @@ import { describe, expect, it } from 'vitest'
 
 import { Country } from '@rules/country'
 
-import { parseAsync } from '../../_support/helpers/parse'
+import { firstParamsAsync, parseAsync } from '../../_support/helpers/parse'
+import { testRuleContract } from '../../_support/helpers/testRule'
+
+// ----------------------------------------------------------
+// CONTRACT TESTS
+// ----------------------------------------------------------
+
+testRuleContract('Country', Country as (opts?: Record<string, unknown>) => unknown, 'country')
 
 // ----------------------------------------------------------
 // VALID ALPHA-2 CODES
@@ -168,6 +175,22 @@ describe('country (emptyToUndefined)', () => {
     const schema = Country()
     const result = await parseAsync(schema, '')
     expect(result.success).toBe(false)
+  })
+})
+
+// ----------------------------------------------------------
+// SECURITY VECTORS
+// ----------------------------------------------------------
+
+// ----------------------------------------------------------
+// LABEL IN ERROR PARAMS
+// ----------------------------------------------------------
+
+describe('country (label)', () => {
+  it('includes label in error params', async () => {
+    const schema = Country({ label: 'Country Code' })
+    const params = await firstParamsAsync(schema, 'invalid!!!')
+    expect(params.label).toBe('Country Code')
   })
 })
 

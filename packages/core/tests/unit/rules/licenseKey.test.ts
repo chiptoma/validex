@@ -175,6 +175,14 @@ describe('licenseKey (security)', () => {
   })
 })
 
+describe('licenseKey (regex override)', () => {
+  it('accepts value matching custom regex override', () => {
+    const schema = LicenseKey({ regex: /^LK-[A-Z0-9]{8}$/ })
+    expect(parse(schema, 'LK-ABCD1234').success).toBe(true)
+    expect(parse(schema, 'invalid').success).toBe(false)
+  })
+})
+
 describe('licenseKey — edge cases', () => {
   it('validates single-segment license key', () => {
     const schema = LicenseKey({ segments: 1, segmentLength: 5 }) as z.ZodType

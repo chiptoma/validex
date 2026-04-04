@@ -62,6 +62,23 @@ describe('deepMergeTwo', () => {
   })
 })
 
+describe('deepMergeTwo (security)', () => {
+  it('does not pollute Object.prototype via __proto__ key', () => {
+    // SAFETY: JSON.parse to create an object with __proto__ key without triggering linter
+    const malicious = JSON.parse('{"__proto__":{"polluted":true}}') as Record<string, unknown>
+    deepMergeTwo({}, malicious)
+    // The critical check: Object.prototype must not be polluted
+    expect(({} as Record<string, unknown>)['polluted']).toBeUndefined()
+  })
+
+  it('does not pollute Object.prototype via constructor.prototype', () => {
+    // SAFETY: JSON.parse to create nested attack vector
+    const malicious = JSON.parse('{"constructor":{"prototype":{"injected":true}}}') as Record<string, unknown>
+    deepMergeTwo({}, malicious)
+    expect(({} as Record<string, unknown>)['injected']).toBeUndefined()
+  })
+})
+
 describe('mergeThreeTiers', () => {
   it('should merge defaults → globals → per-call', () => {
     const defaults = { a: 1, b: 2, c: 3 }

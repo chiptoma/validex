@@ -208,6 +208,16 @@ describe('username (security)', () => {
   })
 })
 
+describe('username (regex override)', () => {
+  it('accepts value matching custom regex override', () => {
+    const schema = Username({ regex: /^[a-z]{3,10}$/ })
+    expect(parse(schema, 'alice').success).toBe(true)
+    // Normalization lowercases input, so test a value that fails
+    // the regex pattern itself (digits not allowed by this regex)
+    expect(parse(schema, 'alice123').success).toBe(false)
+  })
+})
+
 describe('username — edge cases', () => {
   it('blocks custom reserved word with case-sensitive matching', async () => {
     // ignoreCase: false means exact match is required for custom reserved words

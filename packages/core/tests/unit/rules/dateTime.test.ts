@@ -9,6 +9,7 @@ import { describe, expect, it } from 'vitest'
 
 import { DateTime } from '@rules/dateTime'
 
+import { getErrorCodes } from '../../_support/helpers/parse'
 import { testRuleContract } from '../../_support/helpers/testRule'
 
 // ----------------------------------------------------------
@@ -170,10 +171,12 @@ describe('dateTime (offset and local)', () => {
 // ----------------------------------------------------------
 
 describe('dateTime (future/past)', () => {
-  it('rejects future date when allowFuture is false', () => {
+  it('rejects future date when allowFuture is false and returns noFuture code', () => {
     const schema = DateTime({ allowFuture: false }) as z.ZodType
     const futureDate = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
     expect(schema.safeParse(futureDate).success).toBe(false)
+    const codes = getErrorCodes(schema, futureDate)
+    expect(codes).toContain('noFuture')
   })
 
   it('accepts past date when allowFuture is false', () => {
@@ -181,9 +184,11 @@ describe('dateTime (future/past)', () => {
     expect(schema.safeParse('2020-01-01T00:00:00Z').success).toBe(true)
   })
 
-  it('rejects past date when allowPast is false', () => {
+  it('rejects past date when allowPast is false and returns noPast code', () => {
     const schema = DateTime({ allowPast: false }) as z.ZodType
     expect(schema.safeParse('2020-01-01T00:00:00Z').success).toBe(false)
+    const codes = getErrorCodes(schema, '2020-01-01T00:00:00Z')
+    expect(codes).toContain('noPast')
   })
 
   it('accepts future date when allowPast is false', () => {
@@ -203,9 +208,11 @@ describe('dateTime (min/max)', () => {
     expect(schema.safeParse('2025-01-01T00:00:00Z').success).toBe(true)
   })
 
-  it('rejects date before minimum', () => {
+  it('rejects date before minimum and returns tooEarly code', () => {
     const schema = DateTime({ min: '2025-01-01T00:00:00Z' }) as z.ZodType
     expect(schema.safeParse('2024-12-31T23:59:59Z').success).toBe(false)
+    const codes = getErrorCodes(schema, '2024-12-31T23:59:59Z')
+    expect(codes).toContain('tooEarly')
   })
 
   it('accepts date at maximum boundary', () => {
@@ -213,9 +220,11 @@ describe('dateTime (min/max)', () => {
     expect(schema.safeParse('2025-12-31T23:59:59Z').success).toBe(true)
   })
 
-  it('rejects date after maximum', () => {
+  it('rejects date after maximum and returns tooLate code', () => {
     const schema = DateTime({ max: '2025-12-31T23:59:59Z' }) as z.ZodType
     expect(schema.safeParse('2026-01-01T00:00:00Z').success).toBe(false)
+    const codes = getErrorCodes(schema, '2026-01-01T00:00:00Z')
+    expect(codes).toContain('tooLate')
   })
 
   it('accepts date within min/max range', () => {

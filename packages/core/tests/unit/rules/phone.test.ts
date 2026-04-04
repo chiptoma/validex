@@ -11,6 +11,13 @@ import { describe, expect, it } from 'vitest'
 import { Phone } from '@rules/phone'
 
 import { getAsyncErrorCodes, parseAsync } from '../../_support/helpers/parse'
+import { testRuleContract } from '../../_support/helpers/testRule'
+
+// ----------------------------------------------------------
+// CONTRACT TESTS
+// ----------------------------------------------------------
+
+testRuleContract('Phone', Phone as (opts?: Record<string, unknown>) => unknown, 'phone')
 
 // ----------------------------------------------------------
 // VALID PHONE NUMBERS

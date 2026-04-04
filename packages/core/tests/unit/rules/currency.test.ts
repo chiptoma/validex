@@ -8,7 +8,14 @@ import { describe, expect, it } from 'vitest'
 
 import { Currency } from '@rules/currency'
 
-import { parseAsync } from '../../_support/helpers/parse'
+import { firstParamsAsync, parseAsync } from '../../_support/helpers/parse'
+import { testRuleContract } from '../../_support/helpers/testRule'
+
+// ----------------------------------------------------------
+// CONTRACT TESTS
+// ----------------------------------------------------------
+
+testRuleContract('Currency', Currency as (opts?: Record<string, unknown>) => unknown, 'currency')
 
 // ----------------------------------------------------------
 // VALID CURRENCY CODES
@@ -149,6 +156,22 @@ describe('currency (emptyToUndefined)', () => {
     const schema = Currency()
     const result = await parseAsync(schema, '')
     expect(result.success).toBe(false)
+  })
+})
+
+// ----------------------------------------------------------
+// SECURITY VECTORS
+// ----------------------------------------------------------
+
+// ----------------------------------------------------------
+// LABEL IN ERROR PARAMS
+// ----------------------------------------------------------
+
+describe('currency (label)', () => {
+  it('includes label in error params', async () => {
+    const schema = Currency({ label: 'Currency' })
+    const params = await firstParamsAsync(schema, 'invalid!!!')
+    expect(params.label).toBe('Currency')
   })
 })
 

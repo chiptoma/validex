@@ -177,6 +177,22 @@ describe('label survives z.object composition', () => {
 })
 
 // ----------------------------------------------------------
+// LONG STRING INPUT
+// ----------------------------------------------------------
+
+describe('long string input', () => {
+  it('rejects very long input (100k chars) with correct error code', async () => {
+    const longString = 'a'.repeat(100_000)
+    const params = await firstParamsAsync(PersonName(), longString)
+    expect(params.code).toBeDefined()
+    // Length check fires first with base namespace (max), proving validex owns the error
+    expect(params.namespace).toBe('base')
+    expect(params.code).toBe('max')
+    expect(params.label).toBeDefined()
+  })
+})
+
+// ----------------------------------------------------------
 // STEP 6 VERIFICATION: I18N KEY MODE
 // ----------------------------------------------------------
 

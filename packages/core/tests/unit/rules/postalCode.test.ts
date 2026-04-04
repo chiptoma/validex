@@ -10,7 +10,18 @@ import { describe, expect, it } from 'vitest'
 
 import { PostalCode } from '@rules/postalCode'
 
-import { parseAsync } from '../../_support/helpers/parse'
+import { firstParamsAsync, parseAsync } from '../../_support/helpers/parse'
+import { testRuleContract } from '../../_support/helpers/testRule'
+
+// ----------------------------------------------------------
+// CONTRACT TESTS
+// ----------------------------------------------------------
+
+testRuleContract(
+  'PostalCode',
+  (opts?: Record<string, unknown>) => PostalCode({ country: 'US', ...opts }),
+  'postalCode',
+)
 
 // ----------------------------------------------------------
 // VALID POSTAL CODES
@@ -193,6 +204,18 @@ describe('postalCode (security)', () => {
   ])('rejects malicious input: %s', async (value) => {
     const result = await parseAsync(schema, value)
     expect(result.success).toBe(false)
+  })
+})
+
+// ----------------------------------------------------------
+// LABEL IN ERROR PARAMS
+// ----------------------------------------------------------
+
+describe('postalCode (label)', () => {
+  it('includes label in error params', async () => {
+    const schema = PostalCode({ country: 'US', label: 'Zip Code' })
+    const params = await firstParamsAsync(schema, 'invalid!!!')
+    expect(params.label).toBe('Zip Code')
   })
 })
 

@@ -10,7 +10,14 @@ import { describe, expect, it } from 'vitest'
 
 import { VatNumber } from '@rules/vatNumber'
 
-import { parseAsync } from '../../_support/helpers/parse'
+import { firstParamsAsync, parseAsync } from '../../_support/helpers/parse'
+import { testRuleContract } from '../../_support/helpers/testRule'
+
+// ----------------------------------------------------------
+// CONTRACT TESTS
+// ----------------------------------------------------------
+
+testRuleContract('VatNumber', VatNumber as (opts?: Record<string, unknown>) => unknown, 'vatNumber')
 
 // ----------------------------------------------------------
 // VALID VAT NUMBERS (AUTO-DETECT)
@@ -160,6 +167,18 @@ describe('vatNumber (security)', () => {
   ])('rejects malicious input: %s', async (value) => {
     const result = await parseAsync(schema, value)
     expect(result.success).toBe(false)
+  })
+})
+
+// ----------------------------------------------------------
+// LABEL IN ERROR PARAMS
+// ----------------------------------------------------------
+
+describe('vatNumber (label)', () => {
+  it('includes label in error params', async () => {
+    const schema = VatNumber({ label: 'VAT Number' })
+    const params = await firstParamsAsync(schema, 'invalid!!!')
+    expect(params.label).toBe('VAT Number')
   })
 })
 

@@ -9,6 +9,7 @@ import { describe, expect, it } from 'vitest'
 
 import { IpAddress } from '@rules/ipAddress'
 
+import { getErrorCodes } from '../../_support/helpers/parse'
 import { testRuleContract } from '../../_support/helpers/testRule'
 
 // ----------------------------------------------------------
@@ -152,7 +153,7 @@ describe('ipAddress (allowPrivate)', () => {
     expect(schema.safeParse('192.168.1.1').success).toBe(true)
   })
 
-  it('rejects private IPv4 when allowPrivate is false', () => {
+  it('rejects private IPv4 when allowPrivate is false and returns privateNotAllowed code', () => {
     const schema = IpAddress({ version: 'v4', allowPrivate: false }) as z.ZodType
     const privateIps: ReadonlyArray<string> = [
       '10.0.0.1',
@@ -163,6 +164,8 @@ describe('ipAddress (allowPrivate)', () => {
     for (const ip of privateIps) {
       expect(schema.safeParse(ip).success).toBe(false)
     }
+    const codes = getErrorCodes(schema, '192.168.1.1')
+    expect(codes).toContain('privateNotAllowed')
   })
 
   it('accepts public IPv4 when allowPrivate is false', () => {

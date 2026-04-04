@@ -177,6 +177,14 @@ describe('token (security)', () => {
   })
 })
 
+describe('token (regex override)', () => {
+  it('accepts value matching custom regex override', () => {
+    const schema = Token({ type: 'hex', length: { min: 1, max: 50 }, regex: /^CUSTOM-[A-Z0-9]+$/ })
+    expect(parse(schema, 'CUSTOM-ABC123').success).toBe(true)
+    expect(parse(schema, 'invalid-format').success).toBe(false)
+  })
+})
+
 describe('token — edge cases', () => {
   it('preserves whitespace when normalize is false', () => {
     const schema = Token({ type: 'hex', normalize: false }) as z.ZodType

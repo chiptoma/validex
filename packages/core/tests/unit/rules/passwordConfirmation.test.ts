@@ -13,6 +13,14 @@ import { Password } from '@rules/password'
 import { PasswordConfirmation } from '@rules/passwordConfirmation'
 
 import { parse } from '../../_support/helpers/parse'
+import { testRuleContract } from '../../_support/helpers/testRule'
+
+// ----------------------------------------------------------
+// CONTRACT TESTS
+// ----------------------------------------------------------
+
+testRuleContract('PasswordConfirmation', PasswordConfirmation as (opts?: Record<string, unknown>) => unknown, 'password')
+
 // ----------------------------------------------------------
 // BASIC VALIDATION
 // ----------------------------------------------------------
