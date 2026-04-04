@@ -10,10 +10,10 @@
 ## Spec Documents
 
 These are the source of truth. Implementation must match them:
-- `docs/scope/SPEC.md` — Full specification
-- `docs/scope/BUILD.md` — Implementation playbook
-- `docs/scope/OPTIONS.md` — All options per rule
-- `docs/scope/DEFAULTS.md` — All defaults with rationale
+- `.github/internal/SPEC.md` — Full specification
+- `.github/internal/BUILD.md` — Implementation playbook
+- `.github/internal/OPTIONS.md` — All options per rule
+- `.github/internal/DEFAULTS.md` — All defaults with rationale
 
 ---
 
