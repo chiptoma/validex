@@ -8,9 +8,5 @@ peerDependencyRules:
   allowAny:
     - eslint
 
-shamefullyHoist: false
-strictPeerDependencies: true
-autoInstallPeers: false
-
 onlyBuiltDependencies:
   - esbuild
