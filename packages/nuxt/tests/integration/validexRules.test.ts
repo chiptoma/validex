@@ -18,7 +18,7 @@ describe('validex rules through nuxt composable', () => {
     const v = useValidation(schema)
     const result = await v.validate({ email: 'test@mailinator.com' })
     expect(result.success).toBe(false)
-    expect(v.getErrors()['email']).toBeDefined()
+    expect(v.errors.value['email']).toBeDefined()
   })
 
   it('email rule with blockPlusAlias rejects plus aliases', async () => {
@@ -26,7 +26,7 @@ describe('validex rules through nuxt composable', () => {
     const v = useValidation(schema)
     const result = await v.validate({ email: 'user+alias@example.com' })
     expect(result.success).toBe(false)
-    expect(v.getErrors()['email']).toBeDefined()
+    expect(v.errors.value['email']).toBeDefined()
   })
 
   it('password rule enforces uppercase and digit requirements', async () => {
@@ -52,7 +52,7 @@ describe('validex rules through nuxt composable', () => {
 
     const result = await v.validate({ email: '', name: '', phone: '' })
     expect(result.success).toBe(false)
-    const errorKeys = Object.keys(v.getErrors())
+    const errorKeys = Object.keys(v.errors.value)
     expect(errorKeys).toContain('email')
     expect(errorKeys).toContain('name')
     expect(errorKeys).toContain('phone')
@@ -64,7 +64,7 @@ describe('validex rules through nuxt composable', () => {
     const result = await v.validate({ email: 'bad' })
     expect(result.success).toBe(false)
 
-    const emailErrors = v.getErrors()['email'] ?? []
+    const emailErrors = v.errors.value['email'] ?? []
     expect(emailErrors.length).toBeGreaterThan(0)
     for (const msg of emailErrors) {
       expect(msg).not.toBe('Invalid input')
