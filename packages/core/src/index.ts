@@ -39,7 +39,7 @@ export { maxConsecutive, maxWords, minWords, noSpaces } from './checks'
 export { collapseWhitespace, emptyToUndefined, stripHtml, toSlug, toTitleCase } from './checks'
 
 // Configuration
-export { configure, getConfig, preloadData, resetConfig, setup } from './config'
+export { getConfig, preloadData, resetConfig, setup } from './config'
 
 // Core utilities
 export {

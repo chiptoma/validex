@@ -24,7 +24,7 @@ Nuxt module for [validex](https://github.com/chiptoma/validex) — auto-imports 
 
 ## Prerequisites
 
-`@validex/core` and `zod` must be installed as peer dependencies.
+`@validex/core` and `zod` must be installed as peer dependencies. `@nuxt/kit` and `vue` are also peer dependencies but are typically already present in any Nuxt project.
 
 ## Install
 
@@ -120,11 +120,13 @@ const schema = z.object({
   password: Password(),
 })
 
+const formData = reactive({ email: '', password: '' })
+
 const { validate, clearErrors, firstErrors, isValid } = useValidation(schema)
 
-async function onSubmit(formData: Record<string, unknown>) {
+async function onSubmit(data: Record<string, unknown>) {
   clearErrors()
-  await validate(formData)
+  await validate(data)
   // isValid and firstErrors refs update automatically
 }
 </script>
