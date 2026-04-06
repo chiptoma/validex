@@ -17,42 +17,71 @@ jobs:
         node-version: [22, 24]
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check for version-only changes
+        id: changes
+        run: |
+          FILES=$(git diff --name-only HEAD~1)
+          VERSION_ONLY=true
+          for f in $FILES; do
+            case "$f" in
+              CHANGELOG.md|*/CHANGELOG.md|.changeset/*|*/package.json) ;;
+              *) VERSION_ONLY=false; break ;;
+            esac
+          done
+          echo "version_only=$VERSION_ONLY" >> "$GITHUB_OUTPUT"
+
       - uses: pnpm/action-setup@v4
+        if: steps.changes.outputs.version_only != 'true'
       - uses: actions/setup-node@v4
+        if: steps.changes.outputs.version_only != 'true'
         with:
           node-version: ${{ matrix.node-version }}
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+        if: steps.changes.outputs.version_only != 'true'
 
       - name: Security audit
+        if: steps.changes.outputs.version_only != 'true'
         run: pnpm audit --prod --audit-level=critical
 
       # Build first — adapters need @validex/core dist types for type-aware lint
       - name: Build
+        if: steps.changes.outputs.version_only != 'true'
         run: pnpm -r build
 
       # Quality gates
       - name: Lint
+        if: steps.changes.outputs.version_only != 'true'
         run: pnpm lint
       - name: Typecheck
+        if: steps.changes.outputs.version_only != 'true'
         run: pnpm -r typecheck
       - name: Test with coverage
+        if: steps.changes.outputs.version_only != 'true'
         run: pnpm -r test:coverage
 
       # Package correctness (per-package)
       - name: Publint
+        if: steps.changes.outputs.version_only != 'true'
         run: |
           cd packages/core && pnpm exec publint && cd ../..
           cd packages/nuxt && pnpm exec publint && cd ../..
           cd packages/fastify && pnpm exec publint && cd ../..
       - name: Are the types wrong?
+        if: steps.changes.outputs.version_only != 'true'
         run: |
           cd packages/core && pnpm attw --pack --ignore-rules no-resolution unexpected-module-syntax && cd ../..
           cd packages/nuxt && pnpm attw --pack --ignore-rules no-resolution unexpected-module-syntax && cd ../..
           cd packages/fastify && pnpm attw --pack --ignore-rules no-resolution unexpected-module-syntax && cd ../..
       - name: Dead code check
+        if: steps.changes.outputs.version_only != 'true'
         run: pnpm knip
       - name: Smoke test
+        if: steps.changes.outputs.version_only != 'true'
         run: pnpm test:smoke
       - name: Bundle size check
+        if: steps.changes.outputs.version_only != 'true'
         run: pnpm test:bundle-size
