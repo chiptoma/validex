@@ -8,7 +8,6 @@ Complete reference for the validex public API. Every option, default value, and 
 
 - [Configuration](#configuration)
   - [`setup(config?)`](#setupconfig)
-  - [`configure(config)`](#configureconfig)
   - [`getConfig()`](#getconfig)
   - [`resetConfig()`](#resetconfig)
   - [`validate(schema, data)`](#validateschema-data)
@@ -55,20 +54,6 @@ Complete reference for the validex public API. Every option, default value, and 
 ---
 
 ## Configuration
-
-### `configure(config)`
-
-Deep-merges the given configuration into the current global config. Can be called multiple times — each call merges with existing config, never replaces. Unlike `setup()`, this does not register the Zod customError handler.
-
-**Parameters:**
-
-| Parameter | Type | Required | Description |
-| --- | --- | --- | --- |
-| `config` | `Partial<GlobalConfig>` | Yes | Partial configuration to merge. |
-
-**Returns:** `void`
-
----
 
 ### `setup(config?)`
 
@@ -176,7 +161,7 @@ setup({
 
 ### `resetConfig()`
 
-Resets the global configuration back to the built-in defaults, discarding any changes from `setup()` or `configure()`.
+Resets the global configuration back to the built-in defaults, discarding any changes from `setup()`.
 
 **Returns:** `void`
 
@@ -430,6 +415,8 @@ All 25 rules are listed alphabetically. Every rule extends either `BaseRuleOptio
 | `emptyToUndefined` | `boolean` | `true` | Convert empty strings to `undefined` before validation. |
 | `normalize` | `boolean` | `true` | Apply rule-specific normalization (trim, lowercase, etc.). |
 | `customFn` | `(value: string) => true \| string \| Promise<true \| string>` | `undefined` | Custom validation that runs after all built-in checks. |
+| `sameAs` | `string` | `undefined` | Cross-field equality check. Field name that this field must match. |
+| `requiredWhen` | `string` | `undefined` | Conditional requirement. Field name — when that field has a value, this field becomes required. |
 
 **`FormatRuleOptions` (extends `BaseRuleOptions`):**
 
@@ -769,7 +756,7 @@ schema.parse('DE89370400440532013000') // OK
 | Code | Message | Params |
 | --- | --- | --- |
 | `ipAddress.invalid` | `{{label}} is not a valid IP address` | `label` |
-| `ipAddress.privateNotAllowed` | `Private IP addresses are not allowed` | -- |
+| `ipAddress.privateNotAllowed` | `{{label}} must not be a private IP address` | `label` |
 
 **Example:**
 
@@ -895,7 +882,7 @@ schema.parse('00:1A:2B:3C:4D:5E') // OK
 
 **Description:** Validates password strength with length, character class, consecutive character, and common password rules.
 
-**Extends:** `BaseRuleOptions` (note: `normalize` default is `false`)
+**Extends:** `BaseRuleOptions`
 
 **Options:**
 
@@ -927,6 +914,9 @@ Password lists sourced from [SecLists](https://github.com/danielmiessler/SecList
 | `password.minDigits` | `{{label}} must have at least {{minimum}} digits` | `label`, `minimum` |
 | `password.minSpecial` | `{{label}} must have at least {{minimum}} special characters` | `label`, `minimum` |
 | `password.maxUppercase` | `{{label}} must have at most {{maximum}} uppercase characters` | `label`, `maximum` |
+| `password.maxLowercase` | `{{label}} must have at most {{maximum}} lowercase characters` | `label`, `maximum` |
+| `password.maxDigits` | `{{label}} must have at most {{maximum}} digits` | `label`, `maximum` |
+| `password.maxSpecial` | `{{label}} must have at most {{maximum}} special characters` | `label`, `maximum` |
 | `password.maxConsecutive` | `{{label}} must not have more than {{maximum}} consecutive identical characters` | `label`, `maximum` |
 | `password.commonBlocked` | `{{label}} is too common` | `label` |
 
@@ -1059,6 +1049,7 @@ schema.parse('John Doe') // OK
 | --- | --- | --- |
 | `phone.invalid` | `{{label}} is not a valid phone number` | `label` |
 | `phone.requireMobile` | `{{label}} must be a mobile phone number` | `label` |
+| `phone.countryCodeRequired` | `{{label}} must include a country code prefix` | `label` |
 | `phone.countryBlocked` | `Phone numbers from '{{country}}' are not allowed` | `country` |
 | `phone.countryNotAllowed` | `Phone numbers from '{{country}}' are not in the allowed list` | `country` |
 
@@ -1172,10 +1163,12 @@ schema.parse('my-awesome-post') // OK
 
 | Code | Message | Params |
 | --- | --- | --- |
+| `text.invalid` | `{{label}} is not valid text` | `label` |
 | `text.noEmails` | `{{label}} must not contain email addresses` | `label` |
 | `text.noUrls` | `{{label}} must not contain URLs` | `label` |
 | `text.noPhoneNumbers` | `{{label}} must not contain phone numbers` | `label` |
 | `text.noHtml` | `{{label}} must not contain HTML` | `label` |
+| `text.minWords` | `{{label}} must have at least {{minimum}} words` | `label`, `minimum` |
 | `text.maxWords` | `{{label}} must have at most {{maximum}} words` | `label`, `maximum` |
 | `text.maxConsecutive` | `{{label}} must not repeat the same character more than {{maximum}} times` | `label`, `maximum` |
 
@@ -1263,6 +1256,9 @@ schema.parse('V1StGXR8_Z5jdHi6B-myT') // OK
 | --- | --- | --- |
 | `url.invalid` | `{{label}} is not a valid URL` | `label` |
 | `url.protocolNotAllowed` | `Protocol '{{protocol}}' is not allowed` | `protocol` |
+| `url.tldRequired` | `{{label}} must include a top-level domain` | `label` |
+| `url.queryNotAllowed` | `{{label}} must not contain query strings` | `label` |
+| `url.authNotAllowed` | `{{label}} must not contain credentials` | `label` |
 | `url.domainBlocked` | `Domain '{{domain}}' is not allowed` | `domain` |
 | `url.domainNotAllowed` | `Domain '{{domain}}' is not in the allowed list` | `domain` |
 
@@ -1416,6 +1412,10 @@ When `normalize: true`, bare domains (e.g. `google.com`) are auto-prepended with
 | Code | Message | Params |
 | --- | --- | --- |
 | `website.invalid` | `{{label}} is not a valid website URL` | `label` |
+| `website.httpsRequired` | `{{label}} must use HTTPS` | `label` |
+| `website.wwwRequired` | `{{label}} must include www prefix` | `label` |
+| `website.pathNotAllowed` | `{{label}} must not contain URL paths` | `label` |
+| `website.queryNotAllowed` | `{{label}} must not contain query strings` | `label` |
 | `website.domainBlocked` | `Domain '{{domain}}' is not allowed` | `domain` |
 | `website.domainNotAllowed` | `Domain '{{domain}}' is not in the allowed list` | `domain` |
 | `website.subdomainNotAllowed` | `Subdomain URLs are not allowed` | -- |
@@ -1606,7 +1606,7 @@ Creates a `superRefine` callback that verifies two fields hold the same value. T
 function sameAs(
   sourceField: string,
   targetField: string,
-  options?: { message?: string },
+  options?: { message?: string, label?: string, targetLabel?: string },
 ): (data: Record<string, unknown>, ctx: z.RefinementCtx) => void
 ```
 
@@ -1616,7 +1616,9 @@ function sameAs(
 | --- | --- | --- | --- |
 | `sourceField` | `string` | Yes | Field that must match the target. |
 | `targetField` | `string` | Yes | Field whose value is the reference. |
-| `options.message` | `string` | No | Custom error message. Default: `"${sourceField} must match ${targetField}"` |
+| `options.message` | `string` | No | Custom error message. Default: `"${label} must match ${targetLabel}"` |
+| `options.label` | `string` | No | Label for the source field. Default: `sourceField` |
+| `options.targetLabel` | `string` | No | Label for the target field. Default: `targetField` |
 
 **Example:**
 
@@ -1643,7 +1645,7 @@ Creates a `superRefine` callback that marks a field as required when a condition
 function requiredWhen(
   field: string,
   condition: (data: Record<string, unknown>) => boolean,
-  options?: { message?: string },
+  options?: { message?: string, label?: string },
 ): (data: Record<string, unknown>, ctx: z.RefinementCtx) => void
 ```
 
@@ -1653,7 +1655,8 @@ function requiredWhen(
 | --- | --- | --- | --- |
 | `field` | `string` | Yes | Field name that becomes required. |
 | `condition` | `(data: Record<string, unknown>) => boolean` | Yes | Predicate receiving the parent data object. |
-| `options.message` | `string` | No | Custom error message. Default: `"${field} is required"` |
+| `options.message` | `string` | No | Custom error message. Default: `"${label} is required"` |
+| `options.label` | `string` | No | Label for the field in error messages. Default: `field` |
 
 A field is considered empty when its value is `undefined`, `null`, or `""`.
 

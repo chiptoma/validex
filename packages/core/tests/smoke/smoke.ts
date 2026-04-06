@@ -10,7 +10,7 @@
 
 import {
   // Config
-  setup, configure, getConfig, preloadData, resetConfig,
+  setup, getConfig, preloadData, resetConfig,
   // Core
   validate, getParams, createRule,
   // All 25 rules
@@ -59,7 +59,7 @@ function section(name: string): void {
 section('Section 1: All imports resolve')
 
 const exports = [
-  setup, configure, getConfig, preloadData, resetConfig,
+  setup, getConfig, preloadData, resetConfig,
   validate, getParams, createRule,
   Email, PersonName, BusinessName, Password, PasswordConfirmation,
   Phone, Website, Url, Username, Slug,
@@ -75,7 +75,7 @@ const exports = [
   emptyToUndefined,
   sameAs, requiredWhen,
 ]
-assert(exports.length === 57, `All 57 exports defined (got ${exports.length})`)
+assert(exports.length === 56, `All 56 exports defined (got ${exports.length})`)
 assert(exports.every(e => e !== undefined), 'No undefined exports')
 
 // ========================================

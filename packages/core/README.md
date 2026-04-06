@@ -142,12 +142,12 @@ Every rule shares a ~5 kB core (Brotli). Each additional rule adds 0.1-0.8 kB. M
 | PasswordConfirmation | 5.7 kB | — | — |
 | PersonName | 5.7 kB | — | — |
 | BusinessName | 5.7 kB | — | — |
-| Phone | 5.7 kB | external | libphonenumber-js peer dep |
+| Phone | 5.7 kB | external | libphonenumber-js (bundled) |
 | Website | 5.7 kB | — | — |
 | Url | 5.6 kB | — | — |
 | Username | 5.9 kB | +0.8 kB | `blockReserved: true` |
 | Slug | 5.5 kB | — | — |
-| PostalCode | 5.4 kB | external | postcode-validator peer dep |
+| PostalCode | 5.4 kB | external | postcode-validator (bundled) |
 | LicenseKey | 5.5 kB | — | — |
 | Uuid | 5.3 kB | — | — |
 | Jwt | 5.6 kB | — | — |
@@ -309,7 +309,7 @@ const result = await validate(schema, data)
 
 ## Chainable Methods
 
-Import `@validex/core` and all Zod string schemas get these methods:
+Import `@validex/core` and all Zod schemas get these methods (intended for use on string schemas):
 
 ### Checks (return same type, add refinement)
 
@@ -456,12 +456,12 @@ Keys follow: `validation.messages.{namespace}.{code}`
 
 ```ts
 interface ValidationResult<T> {
-  success: boolean
-  data?: T                                    // typed parsed data (when success)
-  errors: Record<string, readonly string[]>   // dot-path to all messages
-  firstErrors: Record<string, string>         // dot-path to first message
-  nestedErrors: NestedErrors                  // nested object matching schema shape
-  issues: ReadonlyArray<unknown>              // raw Zod issues (escape hatch)
+  readonly success: boolean
+  readonly data?: T                                    // typed parsed data (when success)
+  readonly errors: Record<string, readonly string[]>   // dot-path to all messages
+  readonly firstErrors: Record<string, string>         // dot-path to first message
+  readonly nestedErrors: NestedErrors                  // nested object matching schema shape
+  readonly issues: ReadonlyArray<unknown>              // raw Zod issues (escape hatch)
 }
 ```
 
