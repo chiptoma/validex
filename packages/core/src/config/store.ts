@@ -1,6 +1,6 @@
 // ==============================================================================
 // CONFIG STORE
-// Module-level singleton for global configuration.
+// Module-level singleton for global configuration state.
 // ==============================================================================
 
 import type { GlobalConfig } from '../types'
