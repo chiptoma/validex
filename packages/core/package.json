@@ -1,7 +1,7 @@
 {
   "name": "@validex/core",
   "type": "module",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Type-safe validation rules built on Zod",
   "author": "Ciprian Toma",
   "license": "MIT",

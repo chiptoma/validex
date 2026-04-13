@@ -1,7 +1,7 @@
 {
   "name": "@validex/fastify",
   "type": "module",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Fastify plugin for validex — request validation via decorators and hooks",
   "author": "Ciprian Toma",
   "license": "MIT",
@@ -60,7 +60,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "peerDependencies": {
-    "@validex/core": "^1.0.2",
+    "@validex/core": "^1.0.3",
     "fastify": "^5.0.0",
     "zod": "^3.25.0 || ^4.0.0"
   },
