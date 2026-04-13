@@ -7,6 +7,9 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -29,7 +32,7 @@ jobs:
         uses: changesets/action@v1.7.0
         with:
           version: pnpm changeset version
-          publish: pnpm -r publish --no-git-checks
+          publish: pnpm exec changeset publish
           commit: 'chore: version packages'
           title: 'chore: version packages'
         env:
