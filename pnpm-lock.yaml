@@ -89,6 +89,10 @@ importers:
         version: 4.21.0
 
   packages/fastify:
+    dependencies:
+      fastify-plugin:
+        specifier: ^5.0.0
+        version: 5.1.0
     devDependencies:
       '@validex/core':
         specifier: workspace:^
@@ -96,18 +100,16 @@ importers:
       fastify:
         specifier: ^5.8.4
         version: 5.8.4
-      fastify-plugin:
-        specifier: ^5.1.0
-        version: 5.1.0
       zod:
         specifier: ^4.3.6
         version: 4.3.6
 
   packages/nuxt:
-    devDependencies:
+    dependencies:
       '@nuxt/kit':
         specifier: ^4.4.2
         version: 4.4.2(magicast@0.5.2)
+    devDependencies:
       '@nuxt/schema':
         specifier: ^4.4.2
         version: 4.4.2
