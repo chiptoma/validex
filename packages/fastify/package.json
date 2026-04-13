@@ -20,6 +20,7 @@
   "keywords": [
     "validex",
     "fastify",
+    "fastify-plugin",
     "zod",
     "validation",
     "plugin"
@@ -61,18 +62,14 @@
   "peerDependencies": {
     "@validex/core": "^1.0.2",
     "fastify": "^5.0.0",
-    "fastify-plugin": "^5.0.0",
     "zod": "^3.25.0 || ^4.0.0"
   },
-  "peerDependenciesMeta": {
-    "fastify": {
-      "optional": true
-    }
+  "dependencies": {
+    "fastify-plugin": "^5.0.0"
   },
   "devDependencies": {
     "@validex/core": "workspace:^",
     "fastify": "^5.8.4",
-    "fastify-plugin": "^5.1.0",
     "zod": "^4.3.6"
   }
 }

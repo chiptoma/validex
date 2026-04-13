@@ -20,6 +20,7 @@
   "keywords": [
     "validex",
     "nuxt",
+    "nuxt-module",
     "zod",
     "validation",
     "composable"
@@ -59,18 +60,15 @@
     "test:coverage": "vitest run --coverage"
   },
   "peerDependencies": {
-    "@nuxt/kit": "^4.4.2",
     "@validex/core": "^1.0.2",
+    "nuxt": ">=3.0.0",
     "vue": "^3.5.0",
     "zod": "^3.25.0 || ^4.0.0"
   },
-  "peerDependenciesMeta": {
-    "nuxt": {
-      "optional": true
-    }
+  "dependencies": {
+    "@nuxt/kit": "^4.4.2"
   },
   "devDependencies": {
-    "@nuxt/kit": "^4.4.2",
     "@nuxt/schema": "^4.4.2",
     "@nuxt/test-utils": "^4.0.0",
     "@validex/core": "workspace:^",
