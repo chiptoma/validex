@@ -1,7 +1,7 @@
 {
   "name": "@validex/nuxt",
   "type": "module",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Nuxt module for validex — auto-imports all rules and composables",
   "author": "Ciprian Toma",
   "license": "MIT",
@@ -59,14 +59,14 @@
     "test:e2e": "vitest run tests/e2e",
     "test:coverage": "vitest run --coverage"
   },
-  "dependencies": {
-    "@nuxt/kit": "^4.4.2"
-  },
   "peerDependencies": {
-    "@validex/core": "^1.0.1",
+    "@validex/core": "^1.0.2",
     "nuxt": ">=3.0.0",
     "vue": "^3.5.0",
     "zod": "^3.25.0 || ^4.0.0"
+  },
+  "dependencies": {
+    "@nuxt/kit": "^4.4.2"
   },
   "devDependencies": {
     "@nuxt/kit": "^4.4.2",
