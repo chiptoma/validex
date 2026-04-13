@@ -70,7 +70,6 @@
   "devDependencies": {
     "@validex/core": "workspace:^",
     "fastify": "^5.8.4",
-    "fastify-plugin": "^5.1.0",
     "zod": "^4.3.6"
   }
 }
